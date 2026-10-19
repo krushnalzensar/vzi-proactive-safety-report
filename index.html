@@ -2,7 +2,7 @@
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Proactive Safety Weekly Report</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Figtree:wght@400;500;600;700&family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Noto+Sans:wght@400;500;600;700&family=Lato:wght@400;700;900&family=Inter:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=Merriweather:wght@700&family=Barlow:wght@400;500;600;700&family=Roboto+Mono:wght@500;600;700&family=Open+Sans:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Figtree:wght@400;500;600;700&family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Barlow:wght@400;500;600;700&family=Roboto+Mono:wght@500;600;700&family=Open+Sans:wght@400;600;700&display=swap">
 <style>
 /* Safety dashboard: ten sober, information-first design languages (data-ds) and ten page layouts (data-layout). Light only. Colour carries severity; everything the AI writes sits in a marked insight box. */
 :root{color-scheme:light;
@@ -167,6 +167,41 @@ main>*{min-width:0}
 .flag svg{width:15px;height:15px}
 .mt.none{background:var(--soft)}
 .mt.none .n{font-size:16px;color:var(--ink3);font-weight:700}
+/* review controls */
+.rvc{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);background:var(--soft);border:1px dashed var(--ref);border-radius:var(--rs);padding:4px 6px 4px 10px}
+.info{width:26px;height:26px;border-radius:50%;border:1px solid var(--rule);background:var(--paper);color:var(--ink2);font-weight:800;font-family:var(--hf);font-size:14px;display:grid;place-items:center;padding:0;text-transform:none}
+.tbtn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--btn);background:var(--paper);color:var(--btn);border-radius:var(--rs);padding:7px 12px;font-size:14.5px;font-weight:700;text-decoration:none}
+.tbtn[aria-pressed="true"]{background:var(--btn);color:var(--btnink)}
+.tbtn svg{width:16px;height:16px}
+/* clean one-screen layout */
+.cl{display:grid;gap:14px}
+.clr{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.35fr);gap:14px;align-items:stretch}
+.clr.b{grid-template-columns:minmax(0,1.35fr) minmax(0,1fr)}
+.clr>*{min-width:0}
+.csum{background:var(--paper);border:var(--bw) solid var(--rule);border-radius:var(--r);box-shadow:var(--sh);padding:16px 18px;display:grid;gap:10px;align-content:start}
+.csum .top{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:14px;color:var(--ink2)}
+.csum .lines{display:grid;gap:8px;margin:0;padding:0;list-style:none}
+.csum .lines li{display:grid;grid-template-columns:130px minmax(0,1fr);gap:8px;font-size:15px;line-height:1.4}
+.csum .lines b{font-size:13px;letter-spacing:.06em;text-transform:uppercase;padding-top:2px}
+.ckp{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.ck{display:grid;gap:4px;text-align:left;width:100%;background:var(--paper);border:var(--bw) solid var(--rule);border-radius:var(--r);box-shadow:var(--sh);padding:14px 16px}
+.ck:hover{box-shadow:var(--shh)}
+.ck .l{font-size:14px;font-weight:600;color:var(--ink2)}
+.ck .row{display:flex;align-items:flex-end;justify-content:space-between;gap:8px}
+.ck .n{font-family:var(--nf);font-size:30px;font-weight:700;line-height:1}
+.pill{display:inline-flex;align-items:center;gap:4px;font-size:13.5px;font-weight:700;border-radius:99px;padding:2px 9px}
+.pill.ok{background:var(--greenbg);color:var(--green)}.pill.bad{background:var(--redbg);color:var(--red)}.pill.eq{background:var(--soft2);color:var(--ink2)}
+.ck small{font-size:14px;color:var(--ink3)}
+.cheat{width:100%;border-collapse:separate;border-spacing:3px;font-size:14px}
+.cheat th{font-size:13px;font-weight:600;color:var(--ink3);text-align:center;padding:2px}
+.cheat th:first-child{text-align:left}
+.cheat td{text-align:center;border-radius:5px;height:30px;font-family:var(--nf);font-weight:600;font-size:13.5px}
+.cheat td.nm{text-align:left;font-family:var(--bf);font-weight:600;white-space:nowrap;padding-right:6px}
+.cheat td.nm i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px;background:var(--st)}
+.cheat tr.ck2{cursor:pointer}
+.cheat tr.ck2:hover td.nm{color:var(--btn)}
+.hint{font-size:14px;color:var(--ink3)}
+@media (max-width:900px){.clr,.clr.b{grid-template-columns:minmax(0,1fr)}.csum .lines li{grid-template-columns:1fr}}
 /* MUE levels */
 #wallBox{display:grid;gap:14px;min-width:0}
 .mhead{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center}
@@ -395,6 +430,14 @@ main>*{min-width:0}
 .ctab{justify-self:start;background:var(--btn);color:var(--btnink);border:0;border-radius:var(--rs);padding:12px 22px;font-weight:700;font-size:16px}
 
 /* ========== DESIGN LANGUAGES (all sober, information-first) ========== */
+/* Clean (original one-screen style): light, airy, small cards, blue accent */
+[data-ds="clean"]{--bg:#f3f6f9;--paper:#fff;--card:#fff;--rule:#e2e8ee;--soft:#f4f7fa;--soft2:#eaf0f5;--hbar:#fff;--ink:#1c2a39;--ink2:#566577;--ink3:#6b7889;--act:#2a78d6;--ref:#b7c1cc;
+ --red:#d6463a;--high:#d9681f;--amber:#b07a00;--green:#2f9e5b;--redbg:#fcebe8;--highbg:#fdf0e6;--amberbg:#fdf3df;--greenbg:#e7f5ec;
+ --ai:#5b4bd6;--aibg:#f3f1fd;--aiedge:#dcd7f7;--aiink:#2a2166;--btn:#2a78d6;--c1:#2a78d6;--c2:#eb6834;
+ --hf:"Archivo",system-ui,sans-serif;--bf:"Figtree",system-ui,sans-serif;--nf:"Archivo",system-ui,sans-serif;--r:14px;--rs:9px;--bw:1px;--sh:0 1px 2px rgba(28,42,57,.05);--shh:0 8px 20px -14px rgba(28,42,57,.3);--btw:16px}
+[data-ds="clean"] .bh{border-bottom:0;padding:14px 18px 0}
+[data-ds="clean"] .bb{padding:12px 18px 18px;gap:12px}
+[data-ds="clean"] .seg button[aria-pressed="true"]{background:#e8f1fb;color:#2a78d6}
 /* 2 IBCS report: black and greys, colour only for variance and severity */
 [data-ds="ibcs"]{--bg:#f2f2f2;--paper:#fff;--card:#fff;--rule:#c4c4c4;--soft:#f5f5f5;--soft2:#e4e4e4;--hbar:#fff;--ink:#000;--ink2:#3d3d3d;--ink3:#5c5c5c;--act:#404040;--ref:#a6a6a6;
  --red:#c80000;--high:#c45a00;--amber:#9a7200;--green:#2f7d32;--ai:#1f4e79;--aibg:#eef3f8;--aiedge:#b9cadb;--aiink:#0f2740;--btn:#000;
@@ -410,26 +453,6 @@ main>*{min-width:0}
 [data-ds="carbon"] .bh{border-bottom:1px solid #e0e0e0}
 [data-ds="carbon"] .vs,[data-ds="carbon"] .mt,[data-ds="carbon"] .fa,[data-ds="carbon"] .frow,[data-ds="carbon"] .kp,[data-ds="carbon"] .mc{background:#f4f4f4;border-color:#f4f4f4}
 [data-ds="carbon"] .sev{border-radius:24px;padding:4px 10px}
-/* 4 SAP Fiori Horizon */
-[data-ds="fiori"]{--bg:#f5f6f7;--paper:#fff;--card:#fff;--rule:#d9dde3;--soft:#f5f6f7;--soft2:#e5e8ec;--hbar:#fff;--ink:#1d2d3e;--ink2:#556b82;--ink3:#5b738b;--act:#354a5f;--ref:#a9b4be;
- --red:#aa0808;--high:#c35500;--amber:#8d6100;--green:#256f3a;--redbg:#ffeaf4;--highbg:#fff8d6;--greenbg:#f5fae5;--ai:#5d36ff;--aibg:#f2efff;--aiedge:#d5ccff;--aiink:#24166b;--btn:#0070f2;
- --hf:"Noto Sans",sans-serif;--bf:"Noto Sans",sans-serif;--nf:"Noto Sans",sans-serif;--r:16px;--rs:8px;--bw:0px;--sh:0 0 2px rgba(34,53,72,.16),0 2px 4px rgba(34,53,72,.16);--btw:19px}
-[data-ds="fiori"] .vs,[data-ds="fiori"] .mt,[data-ds="fiori"] .fa,[data-ds="fiori"] .frow,[data-ds="fiori"] .kp,[data-ds="fiori"] .mc,[data-ds="fiori"] .win{box-shadow:0 0 2px rgba(34,53,72,.16),0 2px 4px rgba(34,53,72,.12);border-color:transparent}
-[data-ds="fiori"] .why,[data-ds="fiori"] .seg,[data-ds="fiori"] .sel{border-radius:8px}
-[data-ds="fiori"] .sev{border-radius:12px}
-/* 5 Salesforce Lightning */
-[data-ds="slds"]{--bg:#f3f3f3;--paper:#fff;--card:#fff;--rule:#c9c9c9;--soft:#f3f3f3;--soft2:#e5e5e5;--hbar:#fff;--ink:#181818;--ink2:#444;--ink3:#5c5c5c;--act:#032d60;--ref:#aeaeae;
- --red:#ba0517;--high:#a64900;--amber:#8c5c00;--green:#2e844a;--ai:#5a1ba9;--aibg:#f9f0ff;--aiedge:#e5c8ff;--aiink:#2e0a5c;--btn:#0176d3;
- --hf:"Lato",sans-serif;--bf:"Lato",sans-serif;--nf:"Lato",sans-serif;--r:4px;--rs:4px;--sh:0 2px 2px rgba(0,0,0,.1);--btw:19px}
-[data-ds="slds"] .bh{border-bottom:0;padding-bottom:6px}
-[data-ds="slds"] .bh::before{content:"";width:28px;height:28px;border-radius:4px;background:var(--btn) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.4'%3E%3Cpath d='M4 20V10M10 20V4M16 20v-7M22 20H2'/%3E%3C/svg%3E") center/16px no-repeat}
-[data-ds="slds"] .sev{border-radius:15px}
-/* 6 Atlassian */
-[data-ds="atlassian"]{--bg:#f7f8f9;--paper:#fff;--card:#fff;--rule:#dcdfe4;--soft:#f7f8f9;--soft2:#e8eaee;--hbar:#fff;--ink:#172b4d;--ink2:#44546f;--ink3:#626f86;--act:#44546f;--ref:#a5adba;
- --red:#c9372c;--high:#a54800;--amber:#7f5f01;--green:#216e4e;--redbg:#ffeceb;--highbg:#fff3eb;--amberbg:#fff7d6;--greenbg:#dcfff1;--ai:#5e4db2;--aibg:#f3f0ff;--aiedge:#dfd8fd;--aiink:#352c63;--btn:#0c66e4;
- --hf:"Inter",sans-serif;--bf:"Inter",sans-serif;--nf:"Inter",sans-serif;--hw:600;--r:8px;--rs:4px;--bw:0px;--sh:0 1px 1px rgba(9,30,66,.25),0 0 1px rgba(9,30,66,.31);--btw:18px}
-[data-ds="atlassian"] .sev{border-radius:3px;font-size:12px}
-[data-ds="atlassian"] .bh{background:#fff}
 /* 7 GOV.UK */
 [data-ds="govuk"]{--bg:#f3f2f1;--paper:#fff;--card:#fff;--rule:#b1b4b6;--soft:#f3f2f1;--soft2:#dedede;--hbar:#f3f2f1;--ink:#0b0c0c;--ink2:#505a5f;--ink3:#505a5f;--act:#0b0c0c;--ref:#b1b4b6;
  --red:#d4351c;--high:#b2400a;--amber:#805b00;--green:#00703c;--ai:#4c2c92;--aibg:#f4f1f9;--aiedge:#c9bde3;--aiink:#0b0c0c;--btn:#00703c;
@@ -439,12 +462,6 @@ main>*{min-width:0}
 [data-ds="govuk"] .why,[data-ds="govuk"] .ctab{box-shadow:0 2px 0 #002d18}
 [data-ds="govuk"] :focus-visible{outline:3px solid #ffdd00;box-shadow:0 4px 0 #0b0c0c}
 [data-ds="govuk"] .sev{border-radius:0;font-size:13px}
-/* 8 USWDS */
-[data-ds="uswds"]{--bg:#f0f0f0;--paper:#fff;--card:#fff;--rule:#dfe1e2;--soft:#f0f0f0;--soft2:#dfe1e2;--hbar:#fff;--ink:#1b1b1b;--ink2:#454545;--ink3:#5d5d52;--act:#162e51;--ref:#a9aeb1;
- --red:#b50909;--high:#a83d00;--amber:#7a5c00;--green:#00762d;--ai:#5e2ca5;--aibg:#f4effa;--aiedge:#d5c6eb;--aiink:#2c1452;--btn:#005ea2;
- --hf:"Merriweather",Georgia,serif;--bf:"Public Sans",sans-serif;--nf:"Public Sans",sans-serif;--r:8px;--rs:4px;--bw:2px;--sh:none;--btw:20px}
-[data-ds="uswds"] .bh{border-bottom:2px solid #dfe1e2}
-[data-ds="uswds"] .vs,[data-ds="uswds"] .mt,[data-ds="uswds"] .fa{border-width:2px}
 /* 9 Control room (ISA-101 high-performance HMI): grey by default, colour only when something is abnormal */
 [data-ds="hmi"]{--bg:#d4d4d4;--paper:#e9e9e9;--card:#f2f2f2;--rule:#a3a3a3;--soft:#e0e0e0;--soft2:#cfcfcf;--hbar:#cdcdcd;--ink:#141414;--ink2:#383838;--ink3:#4d4d4d;--act:#4d4d4d;--ref:#8c8c8c;
  --red:#c00000;--high:#c25400;--amber:#8a6400;--green:#4d4d4d;--redbg:#f6dcdc;--highbg:#f6e4d6;--amberbg:#f2ead0;--greenbg:#dedede;--ai:#2b4c7e;--aibg:#dfe5ee;--aiedge:#9fb0c9;--aiink:#122440;--btn:#2b4c7e;
@@ -467,6 +484,9 @@ main>*{min-width:0}
 <header class="mast"><div class="in">
   <div class="strip">
     <span class="org"><b>VZI</b> · Proactive Safety Agent · weekly report</span>
+    <span class="rvc">Review controls <button class="info" type="button" data-info="1" aria-label="About the review controls">i</button></span>
+    <button class="tbtn" type="button" id="cleanBtn" data-clean="1" aria-pressed="false">Clean view</button>
+    <a class="tbtn" id="origBtn" href="original.html" target="_blank" rel="noopener">Original one-screen mock-up <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>
     <div class="sel"><label for="laySel">Layout</label><select id="laySel"></select></div>
     <div class="sel"><label for="dsSel">Design</label><select id="dsSel"></select></div>
     <div class="sel"><label for="scn">Data</label><select id="scn">
@@ -732,8 +752,8 @@ function weekBars(v,c,label,v2){const W=640,H=200,B=28,T=18,bw=W/8,mx=Math.max(3
     if(v2&&v2[i])s+=`<rect class="growY" x="${xx}" y="${y(v2[i])}" width="${w}" height="${H-B-y(v2[i])}" rx="4" style="fill:${i>=6?'var(--red)':'var(--ref)'};opacity:.85;pointer-events:none;--d:${(i*.05+.1).toFixed(2)}s"/>`;
     s+=`<text x="${xx+w/2}" y="${y(x)-8}" font-size="17" font-weight="800" text-anchor="middle" style="fill:${i>=6?'var(--ink)':'var(--ink3)'}">${x}</text>`;
     s+=`<text x="${xx+w/2}" y="${H-6}" font-size="14.5" text-anchor="middle" style="fill:${i>=6?'var(--ink)':'var(--ink3)'};font-weight:${i>=6?800:600}">${i===7?'This week':i===6?'Last week':WEEKS[i]}</text>`});
-  s+=`<line x1="0" x2="${W}" y1="${y(a7)}" y2="${y(a7)}" style="stroke:var(--ink2);stroke-width:1.5;stroke-dasharray:6 5"/><text x="4" y="${y(a7)-7}" font-size="14.5" font-weight="700" style="fill:var(--ink2)">usual ${Math.round(a7)}</text>`;
-  return s+"</svg>"+(v2?`<div class="legend" style="margin-top:4px"><span><span class="k1" style="background:var(--red)"></span>High potential</span><span><span class="k1" style="background:${c}"></span>All unsafe</span></div>`:"")}
+  s+=`<line x1="0" x2="${W}" y1="${y(a7)}" y2="${y(a7)}" style="stroke:var(--ink2);stroke-width:1.5;stroke-dasharray:6 5"/>`;
+  return s+"</svg>"+`<div class="mwl"><span><i class="ds"></i>Usual: ${Math.round(a7)}</span></div>`+(v2?`<div class="legend" style="margin-top:4px"><span><span class="k1" style="background:var(--red)"></span>High potential</span><span><span class="k1" style="background:${c}"></span>All unsafe</span></div>`:"")}
 function mueSpot(m,i){const x=m.mue[i],r=m.R[i];const tot=x.site[0]+x.site[1]+x.site[2]||1;
   const area=AREAS.map((a,k)=>[a,x.area[k]]).filter(q=>q[1]).sort((a,b)=>b[1]-a[1]);
   return [`<div class="stats"><div><b>${cnt(r.hp8)}</b><span>high-potential findings, 8 weeks</span></div><div><b>${cnt(x.openHP)}</b><span>still open</span></div><div><b>${x.late} / ${x.open}</b><span>actions past due</span></div></div>`,
@@ -758,9 +778,9 @@ function miniWeeks(v,label){const W=280,H=64,bw=W/8,mx=Math.max(3,...v)*1.1,u=av
   return `<svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:320px;font-family:var(--bf)" role="img" aria-label="${esc(label)} per week">`+v.map((x,i)=>`<rect class="hov growY" data-html="${esc(`<div class='t'>Week to ${WEEKS[i]}</div><div class='r'><span>${label}</span><b>${x}</b></div>`)}" x="${i*bw+bw*.18}" y="${y(x)}" width="${bw*.64}" height="${Math.max(H-2-y(x),1.5)}" rx="3" style="fill:${i>=6?'var(--act)':'var(--soft2)'};--d:${(.2+i*.05).toFixed(2)}s"/>`).join("")+`<line x1="0" x2="${W}" y1="${y(u)}" y2="${y(u)}" style="stroke:var(--ink2);stroke-width:1.5;stroke-dasharray:4 4"/></svg><div class="mwl"><span><i class="dk"></i>Last 2 weeks</span><span><i class="ds"></i>Usual: ${Math.round(u)}</span></div>`}
 
 /* ===== v11: design languages and layouts ===== */
-const DSS=[["exec","Executive (sober)"],["ibcs","IBCS report"],["carbon","IBM Carbon style"],["fiori","SAP Fiori style"],["slds","Salesforce Lightning style"],["atlassian","Atlassian style"],["govuk","GOV.UK style"],["uswds","US Web Design System style"],["hmi","Control room (ISA-101)"],["powerbi","Power BI report style"]];
-const LAYS=[["brief","Briefing (scrolling report)"],["grid","Single-screen dashboard"],["tabs","Tabbed sections"],["inbox","Issue list and detail"],["score","Scorecard table"],["register","MUE risk register"],["memo","Briefing note (text first)"],["matrix","Heat map first"],["steps","Step-through (for meetings)"],["sites","Sites side by side"]];
-let lay="brief",tabSel=0,pick=null,stepSel=0;
+const DSS=[["clean","Clean (original one-screen style)"],["exec","Executive (sober)"],["ibcs","IBCS report"],["carbon","IBM Carbon style"],["govuk","GOV.UK style"],["hmi","Control room (ISA-101)"],["powerbi","Power BI report style"]];
+const LAYS=[["clean","Clean one-screen (recommended start)"],["brief","Briefing (scrolling report)"],["grid","Single-screen dashboard"],["tabs","Tabbed sections"],["inbox","Issue list and detail"],["score","Scorecard table"],["register","MUE risk register"],["memo","Briefing note (text first)"],["matrix","Heat map first"],["steps","Step-through (for meetings)"],["sites","Sites side by side"]];
+let lay="clean",tabSel=0,pick=null,stepSel=0,clTk="obs";
 const LV={Critical:0,High:1,Watch:2,Good:3};
 const STC={focus:["var(--red)","var(--redbg)","Need action"],watch:["var(--high)","var(--highbg)","Watch"],ok:["var(--green)","var(--greenbg)","Steady"],none:["var(--grey)","var(--soft2)","No data"]};
 const ORD={focus:0,watch:1,ok:2,none:3};
@@ -952,9 +972,30 @@ const LB={
    const diff=`<div class="tw2"><span class="hd">MUE group</span><span class="hd">BMM</span><span class="hd">Gamsberg</span>${rows.map(x=>{return `<button class="lnk" type="button" data-grp="${x.k}" style="color:var(--ink);font-weight:600;text-decoration:none">${esc(x.name)}</button>${[0,1].map(k=>`<span class="br"><i class="grow" style="width:${x.site[k]/mx*80}%;background:${k?"var(--c2)":"var(--c1)"}"></i><b>${x.site[k]}</b></span>`).join("")}`}).join("")}</div><div class="ft">Unsafe findings in the last 8 weeks. Records with no site are left out. * CRM checks by site are indicative.</div>`;
    return verdictHTML(c.m,c.ins,{compact:1})+summaryHTML(c)+`<div class="cmp">${col("BMM")}${col("GMB")}</div>`+blk("Where the sites differ",diff,{d:.15})}
 };
+
+/* ===== clean one-screen layout (original mock-up style, fewer elements) ===== */
+const CLT={obs:["Observations","var(--act)",m=>m.obs,m=>m.hp],hp:["High-potential findings","var(--red)",m=>m.hp],crm:["CRM checks","var(--act)",m=>m.crm],act:["Actions opened","var(--act)",m=>m.ao]};
+function clTrend(m){const t=CLT[clTk];return `<div class="seg" role="group" aria-label="Trend measure">${Object.keys(CLT).map(k=>`<button type="button" data-cltk="${k}" aria-pressed="${clTk===k}">${CLT[k][0]}</button>`).join("")}</div>${weekBars(t[2](m),t[1],t[0],t[3]?t[3](m):null)}`}
+function clKpi(label,v,prev,ser,good,dim,sub){const d=v-prev,cls=d===0?"eq":(d>0)===good?"ok":"bad";return `<button class="ck" type="button" data-dim="${dim}" data-sc="${scope}"><span class="l">${label}</span><span class="row"><span class="n">${cnt(v)}</span>${spark(ser,"var(--act)",84,30)}</span><span><span class="pill ${cls}">${d>0?"▲":d<0?"▼":"="} ${Math.abs(d)} vs last week</span></span>${sub?`<small>${sub}</small>`:""}</button>`}
+LB.clean=c=>{const m=c.m,g=m.grades,w=wins(m),f=c.f,A=f[0];
+  const lines=[["Better",w.length?esc(uc(w[0][1]))+(w[1]?`; ${esc(w[1][1])}`:""):"Nothing improved on last week"],["Needs attention",f.length?f.slice(0,2).map(o=>esc(o.head)).join("; "):"Nothing unusual"],["Focus next week",A?esc(A.act):"Routine checks only"]];
+  const sumH=`<section class="csum anim"><div class="top"><i class="gq" style="background:${gcol(g.overall)}">${g.overall}</i><b>Overall grade ${g.overall}</b><span>${esc(SITENAME[m.scope])} · week to 1 October 2026</span></div>
+   ${insBox(`${esc(vText(c.ins))}.`)}<ul class="lines">${lines.map(([k,v],i)=>`<li><b style="color:${i===0?"var(--green)":i===1?"var(--red)":"var(--ai)"}">${k}</b><span>${v}</span></li>`).join("")}</ul>
+   <div class="more"><button class="lnk" type="button" data-view="sum">Read the AI summary ${ARROW}</button>${A?`<button class="lnk" type="button" data-ins="${A.key}">Why, and what to do ${ARROW}</button>`:""}</div></section>`;
+  const kp=`<div class="ckp">${clKpi("Observations",m.obs[7],m.obs[6],m.obs,true,0)}${clKpi("High-potential findings",m.hp[7],m.hp[6],m.hp,false,1)}${clKpi("CRM checks",m.crm[7],m.crm[6],m.crm,true,2)}${clKpi("Actions past due",m.late,m.late,m.ao,false,3,`of ${m.open} open actions`).replace(/<span><span class="pill[^]*?<\/span><\/span>/,`<span><span class="pill bad">${m.open?Math.round(m.late/m.open*100):0}% of open actions</span></span>`)}</div>`;
+  const G=nodes(m,2),mx=Math.max(1,...G.flatMap(n=>n.u));
+  const heat=`<div style="overflow-x:auto"><table class="cheat"><thead><tr><th>MUE group</th>${WEEKS.map((wk,i)=>`<th>${i===7?"This wk":wk}</th>`).join("")}<th>8 wks</th></tr></thead><tbody>${G.map(n=>`<tr class="ck2" data-grp="${n.k}" style="--st:${STC[n.status][0]}"><td class="nm"><i></i>${esc(n.name)}</td>${n.u.map((v,i)=>{const p=v?Math.round(12+70*Math.sqrt(v/mx)):0;return `<td class="hov" data-html="${esc(`<div class='t'>${n.name} · week to ${WEEKS[i]}</div><div class='r'><span>Unsafe findings</span><b>${v}</b></div>`)}" style="background:${v?`color-mix(in srgb,var(--act) ${p}%,var(--paper))`:"var(--soft)"};color:${p>45?"#fff":"var(--ink2)"}">${v||""}</td>`}).join("")}<td><b>${sum8(n.u)}</b></td></tr>`).join("")}</tbody></table></div><div class="hint">Unsafe findings per week for the 12 MUE groups (34 MUEs, draft VZI taxonomy). Select a group to see its MUEs.</div>`;
+  const where=hbars(AREAS.slice(0,5).map((a,k)=>[a,sum(m.area[k].uns),m.area[k].late]).sort((x,y)=>y[1]-x[1]).map(r=>[r[0],r[1]]),"var(--act)")+`<div class="hint">Unsafe findings in the last 8 weeks, by area.</div>`;
+  return `<div class="cl"><div class="clr">${sumH}${kp}</div>
+   <div class="clr b">${blk("Weekly trend",`<div id="clTrend">${clTrend(m)}</div>`,{d:.05})}${blk("Focus next week",`<div class="frows">${f.slice(0,3).map(o=>frow(o)).join("")}</div><div class="hint">Proposed by the agent; the HSE Head confirms.</div>`,{d:.1})}</div>
+   <div class="clr b">${blk("MUE groups by week",heat,{d:.15})}${blk("Where it is happening",where,{d:.2})}</div></div>`};
+const sum8=a=>a.reduce((x,y)=>x+y,0);
+function spotInfo(){openSpot(`<span class="theme">Review controls</span><h2 id="spotH">These controls are for reviewers</h2>
+  <p class="lede">The controls at the top of the page are for developers and reviewers only. They let us try the different layouts and design languages side by side, so we can agree on one before implementation starts. They will not appear in the final report.</p>
+  <ul class="rules"><li><b>Clean view:</b> one screen in the style of the original mock-up, with the fewest elements.</li><li><b>Original one-screen mock-up:</b> opens the earlier version in a new tab, for comparison.</li><li><b>Layout:</b> ${LAYS.length} ways to structure the page.</li><li><b>Design:</b> ${DSS.length} visual styles.</li><li><b>Data:</b> this week, or example scenarios built by adjusting the records.</li><li><b>Site:</b> VZI, BMM or Gamsberg. <b>View:</b> AI summary, full report or the site emails.</li></ul>`)}
 function pickDetail(c){if(!pick)return `<p class="ft">Nothing to show.</p>`;if(pick[0]==="i"){const o=c.ins.find(x=>"i:"+x.key===pick);return o?insDetail(o):""}return mueDetail(+pick.slice(2))}
 function ctx(){const m=model(lay==="sites"?"ALL":scope),ins=insights(m),f=pickFocus(ins),rest=ins.filter(o=>!f.includes(o)&&o.level!=="Good");return {m,ins,f,rest,t:texts(m,ins,f)}}
-function render(){const c=ctx();window.__ins=c.ins;document.documentElement.dataset.layout=lay;$("siteSeg").hidden=!isDash()||(lay==="sites"&&view!=="sum");$("dash").innerHTML=view==="sum"?summaryView(c):LB[lay](c);countUp($("dash"))}
+function render(){const cb=$("cleanBtn");if(cb)cb.setAttribute("aria-pressed",lay==="clean"&&document.documentElement.dataset.ds==="clean");const c=ctx();window.__ins=c.ins;document.documentElement.dataset.layout=lay;$("siteSeg").hidden=!isDash()||(lay==="sites"&&view!=="sum");$("dash").innerHTML=view==="sum"?summaryView(c):LB[lay](c);countUp($("dash"))}
 
 /* ===== pop-up detail ===== */
 let lastFocus=null;
@@ -1002,6 +1043,9 @@ document.addEventListener("click",e=>{const t=e.target;if(t.closest("#spot")&&!t
   const gp=t.closest("[data-grp]");if(gp){spotGroup(+gp.dataset.grp);return}
   const rg=t.closest("[data-rgrp]");if(rg){const k=+rg.dataset.rgrp;regOpen.has(k)?regOpen.delete(k):regOpen.add(k);render();return}
   const ra=t.closest("[data-rall]");if(ra){regOpen=ra.dataset.rall==="1"?new Set(L2N.map((_,k)=>k)):new Set();render();return}
+  const ct=t.closest("[data-cltk]");if(ct){clTk=ct.dataset.cltk;$("clTrend").innerHTML=clTrend(ctx().m);return}
+  if(t.closest("[data-info]")){spotInfo();return}
+  if(t.closest("[data-clean]")){const on=!(lay==="clean"&&document.documentElement.dataset.ds==="clean");$("laySel").value=on?"clean":"brief";$("dsSel").value=on?"clean":"exec";document.documentElement.dataset.ds=on?"clean":"exec";store("a04ds12",on?"clean":"exec");setLay(on?"clean":"brief");return}
   const dv=t.closest("[data-view]");if(dv){setView(dv.dataset.view);return}
   if(t.closest("[data-about]")){spotAbout();return}
   const sc=t.closest("[data-site]");if(sc){setScope(sc.dataset.site);return}
@@ -1019,14 +1063,14 @@ document.querySelectorAll("#viewSeg button").forEach(b=>b.onclick=e=>{e.stopProp
 const store=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}},load=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
 $("dsSel").innerHTML=DSS.map((d,i)=>`<option value="${d[0]}">${i+1} · ${d[1]}</option>`).join("");
 $("laySel").innerHTML=LAYS.map((d,i)=>`<option value="${d[0]}">${i+1} · ${d[1]}</option>`).join("");
-function setDS(v){document.documentElement.dataset.ds=v;store("a04ds11",v);isDash()?render():email(view)}
-function setLay(v){lay=v;tabSel=0;stepSel=0;store("a04lay11",v);if(view!=="dash")setView("dash");render()}
+function setDS(v){document.documentElement.dataset.ds=v;store("a04ds12",v);isDash()?render():email(view)}
+function setLay(v){lay=v;tabSel=0;stepSel=0;store("a04lay12",v);if(view!=="dash")setView("dash");render()}
 $("dsSel").onchange=e=>setDS(e.target.value);
 $("laySel").onchange=e=>setLay(e.target.value);
 $("scn").onchange=e=>{const k=e.target.value;D=k==="live"?BASE:scenario(k);for(const x in CACHE)delete CACHE[x];pick=null;
   $("banner").hidden=k==="live";$("banner").textContent={good:"Example scenario: most past-due actions closed, CRM checks back to normal and fewer high-potential findings. Built by adjusting this week's records; not real data.",slope:"Example scenario: 11 high-potential pit wall findings at Gamsberg in two weeks and no pit wall CRM checks. Built by adjusting this week's records; not real data.",quiet:"Example scenario: BMM records two thirds fewer observations in the last two weeks. Built by adjusting this week's records; not real data."}[k]||"";
   isDash()?render():email(view)};
-(()=>{let v=load("a04ds11");if(!DSS.some(d=>d[0]===v))v="exec";let l=load("a04lay11");if(!LAYS.some(d=>d[0]===l))l="brief";$("dsSel").value=v;$("laySel").value=l;document.documentElement.dataset.ds=v;lay=l})();
+(()=>{let v=load("a04ds12");if(!DSS.some(d=>d[0]===v))v="clean";let l=load("a04lay12");if(!LAYS.some(d=>d[0]===l))l="clean";$("dsSel").value=v;$("laySel").value=l;document.documentElement.dataset.ds=v;lay=l})();
 render();
 </script>
 
