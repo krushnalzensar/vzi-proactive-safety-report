@@ -1,0 +1,1033 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Proactive Safety Weekly Report</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Figtree:wght@400;500;600;700&family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Noto+Sans:wght@400;500;600;700&family=Lato:wght@400;700;900&family=Inter:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=Merriweather:wght@700&family=Barlow:wght@400;500;600;700&family=Roboto+Mono:wght@500;600;700&family=Open+Sans:wght@400;600;700&display=swap">
+<style>
+/* Safety dashboard: ten sober, information-first design languages (data-ds) and ten page layouts (data-layout). Light only. Colour carries severity; everything the AI writes sits in a marked insight box. */
+:root{color-scheme:light;
+  --bg:#e8ecf1; --paper:#fff; --card:#fff; --rule:#d2d9e2; --soft:#f4f6f9; --soft2:#e3e8ee; --hbar:#f6f8fa;
+  --ink:#17212d; --ink2:#465263; --ink3:#5f6b7b; --act:#2b3a4d; --ref:#9aa5b3;
+  --red:#c62f25; --high:#c8561a; --amber:#a87500; --green:#1d7f52; --redbg:#fcebe9; --highbg:#fcefe6; --amberbg:#fbf3df; --greenbg:#e7f4ee;
+  --crit:var(--red); --watch:var(--amber); --good:var(--green);
+  --ai:#4338ca; --aibg:#f1f0fc; --aiedge:#d4d1f3; --aiink:#1e1b4b;
+  --gA:#1d7f52; --gB:#4f8f2a; --gC:#b98100; --gD:#d0611f; --gE:#c62f25;
+  --c1:#2a6fc2; --c2:#d9622b; --grey:#c4ccd6;
+  --btn:#17212d; --btnink:#fff;
+  --hf:"Archivo",system-ui,sans-serif; --bf:"Figtree",system-ui,sans-serif; --nf:"Archivo",system-ui,sans-serif;
+  --hw:700; --r:10px; --rs:6px; --bw:1px; --sh:0 1px 2px rgba(16,24,40,.06); --shh:0 8px 20px -12px rgba(16,24,40,.3);
+  --btw:18px; --btt:none; --btls:0;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--bf);font-size:16px;line-height:1.5;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 56px;-webkit-font-smoothing:antialiased}
+body.lock{overflow:hidden}
+.page{max-width:1280px;margin:0 auto}
+h1,h2,h3,h4{margin:0;text-wrap:balance;font-family:var(--hf);font-weight:var(--hw)}
+button,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--ai);outline-offset:2px}
+.num,.n,.big,.v,.cnt{font-family:var(--nf);font-variant-numeric:tabular-nums}
+[data-n]{font:inherit!important;color:inherit;letter-spacing:inherit;text-transform:none}
+/* motion: calm, short, never decorative */
+@keyframes rise{from{opacity:.001;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes grow{from{transform:scaleX(.02)}to{transform:none}}
+@keyframes growY{from{transform:scaleY(.02)}to{transform:none}}
+@keyframes fade{from{opacity:.001}to{opacity:1}}
+.anim{animation:rise .45s ease-out both;animation-delay:var(--d,0s)}
+.grow{transform-origin:left;animation:grow .7s ease-out both;animation-delay:var(--d,.15s)}
+.growY{transform-origin:bottom;transform-box:fill-box;animation:growY .6s ease-out both;animation-delay:var(--d,.1s)}
+.popin{animation:fade .4s ease-out both;animation-delay:var(--d,.1s)}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+/* masthead */
+.mast{background:var(--paper);border-bottom:1px solid var(--rule);margin:0 calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding:0 max(16px,env(safe-area-inset-left,0px))}
+.mast .in{max-width:1280px;margin:0 auto;padding:12px 0 16px;display:grid;gap:12px}
+.strip{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px}
+.org{font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink2);margin-right:auto}
+.org b{color:var(--ink)}
+.seg{display:inline-flex;border:1px solid var(--rule);border-radius:var(--rs);overflow:hidden;background:var(--paper)}
+.seg button{border:0;background:none;padding:8px 14px;font-size:14.5px;font-weight:600;color:var(--ink2)}
+.seg button[aria-pressed="true"]{background:var(--btn);color:var(--btnink)}
+.sel{display:flex;align-items:center;gap:6px;border:1px solid var(--rule);border-radius:var(--rs);padding:0 4px 0 12px;background:var(--paper)}
+.sel label{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3)}
+.sel select{appearance:none;border:0;background:transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23465263' stroke-width='1.5'/%3E%3C/svg%3E") no-repeat right 8px center;padding:8px 26px 8px 2px;font-weight:600;font-size:14.5px;max-width:250px}
+.ttl{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 16px}
+.ttl h1{font-size:clamp(24px,2.6vw,32px)}
+.ttl span{font-size:15.5px;color:var(--ink2)}
+.ttl .demo{font-size:14px;font-weight:700;color:var(--ink);background:var(--amberbg);border:1px solid var(--amber);border-radius:var(--rs);padding:3px 10px}
+.banner{max-width:1280px;margin:14px auto 0;background:var(--amberbg);border:1px solid var(--amber);color:var(--ink);border-radius:var(--rs);padding:10px 16px;font-size:15px}
+main{display:grid;grid-template-columns:minmax(0,1fr);gap:22px;margin-top:22px}
+main>*{min-width:0}
+/* section block: every section is a framed panel with its own header bar */
+.blk{background:var(--paper);border:var(--bw) solid var(--rule);border-radius:var(--r);box-shadow:var(--sh);min-width:0;overflow:hidden}
+.bh{display:flex;align-items:center;gap:8px 14px;flex-wrap:wrap;padding:13px 20px;background:var(--hbar);border-bottom:1px solid var(--rule)}
+.bt{font-size:var(--btw);line-height:1.25;text-transform:var(--btt);letter-spacing:var(--btls)}
+.bx{margin-left:auto;font-size:14.5px;color:var(--ink2)}
+.bb{padding:18px 20px 20px;display:grid;gap:16px;min-width:0}
+/* AI insight box: same treatment everywhere, never a heading */
+.ins{border-left:4px solid var(--ai);background:var(--aibg);padding:11px 16px 12px;border-radius:0 var(--rs) var(--rs) 0;display:grid;gap:3px}
+.lab{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ai)}
+.lab svg{width:14px;height:14px}
+.ins p{margin:0;font-family:var(--bf);font-size:17.5px;font-weight:500;line-height:1.4;color:var(--aiink)}
+.ins p b{font-weight:700}
+/* verdict: a status panel, not a banner */
+.vd{display:grid;grid-template-columns:minmax(0,1fr) 320px;background:var(--paper);border:var(--bw) solid var(--rule);border-left:8px solid var(--stc);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden}
+.vd .main{padding:18px 22px 20px;display:grid;gap:12px;align-content:start}
+.vd .vt{border-left:4px solid var(--ai);background:var(--aibg);padding:12px 16px;border-radius:0 var(--rs) var(--rs) 0;display:grid;gap:4px}
+.vd .txt{margin:0;font-family:var(--bf);font-size:20px;font-weight:600;line-height:1.4;color:var(--aiink)}
+.meta{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;font-size:14.5px;color:var(--ink2)}
+.meta .ml{font-weight:700;color:var(--ink2)}
+.why{display:inline-flex;align-items:center;gap:10px;justify-self:start;background:var(--btn);color:var(--btnink);border:0;border-radius:var(--rs);padding:14px 24px;font-size:18px;font-weight:700}
+.why svg{width:22px;height:22px}
+.why:hover{filter:brightness(1.12)}
+.vd .stat{background:var(--soft);border-left:1px solid var(--rule);padding:18px 20px;display:grid;gap:12px;align-content:start}
+.og{display:flex;gap:14px;align-items:center}
+.og b{display:block;font-size:17px}
+.og small{display:block;font-size:14px;color:var(--ink2)}
+.gq{font-style:normal;flex:none;width:32px;height:32px;border-radius:var(--rs);display:grid;place-items:center;color:#fff;font-family:var(--nf);font-weight:800;font-size:17px}
+.gq.big{width:60px;height:60px;font-size:32px}
+.srs{display:grid;gap:8px}
+.sr{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:7px 10px 7px 7px;border:1px solid var(--rule);background:var(--paper);border-radius:var(--rs);font-weight:600;font-size:15px}
+.sr em{margin-left:auto;font-style:normal;font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.05em}
+.vd.compact{grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:16px;padding:14px 18px}
+.vd.compact .vt{padding:9px 14px}.vd.compact .txt{font-size:18px}
+.vd.compact .why{padding:12px 20px;font-size:17px}
+.imp{display:inline-flex;align-items:center;gap:6px;background:var(--soft);border:1px solid var(--rule);border-radius:99px;padding:4px 12px 4px 6px;font-size:14px;font-weight:600;color:var(--ink)}
+.imp svg{width:20px;height:20px;padding:3px;border-radius:50%;background:var(--ink2);color:#fff}
+.meter{display:inline-flex;align-items:flex-end;gap:2px;height:16px}
+.meter span{width:6px;border-radius:1px;background:var(--soft2)}
+.meter span:nth-child(1){height:6px}.meter span:nth-child(2){height:11px}.meter span:nth-child(3){height:16px}
+.meter.l1 span:nth-child(1),.meter.l2 span:nth-child(-n+2),.meter.l3 span{background:var(--ai)}
+.conf{display:inline-flex;gap:8px;align-items:center;font-size:14px;font-weight:600;color:var(--ink2)}
+/* severity tags */
+.sev{display:inline-flex;align-items:center;gap:5px;color:#fff;font-size:12.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;border-radius:4px;padding:4px 9px;white-space:nowrap}
+.sev svg{width:13px;height:13px}
+.sev.Critical{background:var(--red)} .sev.High{background:var(--high)} .sev.Watch{background:var(--amber)} .sev.Good{background:var(--green)}
+.theme{font-size:13.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--ink3)}
+/* vital signs */
+.vitals{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+.vs{background:var(--card);border:1px solid var(--rule);border-radius:var(--rs);padding:16px;display:grid;gap:10px;align-content:start;text-align:left;width:100%;min-width:0;transition:box-shadow .15s}
+.vs:hover,.fa:hover,.mt:hover,.frow:hover,.mc:hover,.kp:hover{box-shadow:var(--shh)}
+.vs .h{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.vs .h>span:first-child{font-size:14px;font-weight:700;color:var(--ink2);text-transform:uppercase;letter-spacing:.04em;line-height:1.2}
+.gl{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;color:#fff;font-family:var(--nf);font-weight:800;font-size:21px;flex:none}
+.vs .v{font-size:34px;font-weight:700;line-height:1;display:flex;flex-wrap:wrap;align-items:baseline;row-gap:4px}
+.vs .v small{white-space:nowrap;font-family:var(--bf);font-size:14.5px;font-weight:600;color:var(--ink3);margin-left:4px}
+.ibcs{display:grid;gap:5px}
+.ibcs .r{display:grid;grid-template-columns:52px 1fr;gap:8px;align-items:center;font-size:14px;color:var(--ink3);font-weight:600}
+.ibcs .t{height:11px;position:relative}
+.ibcs .t i{position:absolute;inset:0 auto 0 0;border-radius:2px}
+.ibcs .a i{background:var(--act)}
+.ibcs .u i{border:1.5px solid var(--ref);background:repeating-linear-gradient(135deg,transparent 0 3px,var(--soft2) 3px 4px)}
+.ibcs .tg{position:absolute;top:-5px;bottom:-5px;width:2.5px;background:var(--ink)}
+.var{font-size:15px;font-weight:700}
+.var.bad{color:var(--red)} .var.ok{color:var(--green)}
+.sites2{display:flex;gap:6px;font-size:14px;font-weight:600;color:var(--ink2);align-items:center;flex-wrap:wrap}
+.sites2 i{font-style:normal;width:24px;height:24px;border-radius:5px;display:grid;place-items:center;color:#fff;font-family:var(--nf);font-size:13px;font-weight:800}
+.legend,.stl{display:flex;gap:16px;flex-wrap:wrap;font-size:14.5px;color:var(--ink2);align-items:center}
+.k1{display:inline-block;width:20px;height:10px;background:var(--act);border-radius:2px;margin-right:6px}
+.k2{display:inline-block;width:20px;height:10px;border:1.5px solid var(--ref);background:repeating-linear-gradient(135deg,transparent 0 3px,var(--soft2) 3px 4px);border-radius:2px;margin-right:6px}
+.k3{display:inline-block;width:2.5px;height:14px;background:var(--ink);margin-right:6px;vertical-align:-2px}
+.stl i{display:inline-block;width:13px;height:13px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+/* focus cards */
+.focus{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.fa{background:var(--card);border:1px solid var(--rule);border-top:5px solid var(--sfg);border-radius:var(--rs);padding:16px 18px 0;display:grid;gap:12px;align-content:start;text-align:left;width:100%;min-width:0;overflow:hidden;transition:box-shadow .15s}
+.fa .top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.fa .top .conf{margin-left:auto}
+.fa h3{font-size:21px;line-height:1.25}
+.fa .body{display:grid;grid-template-columns:auto minmax(0,1fr);gap:18px;align-items:end}
+.fa .big{font-size:48px;font-weight:800;line-height:.95}
+.fa .big small{display:block;font-family:var(--bf);font-size:14.5px;font-weight:500;color:var(--ink2);margin-top:6px;line-height:1.3;max-width:22ch}
+.fa .imps{display:flex;gap:6px;flex-wrap:wrap}
+.cta{margin:0 -18px;padding:13px 18px;display:flex;align-items:center;gap:10px;font-weight:700;font-size:16px;border-top:1px solid var(--rule);background:var(--sbg);color:var(--sfg)}
+.cta svg{width:20px;height:20px;flex:none}
+.cta .go{margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-size:14.5px;border:1.5px solid var(--sfg);color:var(--sfg);background:var(--paper);border-radius:var(--rs);padding:5px 12px}
+.more{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.mo{display:inline-flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--rule);border-radius:var(--rs);padding:9px 13px;font-size:15.5px;font-weight:600;text-align:left}
+/* compact focus rows */
+.frows{display:grid;gap:8px}
+.frow{display:grid;grid-template-columns:minmax(0,1fr) auto 26px;gap:12px;align-items:center;text-align:left;width:100%;background:var(--card);border:1px solid var(--rule);border-left:5px solid var(--sfg);border-radius:var(--rs);padding:11px 12px 11px 14px}
+.frow .fl{display:grid;gap:4px;justify-items:start;min-width:0}
+.frow .fl b{font-size:16.5px;line-height:1.3}
+.frow .fl small{font-size:14px;color:var(--ink2)}
+.frow .fb{font-family:var(--nf);font-size:28px;font-weight:800;color:var(--sfg)}
+.frow svg{width:20px;height:20px;color:var(--ink3)}
+/* MUE tiles */
+.muegrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.mt{background:var(--card);border:1px solid var(--rule);border-top:5px solid var(--st);border-radius:var(--rs);padding:12px 14px;display:grid;gap:8px;text-align:left;width:100%;min-width:0;transition:box-shadow .15s}
+.mt .nm{display:flex;gap:10px;align-items:center;font-weight:700;font-size:15.5px;line-height:1.25}
+.mic{width:38px;height:38px;border-radius:var(--rs);display:grid;place-items:center;flex:none;background:var(--stbg);color:var(--st)}
+.mic svg{width:24px;height:24px}
+.mt .row{display:flex;justify-content:space-between;align-items:flex-end;gap:6px}
+.mt .n{font-size:30px;font-weight:800;line-height:1}
+.mt .n small{font-family:var(--bf);font-size:14px;font-weight:600;color:var(--ink3);margin-left:4px}
+.mt .d{font-size:14.5px;font-weight:800}
+.flags{display:flex;gap:5px;flex-wrap:wrap}
+.flag{display:inline-flex;align-items:center;gap:5px;background:var(--redbg);color:var(--red);border-radius:4px;padding:3px 8px;font-size:13px;font-weight:700}
+.flag svg{width:15px;height:15px}
+.mt.none{background:var(--soft)}
+.mt.none .n{font-size:16px;color:var(--ink3);font-weight:700}
+/* MUE levels */
+#wallBox{display:grid;gap:14px;min-width:0}
+.mhead{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center}
+.seg.lv button{padding:9px 14px;font-size:15px}
+.crumb{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:15.5px;color:var(--ink2)}
+.nsub{display:block;font-family:var(--bf);font-size:13.5px;font-weight:500;color:var(--ink2);margin-top:2px}
+.cnts{display:flex;flex-wrap:wrap;gap:4px 12px}
+.cnts .stb{font-size:13.5px;font-weight:600}
+.drill{display:inline-flex;gap:6px;align-items:center;font-size:14px;font-weight:700;color:var(--ink2)}
+.drill svg{width:15px;height:15px}
+.gsub{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;font-family:var(--hf);font-weight:var(--hw);font-size:17px;margin-top:6px}
+.tb tr.grp td{background:var(--hbar)}
+.tb tr.grp:hover td{background:var(--soft2)}
+.tb .tog{width:22px;font-size:16px;color:var(--ink2)}
+.tb tr.l3 td{font-size:14.5px}
+/* compact MUE chips */
+.mcs{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.mc{display:flex;align-items:center;gap:8px;text-align:left;width:100%;background:var(--card);border:1px solid var(--rule);border-left:5px solid var(--st);border-radius:var(--rs);padding:8px 10px;font-size:14.5px;font-weight:600;min-width:0}
+.mc .mic{width:30px;height:30px}.mc .mic svg{width:19px;height:19px}
+.mc span:nth-child(2){flex:1;min-width:0;line-height:1.2}
+.mc b{font-family:var(--nf);font-size:18px}
+/* compact KPI tiles */
+.kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.kp{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 12px;align-items:center;text-align:left;width:100%;background:var(--card);border:1px solid var(--rule);border-radius:var(--rs);padding:12px 14px}
+.kp .gl{grid-row:span 2;width:40px;height:40px;font-size:20px}
+.kp b{font-size:14.5px;line-height:1.2}
+.kp>span:last-child{font-size:14.5px;color:var(--ink2)}
+.kp>span:last-child em{font-style:normal;font-weight:700}
+/* heat map */
+.hs{display:grid;gap:5px;align-items:center}
+.hs .hd{font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--ink3);text-align:center}
+.hs .rl{display:flex;gap:8px;align-items:center;font-size:15px;font-weight:700;padding-right:8px}
+.hs .rl svg{width:20px;height:20px;color:var(--ink2);flex:none}
+.hs .cl{display:grid;place-items:center;height:54px;border-radius:var(--rs);background:var(--soft);border:0;width:100%}
+.dotc{border-radius:50%;display:grid;place-items:center;color:#fff;font-size:13.5px;font-weight:800;font-family:var(--nf)}
+.duo{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:22px}
+.duo>*{min-width:0}
+/* wins */
+.wins{display:grid;gap:10px}
+.win{display:grid;grid-template-columns:64px 1fr;gap:2px 14px;align-items:center;background:var(--card);border:1px solid var(--rule);border-left:5px solid var(--green);border-radius:var(--rs);padding:12px 14px}
+.win b{font-family:var(--nf);font-size:36px;font-weight:800;color:var(--green);grid-row:span 2;text-align:center;line-height:1}
+.win>span{font-weight:700;font-size:16.5px}
+.win>small{font-size:15px;color:var(--ink2)}
+.wrow{display:flex;gap:8px;flex-wrap:wrap}
+.wrow span{border:1px solid var(--rule);border-left:5px solid var(--green);border-radius:var(--rs);padding:8px 12px;font-size:15px;font-weight:600;background:var(--card)}
+.wrow b{color:var(--green);font-family:var(--nf);margin-right:4px}
+/* tables */
+.tw{overflow-x:auto;border:1px solid var(--rule);border-radius:var(--rs)}
+.tb{width:100%;border-collapse:collapse;font-size:15px;background:var(--card)}
+.tb th{position:sticky;top:0;background:var(--hbar);text-align:left;font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--ink2);padding:10px 12px;border-bottom:1px solid var(--rule);vertical-align:bottom}
+.tb td{padding:11px 12px;border-bottom:1px solid var(--rule);vertical-align:middle}
+.tb tr:last-child td{border-bottom:0}
+.tb tr.ck{cursor:pointer}
+.tb tr.ck:hover td{background:var(--soft)}
+.tb .nmc{display:flex;align-items:center;gap:10px;font-weight:700;min-width:200px}
+.tb .nmc .mic{width:32px;height:32px}.tb .nmc .mic svg{width:20px;height:20px}
+.tb .r{text-align:right;font-family:var(--nf);font-variant-numeric:tabular-nums;font-weight:700;white-space:nowrap}
+.tb .var{white-space:nowrap}
+.tb .fis{display:flex;gap:4px}.tb .fi{width:28px;height:28px;border-radius:4px;background:var(--red);color:#fff;display:grid;place-items:center;padding:5px}.tb .fi svg{width:18px;height:18px}
+.tb .wrap{min-width:240px;font-size:14.5px;color:var(--ink2)}
+.tb .cz{min-width:220px;font-size:14.5px}
+.stb{display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:14px;white-space:nowrap}
+.stb i{width:12px;height:12px;border-radius:50%;background:var(--st)}
+.mx td.c{text-align:center;font-family:var(--nf);font-weight:700;min-width:64px;padding:8px}
+.mx td.c span{display:grid;place-items:center;height:38px;border-radius:4px}
+/* AI action summary */
+.sumy{background:var(--paper);border:var(--bw) solid var(--rule);border-top:4px solid var(--ai);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;min-width:0}
+.sal{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.sa{display:grid;grid-template-columns:40px minmax(0,1fr);gap:14px;border:1px solid var(--rule);border-left:5px solid var(--sfg);border-radius:var(--rs);padding:14px 16px;background:var(--card)}
+.sa .no{width:34px;height:34px;border-radius:50%;background:var(--sfg);color:#fff;display:grid;place-items:center;font-weight:800;font-family:var(--nf);font-size:17px}
+.sa .sh3{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}
+.sa .sh3 b{font-size:18px;font-family:var(--hf)}
+.sa .kf{font-size:15px;color:var(--ink2)}
+.sa p{margin:8px 0 0;font-size:16.5px;line-height:1.45}
+.sa .act{color:var(--aiink);background:var(--aibg);border-left:3px solid var(--ai);padding:7px 12px;border-radius:0 var(--rs) var(--rs) 0}
+.sa .act b{color:var(--ai)}
+.sa .rk{background:var(--sbg);border-left:3px solid var(--sfg);padding:7px 12px;border-radius:0 var(--rs) var(--rs) 0}
+.sa .rk b{color:var(--sfg)}
+.sa .ft2{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;margin-top:10px;font-size:15px;color:var(--ink2)}
+.sa .ft2 .lnk{margin-left:auto}
+.lnk{display:inline-flex;gap:6px;align-items:center}
+.lnk svg{width:16px;height:16px}
+.also2{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center}
+.memo .sumy{box-shadow:none}
+@media (max-width:760px){.sa{grid-template-columns:minmax(0,1fr)}.sa .ft2 .lnk{margin-left:0}}
+/* tabs */
+.tabs{display:flex;gap:4px;flex-wrap:wrap;border-bottom:2px solid var(--rule)}
+.tabs button{border:0;background:none;padding:12px 16px;font-size:16px;font-weight:600;color:var(--ink2);border-bottom:3px solid transparent;margin-bottom:-2px}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--btn);font-weight:700}
+.tabs button .cnt{display:inline-grid;place-items:center;min-width:24px;height:22px;padding:0 6px;border-radius:99px;background:var(--soft2);font-size:13px;margin-left:6px}
+.tabs button .cnt.r{background:var(--red);color:#fff}
+/* issue list and detail */
+.ib{display:grid;grid-template-columns:minmax(0,380px) minmax(0,1fr);gap:22px;align-items:start}
+.ilist{display:grid;gap:6px}
+.ilist .gh{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3);margin:8px 0 2px}
+.ii{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;align-items:center;text-align:left;width:100%;background:var(--card);border:1px solid var(--rule);border-left:5px solid var(--sfg);border-radius:var(--rs);padding:10px 12px}
+.ii b{font-size:15.5px;line-height:1.3}
+.ii .fb{grid-row:span 2;font-family:var(--nf);font-size:24px;font-weight:800;color:var(--sfg)}
+.ii[aria-current="true"]{outline:2px solid var(--btn);outline-offset:-1px;background:var(--soft)}
+.ii .tg{display:flex;gap:8px;align-items:center}
+.det{display:grid;gap:18px}
+.det h2{font-size:clamp(22px,2.4vw,28px);line-height:1.2}
+.det .lede{font-size:17px;color:var(--ink2);margin:0}
+/* briefing note */
+.memo{background:var(--paper);border:1px solid var(--rule);border-radius:var(--r);box-shadow:var(--sh);max-width:900px;width:100%;margin:0 auto;padding:30px 36px;display:grid;gap:22px}
+.memo .mh{display:grid;grid-template-columns:auto 1fr;gap:4px 16px;font-size:15.5px;border-bottom:2px solid var(--ink);padding-bottom:14px}
+.memo .mh b{color:var(--ink2);font-weight:600}
+.memo h2.mt2{font-size:20px;border-bottom:1px solid var(--rule);padding-bottom:6px}
+.memo ol.fi{margin:0;padding:0;list-style:none;display:grid;gap:18px;counter-reset:f}
+.memo ol.fi>li{counter-increment:f;display:grid;gap:8px;padding-left:44px;position:relative}
+.memo ol.fi>li::before{content:counter(f);position:absolute;left:0;top:0;width:32px;height:32px;border-radius:50%;background:var(--sfg);color:#fff;display:grid;place-items:center;font-weight:800}
+.memo ol.fi h3{font-size:19px}
+.memo p{margin:0;font-size:16.5px}
+.memo .cz{border-left:4px solid var(--sfg);background:var(--sbg);padding:9px 14px;border-radius:0 var(--rs) var(--rs) 0;font-size:16px}
+.memo .cz b,.memo .az b{display:block;font-size:13px;letter-spacing:.06em;text-transform:uppercase}
+.memo .cz b{color:var(--sfg)}
+.memo .az{border-left:4px solid var(--ai);background:var(--aibg);padding:9px 14px;border-radius:0 var(--rs) var(--rs) 0;font-size:16px}
+.memo .az b{color:var(--ai)}
+.memo ul{margin:0;padding-left:22px;display:grid;gap:6px;font-size:16px}
+.memo .dec{list-style:none;padding:0}
+.memo .dec li{display:flex;gap:10px;align-items:flex-start}
+.memo .dec i{flex:none;width:20px;height:20px;border:2px solid var(--ink2);border-radius:3px;margin-top:2px}
+.lnk{border:0;background:none;color:var(--ai);font-weight:700;font-size:15px;text-decoration:underline;text-underline-offset:3px;padding:0;justify-self:start}
+/* step-through */
+.stp{display:grid;gap:16px}
+.snav{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--paper);border:var(--bw) solid var(--rule);border-radius:var(--r);padding:10px 12px;box-shadow:var(--sh)}
+.snav .sb2{border:1px solid var(--rule);background:var(--paper);border-radius:var(--rs);padding:10px 16px;font-weight:700;font-size:15.5px}
+.snav .sb2.pri{background:var(--btn);color:var(--btnink);border-color:var(--btn)}
+.snav .sb2:disabled{opacity:.4;cursor:default}
+.dots{display:flex;gap:6px;flex-wrap:wrap;flex:1;justify-content:center}
+.dots button{border:1px solid var(--rule);background:var(--soft);border-radius:99px;padding:5px 12px;font-size:14px;font-weight:600;color:var(--ink2)}
+.dots button[aria-current="true"]{background:var(--btn);color:var(--btnink);border-color:var(--btn)}
+/* site side by side */
+.cmp{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px;align-items:start}
+.vr{display:grid;gap:8px}
+.vrr{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;text-align:left;width:100%;background:var(--card);border:1px solid var(--rule);border-radius:var(--rs);padding:8px 12px}
+.vrr .gl{width:32px;height:32px;font-size:16px}
+.vrr b{font-size:15.5px}
+.vrr span{font-family:var(--nf);font-weight:700;font-size:17px}
+.sub{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3)}
+.tw2{display:grid;grid-template-columns:minmax(120px,1fr) minmax(0,2fr) minmax(0,2fr);gap:6px 10px;align-items:center;font-size:15px}
+.tw2 .hd{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--ink3)}
+.tw2 .br{display:flex;align-items:center;gap:8px}
+.tw2 .br i{height:14px;border-radius:2px;display:block}
+.tw2 .br b{font-family:var(--nf);font-size:14.5px}
+/* how it works */
+.nodes{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;counter-reset:n}
+.node{display:grid;gap:6px;align-content:start;background:var(--soft);border-radius:var(--rs);padding:14px;border-top:4px solid var(--nc,var(--ink))}
+.node .ic{display:flex;align-items:center;gap:8px;color:var(--nc,var(--ink));font-weight:700;font-size:14px}
+.node .ic svg{width:24px;height:24px}
+.node .cnt{font-size:26px;font-weight:800;color:var(--ink);line-height:1}
+.node b{font-size:16px}
+.node small{font-size:14.5px;color:var(--ink2)}
+.dv{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.dvt{border-radius:var(--rs);padding:12px 14px;border:1px solid var(--rule);display:grid;gap:4px;align-content:start}
+.dvt .st{display:flex;align-items:center;gap:8px;font-weight:700;font-size:15px}
+.dvt .st i{font-style:normal;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:13px}
+.dvt b{font-size:15.5px}
+.dvt small{font-size:14px;color:var(--ink2)}
+/* spotlight */
+.dim{position:fixed;inset:0;background:rgba(15,23,32,.5);z-index:60;display:grid;place-items:start center;overflow-y:auto;padding:calc(28px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) 40px max(16px,env(safe-area-inset-left,0px))}
+.spot{width:min(980px,100%);background:var(--paper);border-radius:var(--r);padding:26px 30px;display:grid;gap:20px;box-shadow:0 30px 80px -30px rgba(0,0,0,.5);animation:rise .25s ease both;position:relative;border:1px solid var(--rule)}
+.spot .x{position:absolute;top:16px;right:16px;border:1px solid var(--rule);background:var(--paper);border-radius:var(--rs);padding:8px 16px;font-weight:700;font-size:15px}
+.spot h2{font-size:clamp(23px,2.8vw,31px);line-height:1.2;padding-right:90px}
+.spot .lede{font-size:17px;color:var(--ink2);margin:0}
+.cause{border-radius:var(--rs);padding:18px 20px;background:var(--sbg);border:1px solid var(--sfg);border-left:8px solid var(--sfg);display:grid;gap:8px;position:relative}
+.cause h5{margin:0;display:flex;gap:10px;align-items:center;font-size:14.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--sfg)}
+.cause h5 i{font-style:normal;width:30px;height:30px;border-radius:50%;background:var(--sfg);color:#fff;display:grid;place-items:center}
+.cause h5 i svg{width:18px;height:18px}
+.cause p{margin:0;font-size:20px;font-weight:600;line-height:1.4;color:var(--ink)}
+.cause .lvl{position:absolute;top:16px;right:18px}
+.aiw{border-radius:var(--rs);background:var(--aibg);border:1px solid var(--aiedge);border-left:4px solid var(--ai);padding:16px 18px;display:grid;gap:12px}
+.aiw .two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
+.ia{background:var(--paper);border:1px solid var(--aiedge);border-radius:var(--rs);padding:14px 16px;display:grid;gap:6px;align-content:start}
+.ia h5{margin:0;font-size:13.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;display:flex;gap:8px;align-items:center;color:var(--ai)}
+.ia h5 i{font-style:normal;width:24px;height:24px;border-radius:5px;display:grid;place-items:center;color:#fff;background:var(--ai)}
+.ia h5 i svg{width:14px;height:14px}
+.ia p{margin:0;font-size:17.5px;font-weight:500;line-height:1.45;color:var(--ink)}
+.ia small{font-size:14.5px;color:var(--ink2);font-weight:600}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.stats div{border-top:3px solid var(--ink);padding-top:8px;display:grid}
+.stats b{font-family:var(--nf);font-size:32px;font-weight:800;line-height:1.05}
+.stats span{font-size:15px;color:var(--ink2)}
+.sec{display:grid;gap:10px}
+.sec>h4{font-size:14.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink2);font-weight:800;font-family:var(--bf)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips span{background:var(--soft);border:1px solid var(--rule);border-radius:var(--rs);padding:7px 12px;font-size:15px}
+.bars{display:grid;gap:10px}
+.bars .b{display:grid;grid-template-columns:170px 1fr 110px;gap:12px;align-items:center;font-size:15.5px;font-weight:600}
+.bars .t{height:16px;border-radius:3px;background:var(--soft2);overflow:hidden}
+.bars .t i{display:block;height:100%;border-radius:3px}
+.bars .v{text-align:right;font-family:var(--nf)}
+.split{display:flex;height:38px;border-radius:var(--rs);overflow:hidden;gap:3px}
+.split span{display:grid;place-items:center;color:#fff;font-weight:800;font-size:15.5px;white-space:nowrap;overflow:hidden}
+.sigs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.sigs div{display:flex;gap:10px;align-items:center;font-size:15.5px;font-weight:600;border-radius:var(--rs);padding:11px 13px;background:var(--soft);color:var(--ink3)}
+.sigs div.on{background:var(--redbg);color:var(--red)}
+.sigs svg{width:22px;height:22px;flex:none}
+.mwl{display:flex;gap:16px;flex-wrap:wrap;font-size:14.5px;font-weight:600;color:var(--ink2);margin-top:6px}.mwl span{display:inline-flex;align-items:center;gap:7px}.mwl i{display:inline-block;width:16px;height:12px;border-radius:2px}.mwl .dk{background:var(--act)}.mwl .ds{height:0;border-top:2px dashed var(--ink2)}
+.rules{margin:0;padding-left:20px;display:grid;gap:6px;font-size:15.5px;color:var(--ink2)}
+.ft{font-size:14px;color:var(--ink3)}
+#tip{position:fixed;z-index:80;pointer-events:none;background:var(--paper);border:1px solid var(--rule);border-radius:var(--rs);box-shadow:0 14px 30px -12px rgba(16,24,40,.4);padding:10px 13px;font-size:14.5px;max-width:300px;color:var(--ink)}
+#tip .t{font-weight:700;margin-bottom:4px}
+#tip .r{display:flex;justify-content:space-between;gap:14px}
+#tip .r span{color:var(--ink2)}
+#tip .c{color:var(--ink3);margin-top:4px;font-size:14px}
+/* email */
+.mailwrap{display:grid;justify-items:center}
+.mail{width:min(680px,100%);background:var(--paper);border:1px solid var(--rule);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh)}
+.mail .hd{background:var(--soft);padding:12px 22px;font-size:14.5px;display:grid;grid-template-columns:auto 1fr;gap:2px 12px;border-bottom:1px solid var(--rule)}
+.mail .hd b{color:var(--ink3);font-weight:600}
+.mail .bd{padding:22px;display:grid;gap:16px}
+.mv{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center;border:1px solid var(--rule);border-left:8px solid var(--stc);border-radius:var(--rs);padding:14px 16px}
+.mail .lab2{font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--ink2);border-top:1px solid var(--rule);padding-top:10px}
+.mail .vrow{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.mail .vrow div{display:grid;justify-items:center;gap:6px;text-align:center;font-size:13.5px;font-weight:600;color:var(--ink2)}
+.mfa{border:1px solid var(--rule);border-left:5px solid var(--sfg);border-radius:var(--rs);overflow:hidden}
+.mfa .h{padding:12px 16px;display:grid;grid-template-columns:auto 1fr;gap:6px 14px;align-items:center}
+.mfa .h .big{font-size:32px;font-weight:800;grid-row:span 2}
+.mfa .h h4{font-size:18px}
+.mfa .h .sev{justify-self:start}
+.mfa .c{background:var(--sbg);padding:10px 16px;font-size:15.5px;font-weight:500}
+.mfa .c b{color:var(--sfg);text-transform:uppercase;font-size:13px;letter-spacing:.06em;display:block}
+.mfa .d{background:var(--aibg);padding:10px 16px;font-size:15px}
+.mfa .d b{color:var(--ai);text-transform:uppercase;font-size:13px;letter-spacing:.06em;display:block}
+.ctab{justify-self:start;background:var(--btn);color:var(--btnink);border:0;border-radius:var(--rs);padding:12px 22px;font-weight:700;font-size:16px}
+
+/* ========== DESIGN LANGUAGES (all sober, information-first) ========== */
+/* 2 IBCS report: black and greys, colour only for variance and severity */
+[data-ds="ibcs"]{--bg:#f2f2f2;--paper:#fff;--card:#fff;--rule:#c4c4c4;--soft:#f5f5f5;--soft2:#e4e4e4;--hbar:#fff;--ink:#000;--ink2:#3d3d3d;--ink3:#5c5c5c;--act:#404040;--ref:#a6a6a6;
+ --red:#c80000;--high:#c45a00;--amber:#9a7200;--green:#2f7d32;--ai:#1f4e79;--aibg:#eef3f8;--aiedge:#b9cadb;--aiink:#0f2740;--btn:#000;
+ --gA:#2f7d32;--gB:#6b8f3a;--gC:#9a7200;--gD:#c45a00;--gE:#c80000;--hf:"Source Sans 3",sans-serif;--bf:"Source Sans 3",sans-serif;--nf:"Source Sans 3",sans-serif;--r:0px;--rs:0px;--sh:none;--shh:none;--btw:20px}
+[data-ds="ibcs"] .bh{border-bottom:2px solid #000}
+[data-ds="ibcs"] .vs,[data-ds="ibcs"] .fa,[data-ds="ibcs"] .mt{border-width:0 0 0 0;border-top:3px solid #000}
+[data-ds="ibcs"] .fa{border-top-color:var(--sfg)} [data-ds="ibcs"] .mt{border-top-color:var(--st)}
+[data-ds="ibcs"] .sev{border-radius:0}
+/* 3 IBM Carbon (g10) */
+[data-ds="carbon"]{--bg:#f4f4f4;--paper:#fff;--card:#fff;--rule:#e0e0e0;--soft:#f4f4f4;--soft2:#e0e0e0;--hbar:#fff;--ink:#161616;--ink2:#525252;--ink3:#6f6f6f;--act:#393939;--ref:#a8a8a8;
+ --red:#da1e28;--high:#ba4e00;--amber:#8e6a00;--green:#198038;--redbg:#fff1f1;--greenbg:#defbe6;--ai:#6929c4;--aibg:#f6f2ff;--aiedge:#d4bbff;--aiink:#31135e;--btn:#0f62fe;
+ --hf:"IBM Plex Sans",sans-serif;--bf:"IBM Plex Sans",sans-serif;--nf:"IBM Plex Sans",sans-serif;--hw:600;--r:0px;--rs:0px;--sh:none;--bw:0px;--btw:20px}
+[data-ds="carbon"] .bh{border-bottom:1px solid #e0e0e0}
+[data-ds="carbon"] .vs,[data-ds="carbon"] .mt,[data-ds="carbon"] .fa,[data-ds="carbon"] .frow,[data-ds="carbon"] .kp,[data-ds="carbon"] .mc{background:#f4f4f4;border-color:#f4f4f4}
+[data-ds="carbon"] .sev{border-radius:24px;padding:4px 10px}
+/* 4 SAP Fiori Horizon */
+[data-ds="fiori"]{--bg:#f5f6f7;--paper:#fff;--card:#fff;--rule:#d9dde3;--soft:#f5f6f7;--soft2:#e5e8ec;--hbar:#fff;--ink:#1d2d3e;--ink2:#556b82;--ink3:#5b738b;--act:#354a5f;--ref:#a9b4be;
+ --red:#aa0808;--high:#c35500;--amber:#8d6100;--green:#256f3a;--redbg:#ffeaf4;--highbg:#fff8d6;--greenbg:#f5fae5;--ai:#5d36ff;--aibg:#f2efff;--aiedge:#d5ccff;--aiink:#24166b;--btn:#0070f2;
+ --hf:"Noto Sans",sans-serif;--bf:"Noto Sans",sans-serif;--nf:"Noto Sans",sans-serif;--r:16px;--rs:8px;--bw:0px;--sh:0 0 2px rgba(34,53,72,.16),0 2px 4px rgba(34,53,72,.16);--btw:19px}
+[data-ds="fiori"] .vs,[data-ds="fiori"] .mt,[data-ds="fiori"] .fa,[data-ds="fiori"] .frow,[data-ds="fiori"] .kp,[data-ds="fiori"] .mc,[data-ds="fiori"] .win{box-shadow:0 0 2px rgba(34,53,72,.16),0 2px 4px rgba(34,53,72,.12);border-color:transparent}
+[data-ds="fiori"] .why,[data-ds="fiori"] .seg,[data-ds="fiori"] .sel{border-radius:8px}
+[data-ds="fiori"] .sev{border-radius:12px}
+/* 5 Salesforce Lightning */
+[data-ds="slds"]{--bg:#f3f3f3;--paper:#fff;--card:#fff;--rule:#c9c9c9;--soft:#f3f3f3;--soft2:#e5e5e5;--hbar:#fff;--ink:#181818;--ink2:#444;--ink3:#5c5c5c;--act:#032d60;--ref:#aeaeae;
+ --red:#ba0517;--high:#a64900;--amber:#8c5c00;--green:#2e844a;--ai:#5a1ba9;--aibg:#f9f0ff;--aiedge:#e5c8ff;--aiink:#2e0a5c;--btn:#0176d3;
+ --hf:"Lato",sans-serif;--bf:"Lato",sans-serif;--nf:"Lato",sans-serif;--r:4px;--rs:4px;--sh:0 2px 2px rgba(0,0,0,.1);--btw:19px}
+[data-ds="slds"] .bh{border-bottom:0;padding-bottom:6px}
+[data-ds="slds"] .bh::before{content:"";width:28px;height:28px;border-radius:4px;background:var(--btn) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.4'%3E%3Cpath d='M4 20V10M10 20V4M16 20v-7M22 20H2'/%3E%3C/svg%3E") center/16px no-repeat}
+[data-ds="slds"] .sev{border-radius:15px}
+/* 6 Atlassian */
+[data-ds="atlassian"]{--bg:#f7f8f9;--paper:#fff;--card:#fff;--rule:#dcdfe4;--soft:#f7f8f9;--soft2:#e8eaee;--hbar:#fff;--ink:#172b4d;--ink2:#44546f;--ink3:#626f86;--act:#44546f;--ref:#a5adba;
+ --red:#c9372c;--high:#a54800;--amber:#7f5f01;--green:#216e4e;--redbg:#ffeceb;--highbg:#fff3eb;--amberbg:#fff7d6;--greenbg:#dcfff1;--ai:#5e4db2;--aibg:#f3f0ff;--aiedge:#dfd8fd;--aiink:#352c63;--btn:#0c66e4;
+ --hf:"Inter",sans-serif;--bf:"Inter",sans-serif;--nf:"Inter",sans-serif;--hw:600;--r:8px;--rs:4px;--bw:0px;--sh:0 1px 1px rgba(9,30,66,.25),0 0 1px rgba(9,30,66,.31);--btw:18px}
+[data-ds="atlassian"] .sev{border-radius:3px;font-size:12px}
+[data-ds="atlassian"] .bh{background:#fff}
+/* 7 GOV.UK */
+[data-ds="govuk"]{--bg:#f3f2f1;--paper:#fff;--card:#fff;--rule:#b1b4b6;--soft:#f3f2f1;--soft2:#dedede;--hbar:#f3f2f1;--ink:#0b0c0c;--ink2:#505a5f;--ink3:#505a5f;--act:#0b0c0c;--ref:#b1b4b6;
+ --red:#d4351c;--high:#b2400a;--amber:#805b00;--green:#00703c;--ai:#4c2c92;--aibg:#f4f1f9;--aiedge:#c9bde3;--aiink:#0b0c0c;--btn:#00703c;
+ --hf:Arial,Helvetica,sans-serif;--bf:Arial,Helvetica,sans-serif;--nf:Arial,Helvetica,sans-serif;--r:0px;--rs:0px;--sh:none;--shh:none;--btw:22px}
+[data-ds="govuk"] .mast{border-bottom:10px solid #1d70b8}
+[data-ds="govuk"] .ins,[data-ds="govuk"] .vd .vt,[data-ds="govuk"] .aiw{border-left-width:10px}
+[data-ds="govuk"] .why,[data-ds="govuk"] .ctab{box-shadow:0 2px 0 #002d18}
+[data-ds="govuk"] :focus-visible{outline:3px solid #ffdd00;box-shadow:0 4px 0 #0b0c0c}
+[data-ds="govuk"] .sev{border-radius:0;font-size:13px}
+/* 8 USWDS */
+[data-ds="uswds"]{--bg:#f0f0f0;--paper:#fff;--card:#fff;--rule:#dfe1e2;--soft:#f0f0f0;--soft2:#dfe1e2;--hbar:#fff;--ink:#1b1b1b;--ink2:#454545;--ink3:#5d5d52;--act:#162e51;--ref:#a9aeb1;
+ --red:#b50909;--high:#a83d00;--amber:#7a5c00;--green:#00762d;--ai:#5e2ca5;--aibg:#f4effa;--aiedge:#d5c6eb;--aiink:#2c1452;--btn:#005ea2;
+ --hf:"Merriweather",Georgia,serif;--bf:"Public Sans",sans-serif;--nf:"Public Sans",sans-serif;--r:8px;--rs:4px;--bw:2px;--sh:none;--btw:20px}
+[data-ds="uswds"] .bh{border-bottom:2px solid #dfe1e2}
+[data-ds="uswds"] .vs,[data-ds="uswds"] .mt,[data-ds="uswds"] .fa{border-width:2px}
+/* 9 Control room (ISA-101 high-performance HMI): grey by default, colour only when something is abnormal */
+[data-ds="hmi"]{--bg:#d4d4d4;--paper:#e9e9e9;--card:#f2f2f2;--rule:#a3a3a3;--soft:#e0e0e0;--soft2:#cfcfcf;--hbar:#cdcdcd;--ink:#141414;--ink2:#383838;--ink3:#4d4d4d;--act:#4d4d4d;--ref:#8c8c8c;
+ --red:#c00000;--high:#c25400;--amber:#8a6400;--green:#4d4d4d;--redbg:#f6dcdc;--highbg:#f6e4d6;--amberbg:#f2ead0;--greenbg:#dedede;--ai:#2b4c7e;--aibg:#dfe5ee;--aiedge:#9fb0c9;--aiink:#122440;--btn:#2b4c7e;
+ --gA:#6e6e6e;--gB:#8a8a8a;--gC:#b38300;--gD:#c25400;--gE:#c00000;--hf:"Barlow",sans-serif;--bf:"Barlow",sans-serif;--nf:"Roboto Mono",monospace;--hw:600;--r:2px;--rs:2px;--sh:none;--shh:0 0 0 2px #7a7a7a;--btw:16px;--btt:uppercase;--btls:.08em}
+[data-ds="hmi"] .mast{background:#e9e9e9}
+[data-ds="hmi"] .vs .v,[data-ds="hmi"] .fa .big,[data-ds="hmi"] .mt .n{font-weight:600;letter-spacing:-.02em}
+/* 10 Power BI report */
+[data-ds="powerbi"]{--bg:#eaeaea;--paper:#fff;--card:#fff;--rule:#e1dfdd;--soft:#f6f6f6;--soft2:#e6e6e6;--hbar:#fff;--ink:#252423;--ink2:#605e5c;--ink3:#6b6967;--act:#118dff;--ref:#c8c6c4;
+ --red:#c4314b;--high:#b7472a;--amber:#8f6f00;--green:#107c10;--ai:#744ec2;--aibg:#f4f0fb;--aiedge:#d9cdf0;--aiink:#2f1a5e;--btn:#0f6cbd;--c1:#118dff;--c2:#e66c37;
+ --hf:"Segoe UI","Open Sans",sans-serif;--bf:"Segoe UI","Open Sans",sans-serif;--nf:"Segoe UI","Open Sans",sans-serif;--hw:600;--r:4px;--rs:2px;--bw:0px;--sh:0 1px 4px rgba(0,0,0,.12);--btw:17px}
+[data-ds="powerbi"] .bh{border-bottom:0;padding-bottom:4px}
+[data-ds="powerbi"] .mast{background:#fff}
+
+@media (max-width:1080px){.vitals,.kpis{grid-template-columns:repeat(3,minmax(0,1fr))}.duo,.cmp{grid-template-columns:minmax(0,1fr)}.nodes,.dv{grid-template-columns:repeat(3,minmax(0,1fr))}.ib{grid-template-columns:minmax(0,1fr)}.g3{grid-template-columns:minmax(0,1fr)!important}}
+@media (max-width:760px){.focus{grid-template-columns:minmax(0,1fr)}.vd,.vd.compact{grid-template-columns:minmax(0,1fr)}.vd .stat{border-left:0;border-top:1px solid var(--rule)}.vitals,.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.aiw .two,.sigs{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}.bars .b{grid-template-columns:110px 1fr 70px}.nodes,.dv{grid-template-columns:minmax(0,1fr)}.memo{padding:20px 18px}.spot{padding:22px 18px}.bb{padding:14px}.fa .body{grid-template-columns:minmax(0,1fr)}.mail .vrow{grid-template-columns:repeat(3,minmax(0,1fr))}.cause .lvl{position:static}}
+</style>
+</head><body>
+
+
+<header class="mast"><div class="in">
+  <div class="strip">
+    <span class="org"><b>VZI</b> · Proactive Safety Agent · weekly report</span>
+    <div class="sel"><label for="laySel">Layout</label><select id="laySel"></select></div>
+    <div class="sel"><label for="dsSel">Design</label><select id="dsSel"></select></div>
+    <div class="sel"><label for="scn">Data</label><select id="scn">
+      <option value="live">This week (example data)</option><option value="good">Example: a good week</option><option value="slope">Example: pit wall warning at Gamsberg</option><option value="quiet">Example: reporting drops at BMM</option></select></div>
+    <div class="seg" id="siteSeg" role="group" aria-label="Site"><button data-s="ALL" aria-pressed="true">VZI</button><button data-s="BMM" aria-pressed="false">BMM</button><button data-s="GMB" aria-pressed="false">Gamsberg</button></div>
+    <div class="seg" id="viewSeg" role="group" aria-label="View"><button data-v="sum" aria-pressed="false">AI summary</button><button data-v="dash" aria-pressed="true">Full report</button><button data-v="BMM" aria-pressed="false">Email BMM</button><button data-v="GMB" aria-pressed="false">Email Gamsberg</button></div>
+  </div>
+  <div class="ttl"><h1>Safety Health Report</h1><span>Week Friday 25 September to Thursday 1 October 2026</span><span class="demo">Mock-up with randomly generated example data, not real records</span></div>
+</div></header>
+<div class="banner" id="banner" hidden></div>
+<div class="page">
+<main id="dash" aria-live="polite"></main>
+<section id="mail" class="mailwrap" hidden></section>
+</div>
+<div class="dim" id="dim" hidden><article class="spot" id="spot" role="dialog" aria-modal="true" aria-labelledby="spotH"></article></div>
+<div id="tip" hidden></div>
+
+<script>
+const BASE={"subs":["Highwalls","Benches","Haul road north","Haul road south","Waste dump","Pit ramp","Drill block","Stockpile","Level 10 stope","Level 12 decline","Level 14 cross cut","Ore pass","Shaft station","Winder house","Workshop underground","Crusher","Mill","Flotation","Thickener","Filter press","Reagent store","Conveyor transfer","Tailings pump station","Main workshop","Tyre bay","Electrical substation","Wash bay","Stores","Offices","Change house","Laboratory","Project laydown"],"O":[[1,0,0,11,9,0,0,0],[1,0,1,21,16,0,0,0],[1,2,2,24,15,2,0,0],[1,1,1,19,6,1,1,31],[1,0,0,13,0,0,0,0],[1,1,0,2,29,2,0,0],[1,2,1,20,5,0,0,0],[1,0,5,17,13,0,0,0],[1,0,5,21,0,1,0,0],[1,2,1,21,23,0,0,0],[1,1,0,5,2,1,0,0],[1,1,0,5,19,2,0,0],[1,2,0,4,8,0,0,0],[1,0,1,16,21,0,0,0],[1,2,0,11,24,0,0,0],[1,2,3,30,0,1,0,0],[1,1,5,0,2,2,0,0],[1,0,3,30,0,1,1,31],[1,0,1,21,14,0,0,0],[1,0,0,13,5,0,0,0],[1,1,1,22,13,0,0,0],[1,2,1,15,0,0,0,0],[1,1,1,15,22,2,0,0],[1,1,5,4,16,0,0,0],[1,0,3,29,25,1,0,0],[1,0,0,13,14,1,1,24],[1,0,2,23,29,0,0,0],[1,2,0,12,20,2,0,0],[1,1,0,0,7,0,0,0],[1,2,0,9,9,1,0,0],[1,2,0,3,5,1,0,0],[1,1,1,19,0,0,0,0],[1,2,3,28,11,0,0,0],[1,0,0,10,22,1,0,0],[1,2,0,0,9,1,0,0],[1,0,0,13,0,1,0,0],[1,0,1,17,16,2,1,28],[1,0,0,11,11,1,0,0],[1,0,0,13,9,0,0,0],[1,2,5,7,24,0,0,0],[1,1,0,2,23,1,1,20],[1,2,0,1,2,0,0,0],[1,0,3,29,5,0,0,0],[1,1,1,19,20,0,0,0],[1,0,5,30,0,0,0,0],[1,1,3,27,5,1,0,0],[1,1,2,26,0,1,0,0],[1,2,0,0,2,0,0,0],[1,2,1,22,10,1,1,46],[1,2,2,24,0,1,0,0],[1,1,2,25,5,0,0,0],[1,1,2,25,0,1,0,0],[1,1,1,19,0,1,0,0],[1,2,1,17,0,2,0,0],[1,0,3,29,9,1,0,0],[1,2,0,1,25,1,0,0],[1,1,3,27,0,0,0,0],[1,0,5,12,24,0,0,0],[1,2,5,19,9,0,0,0],[1,1,0,0,16,0,0,0],[1,1,5,5,2,0,0,0],[1,2,0,7,21,0,0,0],[1,1,5,25,0,2,0,0],[1,2,5,6,16,0,0,0],[1,1,1,18,0,2,0,0],[1,1,1,20,11,0,0,0],[1,1,2,25,22,2,0,0],[1,0,1,21,20,0,0,0],[1,2,0,5,0,0,0,0],[1,0,1,16,0,2,0,0],[1,0,2,23,0,0,0,0],[1,1,4,31,0,0,0,0],[1,1,4,31,16,0,0,0],[1,0,0,10,16,0,0,0],[1,0,1,17,13,0,0,0],[1,1,2,25,0,2,0,0],[1,1,0,6,0,0,0,0],[1,2,0,0,2,0,0,0],[1,0,0,9,9,0,0,0],[1,0,0,9,20,0,0,0],[1,1,0,3,0,0,0,0],[1,2,1,17,29,1,1,14],[1,2,1,16,16,1,1,26],[1,0,5,14,0,0,0,0],[1,0,1,16,9,0,0,0],[1,2,0,7,0,1,0,0],[1,2,4,31,8,1,1,26],[1,1,5,0,2,0,0,0],[1,0,0,8,1,1,0,0],[1,2,5,18,33,0,0,0],[1,0,0,10,13,0,0,0],[1,1,0,1,0,0,0,0],[1,2,4,31,0,1,0,0],[1,0,0,11,20,1,0,0],[1,0,0,10,1,0,0,0],[1,2,0,11,1,1,0,0],[1,0,2,24,5,0,0,0],[1,1,1,15,19,0,0,0],[1,2,0,13,1,0,0,0],[1,1,0,1,2,0,0,0],[1,1,0,3,19,0,0,0],[1,0,1,21,8,2,1,27],[1,2,5,12,11,0,0,0],[1,2,1,15,21,0,0,0],[1,0,2,24,0,0,0,0],[1,1,2,26,7,0,0,0],[1,1,0,7,0,0,0,0],[1,0,0,8,0,0,0,0],[1,1,0,1,8,0,0,0],[1,1,4,31,25,0,0,0],[1,1,4,31,11,0,0,0],[1,2,0,13,16,1,1,41],[1,2,0,14,23,0,0,0],[1,0,5,12,4,1,0,0],[1,1,4,31,21,0,0,0],[1,2,0,13,16,0,0,0],[1,1,0,2,20,0,0,0],[1,1,0,7,10,1,0,0],[1,1,0,5,0,2,1,4],[1,1,0,6,5,0,0,0],[1,1,1,15,0,0,0,0],[1,0,0,10,11,0,0,0],[1,1,5,28,18,0,0,0],[1,0,0,8,0,1,0,0],[1,1,5,0,2,1,0,0],[1,1,0,1,0,0,0,0],[1,2,3,30,5,0,0,0],[1,0,0,8,9,2,0,0],[1,2,1,17,9,0,0,0],[1,1,1,20,18,0,0,0],[1,1,0,3,25,0,0,0],[1,0,0,10,1,0,0,0],[1,1,3,28,14,1,0,0],[1,0,1,16,0,0,0,0],[1,1,5,19,21,1,0,0],[2,1,4,31,7,1,1,15],[2,2,0,8,1,0,0,0],[2,0,0,12,0,0,0,0],[2,1,2,25,8,1,0,0],[2,1,0,7,8,0,0,0],[2,1,1,19,0,1,1,46],[2,0,1,21,23,2,1,4],[2,0,0,8,0,0,0,0],[2,1,0,6,9,0,0,0],[2,1,1,19,33,0,0,0],[2,2,0,12,9,0,0,0],[2,0,3,30,9,0,0,0],[2,0,1,21,11,0,0,0],[2,2,0,2,20,2,0,0],[2,0,2,23,0,1,1,41],[2,1,0,2,13,0,0,0],[2,1,1,19,5,0,0,0],[2,0,0,9,9,0,0,0],[2,1,1,15,23,2,0,0],[2,1,1,15,0,0,0,0],[2,0,2,23,5,0,0,0],[2,2,0,10,22,1,1,14],[2,0,0,13,1,1,0,0],[2,0,0,14,18,2,1,45],[2,1,0,4,0,0,0,0],[2,1,5,28,13,0,0,0],[2,2,1,17,16,1,1,7],[2,1,5,15,18,0,0,0],[2,1,1,15,24,0,0,0],[2,1,0,0,16,0,0,0],[2,1,3,27,0,0,0,0],[2,1,5,25,25,0,0,0],[2,1,2,26,13,1,1,8],[2,1,1,20,0,2,1,15],[2,1,5,2,8,0,0,0],[2,0,0,12,1,1,0,0],[2,1,5,1,8,2,1,2],[2,1,0,5,5,0,0,0],[2,0,0,13,0,0,0,0],[2,2,1,19,0,0,0,0],[2,1,0,7,20,1,0,0],[2,0,0,14,1,0,0,0],[2,1,3,28,8,0,0,0],[2,1,0,6,5,1,1,44],[2,1,4,31,4,2,0,0],[2,1,2,25,33,0,0,0],[2,0,5,8,1,0,0,0],[2,0,0,14,7,1,0,0],[2,1,5,7,21,1,0,0],[2,0,2,24,0,1,0,0],[2,0,0,9,5,0,0,0],[2,0,0,11,8,0,0,0],[2,2,0,6,14,1,1,44],[2,1,2,25,10,0,0,0],[2,0,0,11,18,0,0,0],[2,2,3,29,8,0,0,0],[2,1,0,7,33,0,0,0],[2,1,0,4,5,1,0,0],[2,2,5,16,9,0,0,0],[2,1,5,20,0,1,0,0],[2,1,5,25,8,0,0,0],[2,2,1,22,34,1,0,0],[2,1,3,28,21,1,0,0],[2,0,0,13,0,0,0,0],[2,2,0,2,13,0,0,0],[2,1,0,5,8,1,0,0],[2,2,5,13,16,0,0,0],[2,0,3,30,14,0,0,0],[2,0,3,30,13,0,0,0],[2,1,0,2,24,0,0,0],[2,1,2,26,7,1,0,0],[2,1,3,27,25,0,0,0],[2,1,1,18,8,2,0,0],[2,1,1,19,0,0,0,0],[2,0,0,12,25,0,0,0],[2,2,0,12,1,2,0,0],[2,2,0,5,25,0,0,0],[2,1,0,6,20,0,0,0],[2,1,3,28,9,0,0,0],[2,2,0,12,11,0,0,0],[2,1,5,3,13,0,0,0],[2,2,0,12,0,0,0,0],[2,1,2,26,0,1,0,0],[2,1,1,15,0,0,0,0],[2,2,0,10,1,0,0,0],[2,2,2,23,14,0,0,0],[2,1,0,0,25,0,0,0],[2,2,2,23,13,0,0,0],[2,1,3,27,0,0,0,0],[2,0,3,29,19,0,0,0],[2,1,1,15,16,1,1,35],[2,0,0,10,5,1,0,0],[2,1,1,18,0,1,0,0],[2,1,2,26,24,1,0,0],[2,2,1,17,16,0,0,0],[2,0,5,12,11,2,0,0],[2,2,5,0,20,0,0,0],[2,2,2,26,5,0,0,0],[2,0,2,24,0,0,0,0],[2,0,0,13,25,0,0,0],[2,0,0,9,0,0,0,0],[2,2,1,19,10,1,0,0],[2,1,0,0,0,1,0,0],[2,1,0,1,7,2,1,36],[2,0,2,24,0,0,0,0],[2,1,0,6,33,1,0,0],[2,0,1,16,0,0,0,0],[2,0,5,12,16,2,0,0],[2,2,1,18,0,1,0,0],[2,2,5,1,9,0,0,0],[2,0,1,21,4,0,0,0],[2,1,0,5,33,1,0,0],[2,1,0,6,9,1,0,0],[2,0,0,13,0,0,0,0],[2,1,3,28,10,0,0,0],[3,1,1,15,33,1,0,0],[3,1,2,25,5,0,0,0],[3,2,3,27,8,0,0,0],[3,1,3,28,25,0,0,0],[3,2,0,14,0,0,0,0],[3,2,0,8,33,0,0,0],[3,1,1,22,25,0,0,0],[3,1,2,26,6,2,0,0],[3,1,5,15,0,1,0,0],[3,1,5,18,11,0,0,0],[3,1,5,7,0,0,0,0],[3,0,1,17,16,0,0,0],[3,2,0,5,5,0,0,0],[3,0,3,29,9,2,0,0],[3,0,0,12,22,0,0,0],[3,0,0,14,7,2,0,0],[3,1,4,31,25,0,0,0],[3,1,0,5,2,0,0,0],[3,1,0,1,13,0,0,0],[3,1,3,27,8,0,0,0],[3,1,0,1,34,2,0,0],[3,0,2,23,11,0,0,0],[3,1,1,22,11,0,0,0],[3,2,5,25,8,1,0,0],[3,0,1,16,0,0,0,0],[3,1,0,7,0,0,0,0],[3,1,3,27,33,1,0,0],[3,0,3,30,16,0,0,0],[3,0,1,17,16,0,0,0],[3,0,0,13,9,0,0,0],[3,1,5,28,5,1,1,29],[3,1,0,1,16,1,0,0],[3,2,0,14,0,0,0,0],[3,0,0,9,1,0,0,0],[3,1,1,20,0,2,0,0],[3,2,0,0,8,0,0,0],[3,0,2,23,18,0,0,0],[3,2,0,1,2,0,0,0],[3,2,0,1,2,0,0,0],[3,0,0,8,9,0,0,0],[3,1,1,18,23,0,0,0],[3,0,2,24,20,0,0,0],[3,2,1,16,15,0,0,0],[3,0,0,11,16,1,0,0],[3,0,0,9,22,0,0,0],[3,1,5,4,0,0,0,0],[3,0,5,16,9,1,1,38],[3,1,0,6,5,2,0,0],[3,0,3,29,29,1,1,14],[3,0,0,13,5,0,0,0],[3,1,2,25,6,1,1,20],[3,1,0,6,0,1,0,0],[3,0,0,8,6,0,0,0],[3,0,0,14,14,1,0,0],[3,2,1,15,25,2,0,0],[3,2,1,16,5,0,0,0],[3,0,0,11,6,1,0,0],[3,1,3,28,0,0,0,0],[3,1,0,2,0,0,0,0],[3,0,1,21,9,1,0,0],[3,2,2,23,29,0,0,0],[3,1,0,7,19,0,0,0],[3,0,2,23,9,0,0,0],[3,2,0,13,0,0,0,0],[3,1,1,15,0,0,0,0],[3,2,0,8,0,1,0,0],[3,1,2,25,9,0,0,0],[3,1,1,20,0,0,0,0],[3,0,5,30,29,2,1,26],[3,2,4,31,10,2,0,0],[3,1,5,4,13,1,0,0],[3,0,5,8,1,1,0,0],[3,1,0,1,2,0,0,0],[3,1,3,27,5,2,0,0],[3,1,0,0,2,0,0,0],[3,2,1,17,0,2,0,0],[3,1,5,1,24,0,0,0],[3,1,3,27,22,1,1,10],[3,1,0,3,0,0,0,0],[3,0,0,8,1,0,0,0],[3,1,0,3,25,1,1,42],[3,2,5,5,2,0,0,0],[3,2,1,20,7,0,0,0],[3,1,0,1,13,0,0,0],[3,1,1,22,5,0,0,0],[3,0,0,14,33,0,0,0],[3,2,0,9,5,1,1,23],[3,0,3,30,33,0,0,0],[3,1,1,19,0,0,0,0],[3,0,2,24,20,1,0,0],[3,2,5,29,9,2,1,30],[3,0,5,13,14,0,0,0],[3,0,0,13,0,0,0,0],[3,1,4,31,16,1,0,0],[3,1,0,2,24,0,0,0],[3,0,0,12,6,0,0,0],[3,1,5,20,25,0,0,0],[3,1,2,25,23,0,0,0],[3,2,2,24,0,1,0,0],[3,0,0,11,14,1,0,0],[3,1,1,20,20,2,0,0],[3,1,0,7,0,0,0,0],[3,2,5,27,0,0,0,0],[3,2,0,2,5,1,0,0],[3,1,1,18,33,1,0,0],[3,1,1,18,0,1,0,0],[3,0,1,16,9,0,0,0],[3,2,3,28,0,0,0,0],[3,1,2,25,0,0,0,0],[3,1,0,7,11,0,0,0],[3,0,0,9,22,0,0,0],[3,2,0,7,33,1,0,0],[3,1,0,4,25,2,1,29],[3,1,0,7,6,0,0,0],[3,0,1,17,6,0,0,0],[3,0,5,9,20,1,1,6],[3,0,0,11,1,1,1,16],[3,1,1,18,8,1,1,7],[3,0,2,23,18,1,0,0],[3,0,1,17,0,1,0,0],[3,0,0,9,0,1,1,8],[3,1,0,4,0,2,0,0],[3,0,0,9,15,1,0,0],[3,0,0,14,25,0,0,0],[4,1,0,1,29,0,0,0],[4,0,5,23,14,2,0,0],[4,1,5,19,20,0,0,0],[4,1,2,25,20,1,0,0],[4,0,0,14,0,1,0,0],[4,0,0,10,1,0,0,0],[4,0,5,21,5,0,0,0],[4,0,0,12,4,0,0,0],[4,0,0,11,25,2,0,0],[4,1,1,22,0,0,0,0],[4,0,5,14,0,0,0,0],[4,2,0,1,2,1,0,0],[4,0,1,16,9,1,1,29],[4,0,3,30,14,0,0,0],[4,1,1,20,0,0,0,0],[4,2,0,2,14,0,0,0],[4,1,4,31,0,0,0,0],[4,1,0,1,11,0,0,0],[4,1,1,15,15,0,0,0],[4,1,3,28,0,0,0,0],[4,2,0,14,8,0,0,0],[4,0,0,8,33,0,0,0],[4,1,1,19,0,1,0,0],[4,2,3,30,25,0,0,0],[4,1,0,6,0,0,0,0],[4,0,0,8,18,2,0,0],[4,0,0,14,1,0,0,0],[4,1,0,3,14,1,1,10],[4,0,0,8,29,0,0,0],[4,0,3,30,0,0,0,0],[4,2,1,21,0,0,0,0],[4,2,3,28,6,0,0,0],[4,1,0,1,33,0,0,0],[4,0,0,13,14,0,0,0],[4,2,0,0,2,1,0,0],[4,0,2,24,11,0,0,0],[4,2,1,21,0,0,0,0],[4,2,5,17,11,0,0,0],[4,2,0,7,22,0,0,0],[4,2,0,0,25,1,0,0],[4,1,0,7,0,0,0,0],[4,0,5,10,33,0,0,0],[4,2,0,2,11,0,0,0],[4,2,0,0,2,2,0,0],[4,0,2,24,20,1,1,27],[4,1,0,2,22,0,0,0],[4,0,0,9,8,0,0,0],[4,1,1,20,0,1,0,0],[4,0,0,11,16,0,0,0],[4,1,1,22,0,0,0,0],[4,0,5,17,8,0,0,0],[4,2,1,15,8,1,1,19],[4,0,1,16,5,1,0,0],[4,0,3,29,9,0,0,0],[4,0,0,10,0,2,0,0],[4,2,0,4,10,1,0,0],[4,1,0,0,0,0,0,0],[4,1,0,0,2,0,0,0],[4,0,0,11,11,0,0,0],[4,2,3,28,9,1,0,0],[4,1,5,20,0,0,0,0],[4,1,2,26,11,0,0,0],[4,2,3,27,33,2,0,0],[4,1,3,27,11,2,0,0],[4,1,0,0,33,0,0,0],[4,2,0,0,25,0,0,0],[4,1,5,15,9,2,0,0],[4,1,1,15,0,1,0,0],[4,1,0,7,7,0,0,0],[4,0,2,24,5,0,0,0],[4,1,0,0,2,0,0,0],[4,0,5,30,0,0,0,0],[4,0,3,30,23,0,0,0],[4,0,0,11,33,0,0,0],[4,1,0,5,2,0,0,0],[4,2,3,28,23,1,0,0],[4,1,1,22,0,2,0,0],[4,2,0,1,2,2,0,0],[4,1,0,0,2,2,1,35],[4,0,1,21,16,0,0,0],[4,1,1,20,10,0,0,0],[4,1,4,31,0,2,0,0],[4,1,1,18,11,1,0,0],[4,0,0,8,23,1,0,0],[4,0,5,30,34,2,0,0],[4,1,0,0,0,0,0,0],[4,1,5,1,21,1,1,27],[4,2,3,30,6,0,0,0],[4,0,1,16,24,0,0,0],[4,0,0,12,16,0,0,0],[4,2,0,14,0,2,0,0],[4,1,3,28,20,1,0,0],[4,1,1,19,9,0,0,0],[4,0,0,12,33,1,0,0],[4,2,0,5,4,0,0,0],[4,1,2,26,5,0,0,0],[4,1,0,3,20,0,0,0],[4,1,4,31,13,0,0,0],[4,1,0,5,2,2,0,0],[4,2,0,9,33,0,0,0],[4,1,5,5,2,0,0,0],[4,1,2,26,0,1,0,0],[4,1,3,27,0,1,0,0],[4,2,1,16,20,0,0,0],[4,1,0,2,8,0,0,0],[4,1,2,26,0,0,0,0],[4,1,5,26,9,2,0,0],[4,2,0,5,7,0,0,0],[4,0,0,12,5,0,0,0],[4,0,3,30,25,2,0,0],[4,1,1,22,10,0,0,0],[4,1,2,25,25,0,0,0],[4,1,0,3,34,0,0,0],[4,1,0,1,2,2,0,0],[4,1,0,6,5,2,0,0],[4,2,0,5,0,1,0,0],[4,2,0,2,33,0,0,0],[4,1,1,15,25,0,0,0],[4,2,0,10,23,2,0,0],[4,1,1,22,13,0,0,0],[4,1,1,22,0,0,0,0],[4,0,5,14,6,0,0,0],[5,1,4,31,0,1,1,17],[5,0,0,9,7,0,0,0],[5,1,3,28,15,1,0,0],[5,0,5,14,20,2,0,0],[5,2,0,12,25,0,0,0],[5,1,5,18,25,1,0,0],[5,0,1,21,21,0,0,0],[5,1,0,0,2,0,0,0],[5,0,1,21,0,1,1,17],[5,1,0,7,0,1,0,0],[5,2,1,17,5,2,0,0],[5,1,5,5,2,0,0,0],[5,1,5,7,0,1,1,2],[5,1,0,5,0,0,0,0],[5,1,1,22,16,1,0,0],[5,1,0,7,29,0,0,0],[5,0,3,29,0,2,0,0],[5,0,0,14,0,0,0,0],[5,1,2,25,20,0,0,0],[5,1,1,20,5,1,0,0],[5,0,0,12,1,2,0,0],[5,0,0,12,0,0,0,0],[5,0,5,17,0,0,0,0],[5,1,0,5,0,1,1,23],[5,0,1,17,5,1,0,0],[5,1,1,19,0,1,1,2],[5,1,0,7,6,1,0,0],[5,1,4,31,29,1,0,0],[5,0,0,9,5,0,0,0],[5,2,0,14,1,2,0,0],[5,1,0,4,25,0,0,0],[5,2,2,24,20,0,0,0],[5,2,0,12,5,1,1,11],[5,1,1,18,20,0,0,0],[5,1,1,20,23,1,0,0],[5,0,5,13,14,0,0,0],[5,1,0,4,20,0,0,0],[5,1,2,26,0,0,0,0],[5,0,1,17,0,0,0,0],[5,0,0,12,20,0,0,0],[5,0,0,13,1,1,0,0],[5,1,0,5,23,0,0,0],[5,2,1,17,16,0,0,0],[5,0,2,24,6,0,0,0],[5,0,5,14,14,2,1,20],[5,1,4,31,23,0,0,0],[5,2,0,4,5,1,0,0],[5,0,1,16,22,1,0,0],[5,0,0,12,9,1,0,0],[5,1,1,18,0,0,0,0],[5,0,0,9,5,0,0,0],[5,0,0,14,23,0,0,0],[5,1,0,0,2,0,0,0],[5,2,4,31,23,1,0,0],[5,1,0,2,0,0,0,0],[5,1,2,26,20,0,0,0],[5,1,4,31,0,1,0,0],[5,0,0,14,4,0,0,0],[5,0,1,21,18,0,0,0],[5,2,0,13,8,0,0,0],[5,2,1,20,0,0,0,0],[5,2,1,17,0,0,0,0],[5,1,0,0,2,0,0,0],[5,0,5,9,1,0,0,0],[5,2,2,26,25,0,0,0],[5,0,2,24,11,0,0,0],[5,0,2,23,6,2,0,0],[5,1,0,2,0,0,0,0],[5,1,0,0,2,1,1,6],[5,1,0,7,14,1,0,0],[5,0,0,11,10,0,0,0],[5,1,0,0,0,0,0,0],[5,1,5,28,20,1,0,0],[5,1,0,6,9,0,0,0],[5,0,0,12,24,0,0,0],[5,0,5,11,18,1,0,0],[5,1,2,25,34,1,0,0],[5,0,1,17,9,0,0,0],[5,1,0,4,22,1,0,0],[5,2,3,27,33,2,0,0],[5,1,0,4,14,0,0,0],[5,0,0,13,25,1,1,28],[5,1,2,25,10,0,0,0],[5,2,1,20,5,0,0,0],[5,0,3,30,0,2,1,4],[5,0,0,12,5,1,0,0],[5,1,3,28,25,0,0,0],[5,0,0,13,5,2,0,0],[5,1,0,2,11,0,0,0],[5,0,0,9,18,0,0,0],[5,1,1,15,9,2,0,0],[5,2,3,28,0,0,0,0],[5,0,2,23,0,0,0,0],[5,2,4,31,23,0,0,0],[5,0,2,24,20,0,0,0],[5,0,1,21,14,0,0,0],[5,2,4,31,20,0,0,0],[5,1,0,5,16,0,0,0],[5,0,3,30,11,0,0,0],[5,1,5,2,25,0,0,0],[5,2,1,18,0,0,0,0],[5,0,0,13,0,2,0,0],[5,0,2,23,20,0,0,0],[5,2,5,15,0,0,0,0],[5,1,2,25,0,1,1,4],[5,1,0,1,0,0,0,0],[5,0,2,24,0,1,0,0],[5,1,1,22,6,2,0,0],[5,0,2,23,14,2,1,23],[5,1,2,26,5,1,0,0],[5,1,0,3,5,0,0,0],[5,1,0,1,0,2,0,0],[5,2,5,13,5,2,0,0],[5,2,5,19,0,1,0,0],[5,1,0,7,20,1,1,28],[5,1,0,1,9,0,0,0],[5,0,0,9,1,1,0,0],[5,1,1,19,33,1,0,0],[5,1,5,5,16,2,0,0],[5,2,5,11,1,1,0,0],[5,1,0,7,0,0,0,0],[5,0,5,29,0,1,0,0],[5,1,0,4,0,2,0,0],[5,1,4,31,0,0,0,0],[5,0,3,29,6,0,0,0],[5,1,1,15,20,2,1,16],[5,1,5,3,14,0,0,0],[5,1,1,15,0,0,0,0],[5,0,5,11,9,1,1,17],[5,2,1,18,33,0,0,0],[5,0,0,10,4,0,0,0],[5,1,0,0,0,0,0,0],[5,0,0,13,0,1,1,8],[5,0,2,24,5,1,0,0],[5,0,0,12,0,0,0,0],[5,2,0,8,10,0,0,0],[5,0,0,10,20,0,0,0],[5,0,0,9,16,1,1,4],[6,0,1,17,5,0,0,0],[6,1,0,2,11,1,0,0],[6,2,0,11,6,2,0,0],[6,0,0,9,10,1,1,3],[6,1,0,2,0,0,0,0],[6,1,1,18,5,0,0,0],[6,1,0,6,0,0,0,0],[6,0,1,16,0,1,0,0],[6,0,2,23,9,0,0,0],[6,1,1,20,23,0,0,0],[6,1,0,1,8,2,1,4],[6,0,2,23,15,0,0,0],[6,1,0,0,14,1,0,0],[6,2,5,27,5,0,0,0],[6,2,5,31,5,1,1,17],[6,0,3,30,25,0,0,0],[6,2,0,14,9,0,0,0],[6,2,1,22,0,1,0,0],[6,2,0,10,0,2,1,18],[6,2,1,16,16,0,0,0],[6,0,3,29,5,1,0,0],[6,0,5,12,1,1,0,0],[6,0,0,13,5,0,0,0],[6,1,3,27,0,0,0,0],[6,1,3,28,6,1,0,0],[6,0,3,29,5,1,0,0],[6,2,1,16,5,0,0,0],[6,1,0,5,2,2,0,0],[6,0,5,9,1,1,0,0],[6,1,5,18,0,1,0,0],[6,1,0,6,8,2,1,19],[6,1,4,31,0,0,0,0],[6,1,2,26,24,2,0,0],[6,2,0,9,20,0,0,0],[6,1,0,5,0,0,0,0],[6,1,2,25,24,0,0,0],[6,1,1,22,23,0,0,0],[6,1,5,5,2,0,0,0],[6,2,4,31,14,2,0,0],[6,0,0,11,15,1,0,0],[6,2,0,10,1,1,1,6],[6,1,5,4,14,0,0,0],[6,1,5,2,0,1,0,0],[6,0,0,9,11,0,0,0],[6,1,2,26,5,2,0,0],[6,1,0,5,0,2,0,0],[6,0,0,12,5,2,0,0],[6,1,5,18,0,0,0,0],[6,0,5,17,25,0,0,0],[6,1,0,4,9,0,0,0],[6,1,0,6,0,0,0,0],[6,2,2,26,33,0,0,0],[6,1,1,18,5,2,0,0],[6,0,0,14,1,1,0,0],[6,1,3,27,0,0,0,0],[6,2,1,16,13,2,1,19],[6,0,1,17,0,0,0,0],[6,0,5,16,5,0,0,0],[6,1,0,4,10,2,0,0],[6,1,0,5,2,2,0,0],[6,1,1,18,0,0,0,0],[6,1,0,5,9,0,0,0],[6,0,0,9,9,0,0,0],[6,1,1,18,11,0,0,0],[6,2,0,1,25,0,0,0],[6,0,1,16,0,1,0,0],[6,2,3,27,0,1,1,11],[6,0,5,17,0,0,0,0],[6,1,3,27,5,0,0,0],[6,1,0,5,8,0,0,0],[6,1,1,19,0,1,0,0],[6,2,2,26,0,0,0,0],[6,2,0,10,0,0,0,0],[6,2,0,13,1,2,0,0],[6,0,1,16,5,0,0,0],[6,1,3,28,16,0,0,0],[6,1,5,3,7,1,0,0],[6,0,1,16,0,0,0,0],[6,1,0,2,34,0,0,0],[6,1,0,2,6,1,1,14],[6,2,1,20,5,1,0,0],[6,0,2,24,5,0,0,0],[6,0,3,30,22,0,0,0],[6,0,5,8,23,0,0,0],[6,1,1,22,5,0,0,0],[6,0,5,21,5,1,0,0],[6,1,1,22,0,0,0,0],[6,1,0,0,2,0,0,0],[6,1,0,0,16,0,0,0],[6,0,3,30,22,0,0,0],[6,1,0,0,10,0,0,0],[6,0,0,8,15,2,1,3],[6,1,0,7,9,2,1,1],[6,1,1,19,0,0,0,0],[6,2,0,13,0,0,0,0],[6,2,0,1,8,1,0,0],[6,2,5,20,16,0,0,0],[6,1,1,15,0,1,1,9],[6,0,3,29,16,0,0,0],[6,2,5,1,0,1,0,0],[6,0,0,14,5,0,0,0],[6,0,0,11,5,1,0,0],[6,2,5,8,0,2,0,0],[6,2,0,9,0,0,0,0],[6,2,1,19,16,0,0,0],[6,1,5,22,0,0,0,0],[6,1,1,15,9,0,0,0],[6,1,3,27,0,0,0,0],[6,2,1,20,16,0,0,0],[6,0,2,24,5,1,0,0],[6,0,3,30,9,1,0,0],[6,0,0,8,0,0,0,0],[6,2,0,7,0,1,0,0],[6,0,0,13,0,1,0,0],[6,1,1,18,25,2,0,0],[6,0,0,13,33,2,0,0],[6,0,0,8,33,0,0,0],[6,1,0,1,0,0,0,0],[6,1,0,4,0,0,0,0],[6,1,1,18,9,1,0,0],[6,1,0,0,2,0,0,0],[6,1,5,1,9,1,0,0],[6,0,0,10,1,1,0,0],[6,2,1,22,16,1,1,1],[6,0,1,17,0,0,0,0],[6,0,0,10,8,0,0,0],[6,2,0,12,0,2,0,0],[6,1,2,25,9,1,0,0],[6,0,0,13,1,1,0,0],[6,1,2,26,0,0,0,0],[6,1,0,5,2,0,0,0],[6,2,1,22,0,0,0,0],[7,2,0,1,2,0,0,0],[7,2,0,0,24,1,0,0],[7,2,0,9,0,2,0,0],[7,0,0,11,5,2,0,0],[7,2,2,26,24,1,0,0],[7,0,3,30,0,2,0,0],[7,0,0,10,1,1,1,13],[7,0,1,21,16,0,0,0],[7,2,2,25,9,2,0,0],[7,0,2,23,24,0,0,0],[7,0,2,23,24,0,0,0],[7,2,0,8,0,2,0,0],[7,2,3,29,9,2,1,8],[7,1,4,31,9,1,0,0],[7,1,5,26,16,0,0,0],[7,0,0,9,0,0,0,0],[7,1,0,5,2,0,0,0],[7,0,0,11,4,1,0,0],[7,1,0,1,2,0,0,0],[7,0,3,30,6,0,0,0],[7,0,1,17,11,1,0,0],[7,0,3,29,0,2,0,0],[7,1,1,15,8,1,1,10],[7,0,3,29,16,0,0,0],[7,2,3,27,20,0,0,0],[7,1,2,26,0,1,0,0],[7,2,5,2,0,0,0,0],[7,1,5,5,2,0,0,0],[7,1,0,0,33,1,0,0],[7,2,0,13,0,1,1,12],[7,1,0,3,13,0,0,0],[7,0,5,14,5,2,0,0],[7,2,0,1,6,1,1,4],[7,1,1,15,25,0,0,0],[7,0,0,11,1,0,0,0],[7,2,2,25,14,0,0,0],[7,1,1,22,0,0,0,0],[7,1,0,0,25,0,0,0],[7,0,5,13,5,2,1,13],[7,2,0,5,0,0,0,0],[7,1,5,31,25,1,0,0],[7,0,5,30,34,2,0,0],[7,2,0,6,18,1,0,0],[7,2,1,19,18,0,0,0],[7,2,0,2,11,0,0,0],[7,1,0,2,18,0,0,0],[7,2,0,4,0,1,0,0],[7,0,1,16,8,0,0,0],[7,0,0,12,0,0,0,0],[7,0,5,21,18,1,0,0],[7,2,0,4,0,1,0,0],[7,2,0,4,0,0,0,0],[7,0,1,17,6,0,0,0],[7,1,5,26,0,0,0,0],[7,1,5,4,19,0,0,0],[7,0,0,8,5,2,0,0],[7,0,1,17,4,0,0,0],[7,0,1,16,24,1,0,0],[7,2,3,30,0,0,0,0],[7,0,0,12,0,1,1,7],[7,2,5,2,11,0,0,0],[7,0,3,30,0,0,0,0],[7,2,2,25,0,1,1,5],[7,1,2,25,5,1,1,11],[7,1,1,18,25,0,0,0],[7,0,1,16,0,0,0,0],[7,0,0,14,8,0,0,0],[7,0,0,14,1,0,0,0],[7,1,1,22,22,0,0,0],[7,1,5,7,6,1,1,6],[7,2,0,6,16,0,0,0],[7,1,0,4,24,0,0,0],[7,1,5,1,8,0,0,0],[7,0,2,23,0,1,0,0],[7,1,1,22,7,0,0,0],[7,2,0,1,6,1,0,0],[7,1,0,0,23,0,0,0],[7,1,0,6,24,0,0,0],[7,1,4,31,5,2,1,10],[7,0,5,14,11,2,0,0],[7,1,2,26,0,0,0,0],[7,0,5,8,1,0,0,0],[7,2,2,26,0,2,0,0],[7,2,1,18,4,0,0,0],[7,2,1,19,0,2,0,0],[7,1,0,7,29,0,0,0],[7,2,5,30,6,2,0,0],[8,0,0,9,1,1,1,5],[8,1,0,5,0,0,0,0],[8,1,0,1,0,1,0,0],[8,2,0,11,9,2,0,0],[8,2,5,30,5,2,1,4],[8,2,5,12,10,0,0,0],[8,0,2,24,11,1,0,0],[8,2,0,6,0,0,0,0],[8,0,5,23,0,1,0,0],[8,1,0,1,10,0,0,0],[8,0,0,12,5,2,0,0],[8,0,1,21,16,0,0,0],[8,0,1,17,9,2,1,3],[8,1,0,0,2,0,0,0],[8,1,5,26,7,0,0,0],[8,0,3,29,8,0,0,0],[8,2,0,13,8,0,0,0],[8,0,3,29,0,0,0,0],[8,0,0,10,1,1,0,0],[8,1,0,1,2,2,0,0],[8,1,1,19,11,1,0,0],[8,0,0,9,9,1,1,3],[8,1,1,18,5,2,0,0],[8,0,1,21,0,0,0,0],[8,1,0,3,0,0,0,0],[8,1,5,22,20,0,0,0],[8,2,5,29,25,1,0,0],[8,0,0,9,6,0,0,0],[8,1,0,7,9,2,0,0],[8,1,0,1,25,1,0,0],[8,0,0,10,0,0,0,0],[8,1,0,7,0,0,0,0],[8,2,1,21,20,1,0,0],[8,1,0,4,5,1,0,0],[8,1,0,6,0,1,1,4],[8,0,0,8,23,0,0,0],[8,0,0,8,13,0,0,0],[8,2,3,27,16,2,0,0],[8,1,1,15,0,1,0,0],[8,1,0,5,11,0,0,0],[8,0,0,13,16,0,0,0],[8,2,0,5,0,0,0,0],[8,2,5,13,11,1,0,0],[8,1,0,5,0,0,0,0],[8,0,1,21,0,0,0,0],[8,0,3,30,0,0,0,0],[8,1,0,1,5,1,1,1],[8,2,0,11,5,1,0,0],[8,0,0,12,1,0,0,0],[8,0,2,23,0,0,0,0],[8,0,0,10,1,0,0,0],[8,2,1,18,0,1,1,3],[8,2,3,29,0,0,0,0],[8,0,0,14,0,0,0,0],[8,2,0,13,5,2,0,0],[8,0,1,16,33,0,0,0],[8,1,0,2,16,0,0,0],[8,2,2,23,16,0,0,0],[8,1,2,25,6,2,0,0],[8,2,1,22,22,1,0,0],[8,1,0,5,23,0,0,0],[8,0,0,14,25,0,0,0],[8,2,2,23,5,2,0,0],[8,1,1,15,5,2,1,4],[8,1,4,31,25,2,0,0],[8,2,0,13,29,0,0,0],[8,1,0,1,0,0,0,0],[8,1,5,4,16,1,1,4],[8,2,2,25,25,1,0,0],[8,1,0,5,2,1,0,0],[8,1,5,6,20,0,0,0],[8,0,5,16,0,0,0,0],[8,1,1,15,0,2,0,0],[8,2,2,26,0,0,0,0],[8,0,5,13,5,1,0,0],[8,2,0,13,6,0,0,0],[8,0,0,14,0,0,0,0],[8,0,1,21,0,2,0,0],[8,1,0,5,16,0,0,0],[8,1,0,6,0,1,0,0],[8,1,5,1,2,0,0,0],[8,1,0,0,14,0,0,0],[8,2,2,26,11,1,0,0],[8,0,0,13,11,0,0,0],[8,1,0,2,22,1,0,0],[8,0,0,12,18,0,0,0],[0,1,1,22,11,1,1,64],[0,0,0,9,9,1,1,70],[0,0,0,9,24,1,1,152],[0,0,0,11,9,2,1,166],[0,0,1,17,14,1,1,82],[0,1,1,18,23,1,1,97],[0,0,0,10,23,2,1,195],[0,0,0,9,33,2,1,105],[0,2,5,1,0,2,1,167],[0,2,0,1,2,2,1,166],[0,1,0,2,25,2,1,65],[0,0,0,14,8,1,1,148],[0,0,2,24,18,1,1,71],[0,0,0,14,8,2,1,130],[0,0,0,13,1,2,1,68],[0,0,0,14,16,1,1,98],[0,1,0,0,25,2,1,107],[0,2,0,12,25,2,1,138],[0,1,0,6,5,2,1,67],[0,2,0,0,2,2,1,88],[0,2,3,30,11,2,1,104],[0,1,0,0,2,2,1,115],[0,2,2,25,0,2,1,146],[0,1,1,20,0,2,1,140],[0,0,1,17,0,2,1,72],[0,1,1,19,8,2,1,173],[0,1,0,5,5,2,1,152],[0,1,5,19,14,1,1,57],[0,0,5,17,6,2,1,190],[0,1,0,5,11,1,1,195],[0,1,0,0,2,2,1,194],[0,0,1,16,0,2,1,197],[0,2,1,17,0,2,1,76],[0,2,5,23,11,2,1,167],[0,2,3,27,9,2,1,129],[0,2,3,28,9,2,1,174],[0,1,0,1,15,2,1,124],[0,0,0,9,20,2,1,87],[0,1,5,22,18,1,1,171],[0,0,0,13,11,2,1,106],[0,1,1,19,19,2,1,180],[0,2,1,19,25,2,1,70],[0,0,3,30,0,2,1,91],[0,0,0,12,20,2,1,116],[0,1,0,0,2,1,1,75],[0,2,1,16,22,1,1,95],[0,0,0,11,4,1,1,149],[0,1,1,22,6,2,1,159],[0,0,2,24,20,2,1,132],[0,1,2,25,24,2,1,132],[0,0,2,24,0,1,1,191],[0,1,0,5,5,1,1,96],[0,1,2,26,0,2,1,192],[0,2,1,17,0,1,1,158],[0,2,0,0,5,2,1,131],[0,1,0,7,11,1,1,156],[0,0,5,9,4,1,1,133],[0,1,1,15,4,2,1,200],[0,1,4,31,13,2,1,98],[0,1,1,15,5,2,1,101],[0,0,0,8,4,2,1,66],[0,0,1,17,33,2,1,197],[0,1,1,20,25,2,1,130],[0,0,3,29,10,2,1,80],[0,0,5,12,24,1,1,106],[0,1,5,20,20,2,1,155],[0,0,0,12,11,2,1,189],[0,0,5,8,33,2,1,85],[0,1,2,25,10,2,1,193],[0,2,0,3,11,2,1,163],[0,2,0,12,13,2,1,110],[0,2,4,31,0,1,1,67],[0,1,0,2,6,1,1,187],[0,1,0,2,20,2,1,135],[0,2,5,7,9,1,1,188],[0,1,2,25,8,1,1,63],[0,0,0,10,25,2,1,199],[0,1,5,31,8,2,1,89],[0,2,1,16,0,2,1,189],[0,0,0,10,34,1,1,156],[0,0,5,10,0,2,1,66],[0,1,2,26,4,2,1,175],[0,0,3,29,0,1,1,182],[0,1,1,15,8,2,1,120],[0,1,5,19,10,1,1,112],[0,2,5,2,0,2,1,138],[0,2,2,25,0,1,1,70],[0,2,2,26,0,2,1,108],[0,2,0,13,0,1,1,176],[0,1,3,28,15,1,1,68]],"I":[[1,2,5,22,9],[1,0,5,12,1],[1,2,5,12,25],[1,0,0,14,7],[1,2,1,16,13],[1,2,0,1,24],[1,2,0,14,19],[1,1,1,19,5],[1,2,5,0,21],[1,2,5,11,11],[1,2,0,5,2],[1,2,0,0,2],[1,2,4,31,10],[1,1,3,27,16],[1,2,0,5,16],[1,2,0,13,1],[1,2,2,23,20],[1,1,3,27,23],[1,2,0,13,18],[1,2,3,30,25],[1,0,0,11,25],[1,2,2,23,5],[1,2,1,15,23],[1,2,0,2,20],[1,2,0,4,7],[1,2,0,1,2],[1,2,1,16,19],[1,2,0,4,10],[1,2,3,28,0],[1,2,3,30,5],[1,2,0,14,1],[1,1,5,26,21],[1,2,1,20,6],[1,2,0,5,7],[1,0,3,30,6],[1,2,0,6,7],[1,2,5,18,10],[1,2,0,0,2],[1,0,0,14,8],[1,2,0,2,5],[1,1,5,19,9],[1,2,0,7,11],[1,2,2,23,0],[1,2,3,27,14],[1,2,3,29,33],[1,2,3,30,23],[1,0,0,13,16],[1,2,0,6,10],[1,2,0,9,9],[1,2,0,9,10],[1,2,5,23,8],[1,2,0,14,1],[1,2,0,3,24],[1,2,5,13,1],[1,2,5,12,13],[1,2,0,10,10],[1,0,5,12,13],[1,1,0,4,25],[1,2,1,16,5],[1,0,3,30,16],[1,1,0,1,5],[1,2,2,23,25],[1,2,0,12,33],[1,2,3,29,14],[1,2,1,19,25],[1,2,1,16,13],[1,1,5,3,11],[1,2,5,9,6],[1,2,5,3,0],[1,2,0,8,16],[1,2,5,5,2],[1,2,0,7,20],[1,2,1,15,24],[1,2,0,5,4],[2,0,5,24,16],[2,2,1,19,11],[2,2,5,30,5],[2,2,0,8,9],[2,2,1,16,33],[2,1,0,0,2],[2,2,0,8,1],[2,2,0,14,6],[2,1,1,20,9],[2,1,3,28,4],[2,2,1,16,11],[2,0,2,24,5],[2,2,0,1,7],[2,2,5,5,9],[2,1,2,26,21],[2,2,1,17,0],[2,2,0,0,16],[2,2,0,2,6],[2,2,0,14,11],[2,2,1,15,6],[2,2,1,15,16],[2,2,0,13,13],[2,0,0,10,6],[2,0,1,16,8],[2,0,0,13,5],[2,0,0,11,10],[2,2,2,24,9],[2,2,2,23,10],[2,2,0,6,33],[2,2,1,17,8],[2,0,1,16,16],[2,2,0,5,20],[2,2,1,15,13],[2,2,2,24,7],[2,2,0,3,5],[2,2,3,28,10],[2,1,0,0,33],[2,2,0,13,1],[2,1,2,25,16],[2,2,0,1,2],[2,2,0,10,11],[2,2,1,22,11],[2,1,1,19,19],[2,2,1,19,5],[2,2,0,0,9],[2,2,2,25,9],[2,2,0,8,18],[2,2,0,1,24],[2,2,3,27,16],[2,2,0,12,7],[2,2,0,4,15],[2,2,0,4,0],[2,2,1,16,33],[2,2,5,17,15],[2,1,0,3,33],[2,2,1,20,10],[2,2,5,4,11],[2,2,0,11,6],[2,2,0,4,9],[2,2,2,24,5],[2,2,0,3,0],[2,2,1,17,16],[2,2,3,28,33],[2,2,2,23,25],[2,2,1,21,25],[2,2,0,6,14],[2,2,3,27,5],[2,0,0,8,7],[2,2,5,27,9],[2,1,0,7,8],[2,2,5,14,8],[3,2,1,16,14],[3,2,1,17,6],[3,1,0,5,2],[3,2,3,28,10],[3,2,0,12,11],[3,1,5,1,25],[3,2,0,13,1],[3,2,0,8,25],[3,2,1,22,8],[3,2,0,14,24],[3,2,1,19,22],[3,2,0,0,11],[3,0,3,29,8],[3,2,0,6,25],[3,2,1,18,4],[3,2,0,14,25],[3,2,2,26,0],[3,1,4,31,7],[3,1,0,2,11],[3,2,0,12,25],[3,1,5,5,2],[3,2,0,5,2],[3,2,5,0,23],[3,2,3,27,9],[3,2,0,5,2],[3,2,1,19,5],[3,2,0,6,6],[3,2,0,2,24],[3,2,5,26,9],[3,2,0,14,11],[3,2,5,2,18],[3,2,2,23,25],[3,2,0,1,2],[3,2,2,26,9],[3,2,0,13,34],[3,1,2,25,14],[3,2,0,9,9],[3,2,0,3,18],[3,0,0,12,24],[3,2,2,24,10],[3,0,2,23,5],[3,2,2,25,20],[3,2,0,5,11],[3,2,1,19,18],[3,2,0,12,10],[3,2,4,31,0],[3,1,5,4,25],[3,2,2,26,5],[3,2,3,28,16],[3,0,5,14,1],[3,2,1,21,33],[3,2,5,20,9],[3,1,5,20,10],[3,2,2,25,9],[3,2,1,15,8],[3,2,0,10,1],[3,2,0,5,9],[3,1,0,1,11],[3,2,5,5,2],[3,2,5,17,14],[4,2,0,1,33],[4,2,1,21,5],[4,2,5,22,16],[4,2,5,17,6],[4,2,0,3,16],[4,2,1,22,15],[4,2,0,9,20],[4,0,0,8,8],[4,2,0,9,16],[4,2,5,13,16],[4,2,0,12,33],[4,2,0,4,11],[4,1,0,4,16],[4,2,1,17,4],[4,1,5,2,33],[4,2,5,14,1],[4,2,0,4,14],[4,2,5,28,13],[4,2,3,28,13],[4,2,2,25,7],[4,2,3,28,11],[4,2,1,17,8],[4,2,2,23,34],[4,0,3,29,9],[4,1,5,25,13],[4,2,5,5,20],[4,2,1,15,14],[4,1,4,31,25],[4,1,1,19,20],[4,0,0,12,15],[4,2,2,26,23],[4,2,2,24,14],[4,2,0,0,15],[4,1,2,26,5],[4,2,1,15,22],[4,2,5,8,5],[4,2,5,26,14],[4,2,5,27,5],[4,2,0,0,0],[4,2,1,17,9],[4,1,0,1,16],[4,2,1,19,6],[4,2,1,15,6],[4,2,5,13,9],[4,1,0,3,0],[4,2,2,25,13],[4,2,3,27,11],[4,2,3,27,18],[4,2,0,12,14],[4,2,0,6,5],[4,2,0,5,2],[4,2,0,1,2],[4,2,1,22,6],[4,2,3,28,24],[4,2,0,1,2],[4,0,0,13,1],[4,2,1,18,5],[4,1,4,31,5],[4,2,1,18,0],[4,0,5,8,8],[4,1,0,5,5],[4,1,5,5,2],[4,2,0,3,0],[4,0,0,12,11],[4,2,5,22,13],[4,2,0,9,0],[4,1,0,6,9],[5,2,0,4,4],[5,0,0,8,1],[5,2,1,18,24],[5,2,0,0,10],[5,2,0,10,5],[5,2,0,3,25],[5,0,1,21,24],[5,2,0,7,20],[5,1,0,5,25],[5,2,0,3,9],[5,2,5,30,18],[5,2,0,2,16],[5,2,0,11,9],[5,2,2,24,10],[5,2,0,13,15],[5,2,0,0,5],[5,2,1,20,33],[5,2,1,19,14],[5,1,5,15,33],[5,0,2,23,25],[5,2,0,1,6],[5,2,5,13,13],[5,2,0,0,19],[5,2,0,13,13],[5,2,0,5,2],[5,2,5,15,9],[5,2,0,14,1],[5,2,0,14,1],[5,2,3,29,6],[5,2,2,23,18],[5,2,2,25,9],[5,1,1,19,0],[5,2,0,12,25],[5,2,1,20,14],[5,2,2,24,5],[5,2,3,29,8],[5,2,3,27,4],[5,2,1,20,15],[5,1,0,2,33],[5,2,5,14,20],[5,2,0,11,14],[5,2,0,1,2],[5,2,1,20,10],[5,2,2,24,9],[5,2,1,17,10],[5,1,0,0,11],[5,2,1,15,5],[5,2,4,31,23],[5,2,2,26,0],[5,1,0,0,2],[5,2,0,6,20],[5,1,4,31,9],[5,2,3,27,22],[5,0,3,30,22],[5,2,0,7,0],[5,2,1,18,11],[5,2,0,7,9],[5,1,2,25,25],[5,2,3,29,8],[5,2,3,29,25],[5,1,4,31,8],[5,2,5,1,2],[5,2,1,17,6],[6,2,1,16,0],[6,2,0,6,9],[6,2,3,28,25],[6,2,0,3,14],[6,0,0,9,34],[6,2,2,23,11],[6,2,1,18,0],[6,2,0,6,5],[6,2,1,19,6],[6,0,1,17,14],[6,2,1,15,16],[6,2,2,25,9],[6,0,0,11,29],[6,2,5,5,5],[6,1,5,31,16],[6,2,1,20,25],[6,2,1,18,11],[6,2,0,1,2],[6,1,5,27,4],[6,2,0,14,10],[6,2,0,11,24],[6,2,5,30,14],[6,2,0,9,18],[6,2,0,9,1],[6,2,0,5,16],[6,0,5,24,7],[6,1,0,5,25],[6,1,5,28,8],[6,2,1,19,5],[6,2,5,31,14],[6,2,5,5,2],[6,2,0,5,2],[6,2,0,9,25],[6,2,5,8,25],[6,2,0,10,1],[6,1,0,7,5],[6,0,2,24,5],[6,2,1,18,0],[6,2,4,31,7],[6,1,0,1,13],[6,2,0,12,10],[6,2,5,21,33],[6,2,5,1,22],[6,1,0,0,2],[6,2,0,5,16],[6,2,0,0,2],[6,2,1,15,19],[6,1,0,7,5],[6,2,0,0,0],[6,2,0,5,2],[6,1,0,5,2],[6,0,1,16,29],[6,2,0,5,9],[6,2,0,9,9],[6,0,5,29,9],[6,2,1,20,11],[6,2,5,15,6],[6,2,2,25,10],[6,2,2,23,16],[6,2,1,15,11],[6,0,5,21,5],[6,2,1,18,16],[7,2,0,10,1],[7,2,2,23,25],[7,0,3,29,6],[7,2,1,16,33],[7,2,0,1,9],[7,2,2,24,8],[7,2,0,14,4],[7,2,3,28,18],[7,0,2,24,34],[7,2,1,18,9],[7,2,3,28,10],[7,0,3,29,20],[7,2,5,3,4],[7,2,0,11,20],[7,2,1,21,7],[7,2,0,2,25],[7,1,0,2,8],[7,2,1,19,14],[7,2,1,20,10],[7,2,5,5,14],[7,2,0,12,1],[7,2,1,19,0],[7,1,0,5,2],[7,2,1,19,33],[7,0,0,9,0],[7,2,5,29,16],[7,2,1,18,13],[7,2,1,21,10],[7,2,0,5,9],[7,2,5,15,5],[8,0,1,17,21],[8,2,5,15,8],[8,2,0,11,1],[8,2,0,7,9],[8,2,1,17,10],[8,2,5,30,0],[8,2,5,8,16],[8,2,3,29,33],[8,0,0,10,16],[8,2,0,7,20],[8,2,4,31,6],[8,2,2,23,11],[8,1,0,7,0],[8,1,0,4,16],[8,2,2,23,16],[8,2,0,2,18],[8,0,1,21,11],[8,1,2,25,25],[8,2,0,1,2],[8,2,0,1,20],[8,2,0,5,2],[8,2,0,0,2],[8,1,0,2,13],[8,2,0,0,23],[8,2,0,1,2],[8,2,2,26,25],[8,2,0,9,9],[8,2,0,6,9],[8,2,1,16,10],[8,2,2,23,5],[8,2,4,31,9],[8,2,1,20,6],[8,2,1,19,18],[8,0,0,13,5],[8,1,0,5,5],[8,2,0,6,6],[8,2,3,27,5],[8,2,5,0,2]],"A":[[1,0,2,3,28,0,1,1,0,185],[0,6,0,0,9,16,0,0,0,0],[0,0,0,1,17,5,1,1,0,81],[7,0,0,2,24,5,1,1,0,154],[2,5,1,0,0,0,0,0,0,0],[8,0,1,0,4,8,1,0,0,0],[8,0,1,4,31,5,0,0,0,0],[1,5,2,0,0,13,0,0,0,0],[0,0,2,1,20,5,0,0,0,0],[4,0,1,1,20,25,1,0,0,0],[0,6,2,3,29,0,0,0,0,0],[4,0,1,0,2,33,0,0,0,0],[2,0,1,0,0,6,1,1,1,5],[4,7,0,5,23,0,0,0,0,0],[6,0,0,3,30,33,1,1,0,8],[2,0,1,1,20,25,1,1,0,59],[6,0,0,0,11,25,1,1,0,65],[4,0,2,3,28,0,1,1,0,37],[0,7,2,2,24,25,0,0,0,0],[5,0,2,1,16,0,1,1,1,8],[0,4,0,0,10,25,0,0,1,0],[1,1,0,0,8,6,0,0,1,0],[6,0,0,0,13,9,1,1,0,17],[0,0,0,0,12,5,1,1,1,144],[5,0,0,5,24,13,1,1,0,108],[8,8,1,0,7,14,0,0,1,0],[1,0,2,0,3,20,1,1,0,181],[2,0,1,3,28,11,0,0,1,0],[0,0,2,5,27,25,1,1,1,23],[7,0,1,0,2,13,1,1,0,31],[8,8,0,0,9,0,0,0,0,0],[7,0,1,3,28,0,1,1,1,52],[1,2,2,0,0,25,0,0,0,0],[0,0,1,3,27,9,0,0,0,0],[2,0,1,0,0,9,1,1,0,196],[6,0,1,1,19,20,1,1,0,86],[4,0,0,0,12,1,0,0,0,0],[3,0,0,0,13,25,1,1,0,81],[4,0,1,1,22,0,0,0,0,0],[5,8,2,0,6,9,0,0,1,0],[0,7,1,3,28,5,0,0,0,0],[7,0,1,0,7,0,1,1,0,55],[7,8,0,0,13,0,0,0,0,0],[5,0,2,4,31,0,0,0,0,0],[2,0,0,0,14,0,0,0,1,0],[3,0,0,0,11,1,0,0,0,0],[7,0,0,1,17,0,0,0,0,0],[5,0,1,3,27,0,1,1,0,156],[3,0,1,1,15,14,1,0,0,0],[3,0,2,1,19,5,1,1,1,169],[2,0,2,4,31,0,1,0,0,0],[1,0,1,1,20,0,0,0,0,0],[4,0,1,2,26,7,0,0,0,0],[7,0,0,0,10,1,0,0,0,0],[4,0,0,3,30,5,1,1,0,199],[0,0,1,0,0,33,1,1,0,84],[4,7,0,3,30,6,0,0,0,0],[6,6,0,0,14,1,0,0,0,0],[0,0,2,3,28,25,1,1,1,160],[3,0,0,0,11,0,0,0,0,0],[6,0,0,1,17,0,0,0,0,0],[2,0,0,0,10,0,0,0,0,0],[6,7,2,2,26,5,0,0,0,0],[0,2,0,0,12,0,0,0,0,0],[2,0,1,1,20,8,0,0,0,0],[0,0,0,0,10,0,1,1,1,193],[7,0,1,3,28,0,1,1,0,35],[6,0,0,0,14,0,1,1,0,199],[0,7,0,1,21,18,0,0,0,0],[1,0,0,0,10,21,1,1,0,179],[3,0,0,5,10,25,1,1,0,92],[0,5,0,0,9,5,0,0,0,0],[4,0,2,1,22,33,1,1,0,197],[8,0,2,2,24,16,0,0,0,0],[7,0,0,2,24,18,1,1,0,72],[5,0,2,1,15,8,0,0,0,0],[0,1,1,1,20,0,0,0,0,0],[0,0,1,5,22,0,1,1,1,126],[3,0,0,1,17,25,0,0,0,0],[4,0,2,5,2,34,1,1,1,165],[8,0,1,1,20,9,1,1,1,143],[0,0,2,3,27,24,0,0,0,0],[7,0,1,0,0,2,0,0,0,0],[5,0,1,3,28,0,0,0,0,0],[0,0,1,0,7,5,0,0,0,0],[6,7,1,0,7,0,0,0,0,0],[5,0,1,0,0,16,0,0,0,0],[3,0,1,5,1,2,0,0,0,0],[1,0,2,5,10,13,1,1,0,1],[0,3,2,0,4,24,0,0,1,0],[8,0,1,0,0,2,1,1,0,156],[8,0,1,5,18,9,1,1,0,36],[0,5,2,5,1,2,0,0,0,0],[7,0,1,1,20,14,0,0,0,0],[2,0,0,0,11,33,1,1,0,38],[0,0,2,5,1,11,0,0,0,0],[5,6,1,1,20,33,0,0,0,0],[8,0,1,0,0,10,1,1,1,149],[6,8,1,0,1,2,0,0,1,0],[2,0,1,1,18,9,1,1,1,200],[3,0,2,5,16,0,1,1,0,40],[4,4,1,1,22,16,0,0,0,0],[4,0,1,0,3,9,0,0,0,0],[3,0,2,0,5,25,1,1,0,19],[7,0,1,5,19,0,0,0,1,0],[0,0,2,1,18,24,1,1,0,151],[3,0,2,1,15,9,1,1,1,86],[7,0,0,2,23,33,1,1,1,193],[3,0,0,0,9,1,1,0,0,0],[3,0,0,3,30,0,1,1,0,31],[2,6,0,0,14,0,0,0,0,0],[0,0,0,5,9,1,1,1,0,104],[2,0,1,5,28,0,0,0,0,0],[4,0,0,0,8,5,1,1,0,63],[0,7,2,0,6,0,0,0,0,0],[0,4,0,0,11,1,0,0,0,0],[7,0,0,0,9,1,1,1,1,50],[0,0,0,0,9,0,0,0,0,0],[0,0,0,1,16,5,0,0,0,0],[0,0,1,5,15,34,1,0,0,0],[2,0,1,0,6,8,1,1,1,187],[4,0,0,5,10,22,0,0,0,0],[4,7,2,0,10,6,0,0,0,0],[0,4,2,0,7,9,0,0,0,0],[4,0,0,0,9,5,1,1,0,139],[8,8,1,1,19,14,0,0,0,0],[0,5,1,5,25,0,0,0,0,0],[0,0,1,3,27,8,0,0,1,0],[1,0,0,0,13,1,1,1,0,40],[0,0,0,5,29,0,1,1,0,34],[0,8,2,5,23,0,0,0,0,0],[8,0,1,1,15,11,0,0,1,0],[0,0,1,1,15,9,0,0,1,0],[0,0,1,0,4,0,1,1,0,79],[0,0,1,0,0,2,0,0,0,0],[0,0,1,4,31,0,0,0,0,0],[4,8,1,0,3,18,0,0,0,0],[4,0,0,0,11,5,0,0,0,0],[3,7,1,0,6,0,0,0,0,0],[0,0,0,0,9,24,0,0,0,0],[0,0,1,0,2,9,0,0,1,0],[5,8,2,0,14,0,0,0,0,0],[4,0,1,0,0,2,1,1,0,65],[2,5,2,2,25,9,0,0,0,0],[6,0,0,5,21,23,1,1,0,88],[3,8,2,3,30,6,0,0,0,0],[0,0,0,3,30,15,1,1,0,104],[1,1,2,1,18,16,0,0,0,0],[2,6,1,0,5,2,0,0,0,0],[5,0,0,2,24,0,0,0,0,0],[2,0,0,1,21,8,0,0,0,0],[1,0,1,1,18,0,1,1,0,84],[0,0,0,1,17,24,1,1,0,146],[0,0,0,1,21,6,0,0,0,0],[3,0,2,5,29,33,0,0,0,0],[0,0,0,0,8,0,0,0,0,0],[0,0,1,1,22,0,0,0,0,0],[6,0,1,3,28,13,0,0,0,0],[4,6,1,3,27,33,0,0,1,0],[4,4,0,5,14,0,0,0,0,0],[2,0,1,0,2,0,1,1,0,18],[0,0,0,5,11,8,1,1,0,32],[4,0,0,3,29,11,0,0,0,0],[0,0,0,0,9,10,1,1,1,187],[2,5,0,0,12,11,0,0,1,0],[5,0,2,0,0,2,0,0,0,0],[0,1,0,3,29,5,0,0,0,0],[8,0,1,1,19,33,1,1,0,88],[2,0,1,0,5,2,0,0,0,0],[0,0,1,0,3,11,0,0,0,0],[8,0,0,1,16,8,0,0,0,0],[1,2,1,5,1,25,0,0,0,0],[1,0,0,0,10,7,1,1,0,145],[7,0,0,0,8,23,1,1,1,85],[0,0,1,5,27,16,1,1,0,24],[0,0,0,2,24,0,0,0,0,0],[1,0,0,5,24,0,0,0,0,0],[3,0,0,5,13,1,0,0,0,0],[4,0,1,1,20,15,0,0,0,0],[2,7,1,3,27,25,0,0,0,0],[6,8,0,0,14,6,0,0,0,0],[0,0,2,1,15,16,1,1,0,58],[0,0,2,5,26,14,1,1,0,88],[3,0,1,1,19,9,0,0,0,0],[0,0,1,2,25,11,1,1,0,157],[4,0,2,5,24,0,1,1,1,26],[3,4,1,1,18,5,0,0,0,0],[4,5,2,3,30,0,0,0,0,0],[1,0,2,2,24,5,1,0,0,0],[7,0,2,0,12,14,0,0,0,0],[4,7,1,0,6,13,0,0,0,0],[3,0,2,1,16,0,0,0,0,0],[8,0,1,1,18,25,1,1,1,5],[1,0,0,5,16,0,1,1,0,30],[0,0,0,2,24,0,0,0,0,0],[6,0,0,0,11,14,1,1,0,8],[0,2,1,3,28,20,0,0,0,0],[2,0,1,0,3,0,1,1,0,100],[0,0,1,1,19,0,0,0,0,0],[3,0,2,1,15,0,0,0,0,0],[7,0,0,2,24,6,1,1,0,122],[5,7,0,5,12,0,0,0,0,0],[4,6,2,1,22,20,0,0,1,0],[8,0,1,3,28,0,1,1,0,6],[1,0,0,0,13,16,0,0,0,0],[8,8,1,0,6,25,0,0,0,0],[1,0,0,0,10,33,0,0,0,0],[4,8,0,0,8,0,0,0,1,0],[0,0,0,5,17,14,1,1,0,36],[2,0,0,0,13,10,0,0,0,0],[4,0,1,0,5,2,1,1,0,131],[0,0,1,0,5,2,1,1,0,159],[7,0,1,0,4,4,1,1,0,24],[7,8,0,3,29,9,0,0,1,0],[1,0,0,0,10,9,1,1,1,37],[1,0,2,1,16,14,1,1,0,7],[1,0,1,0,4,9,0,0,1,0],[1,0,0,0,9,1,0,0,1,0],[4,0,2,0,5,2,1,1,0,28],[3,0,2,3,29,14,0,0,0,0],[0,7,1,1,20,9,0,0,0,0],[7,0,1,1,22,0,1,1,0,99],[0,7,2,0,3,14,0,0,0,0],[2,0,1,3,28,4,0,0,0,0],[1,4,0,1,17,9,0,0,0,0],[0,2,0,1,17,14,0,0,0,0],[8,8,2,4,31,5,0,0,0,0],[1,2,0,2,23,0,0,0,0,0],[0,0,1,3,28,0,1,1,0,69],[0,2,1,4,31,5,0,0,0,0],[3,0,0,3,30,0,1,1,0,120],[8,0,1,0,6,14,0,0,0,0],[8,8,1,5,31,8,0,0,0,0],[7,0,1,5,1,2,1,1,0,3],[1,0,0,0,8,0,1,1,0,187],[2,0,2,3,28,9,1,1,0,134],[0,4,0,1,16,33,0,0,0,0],[3,0,0,1,17,5,1,1,0,149],[7,0,2,0,13,4,1,1,0,147],[8,0,0,1,17,0,1,1,0,159],[3,0,1,5,20,4,0,0,0,0],[0,4,0,1,16,0,0,0,0,0],[5,0,0,0,9,6,0,0,0,0],[0,0,2,4,31,16,1,1,0,149],[0,0,1,3,27,10,1,1,0,66],[5,0,2,0,11,25,1,1,1,97],[0,6,0,0,14,8,0,0,0,0],[1,0,1,3,28,4,1,1,0,36],[5,0,1,5,0,2,0,0,1,0],[0,0,0,1,16,0,0,0,0,0],[3,0,2,0,12,0,1,0,0,0],[4,0,0,0,11,0,1,1,0,81],[1,0,1,3,27,0,1,1,0,35],[4,5,1,0,7,5,0,0,0,0],[0,0,0,0,13,8,0,0,0,0],[2,0,1,4,31,0,1,1,0,49],[0,1,2,0,1,16,0,0,0,0],[6,0,0,0,9,1,0,0,0,0],[2,4,1,0,5,16,0,0,1,0],[8,0,0,0,12,1,1,1,0,88],[1,0,0,5,10,25,0,0,0,0],[0,0,1,2,25,0,1,1,1,54],[8,0,1,0,2,0,1,1,0,144],[0,0,0,0,13,16,1,1,0,197],[0,4,1,1,15,7,0,0,0,0],[2,0,1,1,15,0,1,1,0,109],[0,0,2,0,14,13,1,1,0,78],[0,0,0,2,23,24,1,1,0,179],[0,0,0,1,21,11,0,0,0,0],[0,7,1,0,4,29,0,0,0,0],[0,3,1,5,19,6,0,0,0,0],[0,0,0,0,10,18,1,1,0,25],[5,0,1,0,1,2,1,1,0,31],[8,0,1,5,28,6,1,1,0,80],[0,8,1,1,22,9,0,0,0,0],[7,0,1,3,28,0,0,0,1,0],[1,7,1,0,0,16,0,0,0,0],[0,7,1,5,7,10,0,0,0,0],[4,0,2,0,13,0,0,0,0,0],[3,0,1,5,5,2,1,1,0,153],[8,0,1,0,6,9,0,0,1,0],[5,0,0,5,30,23,1,1,0,92],[8,0,0,0,12,0,1,1,0,198],[0,0,1,0,2,34,1,1,0,136],[3,0,0,0,14,9,1,1,0,56],[4,5,1,1,18,0,0,0,0,0],[0,0,0,0,10,4,1,0,0,0],[7,7,1,0,7,0,0,0,0,0],[3,0,2,0,13,1,0,0,0,0],[0,0,0,5,14,14,1,1,1,120],[2,0,1,0,6,0,0,0,0,0],[8,8,0,5,13,8,0,0,0,0],[2,4,1,5,31,24,0,0,1,0],[0,0,1,3,27,4,1,1,0,12],[8,8,1,0,0,2,0,0,0,0],[2,3,1,2,26,7,0,0,0,0],[8,0,2,1,22,5,1,1,0,168],[4,5,1,0,2,0,0,0,1,0],[5,0,1,5,18,24,0,0,0,0],[8,0,2,0,12,7,1,0,1,0],[7,0,1,5,4,0,0,0,1,0],[3,4,0,2,23,33,0,0,0,0],[2,0,1,1,19,4,1,1,0,69],[1,0,0,1,16,16,0,0,0,0],[0,0,1,3,27,24,1,1,0,108],[0,0,1,0,4,33,1,1,0,137],[3,0,0,2,23,5,0,0,0,0],[2,0,0,3,29,25,0,0,1,0],[3,0,0,0,14,9,0,0,0,0],[5,8,0,5,10,6,0,0,0,0],[3,3,2,1,21,0,0,0,0,0],[1,1,0,0,11,0,0,0,0,0],[2,0,1,0,6,6,1,1,0,55],[8,0,1,0,5,8,1,1,0,33],[0,0,1,3,27,6,0,0,0,0],[0,0,0,0,13,0,0,0,0,0],[5,0,1,5,28,0,0,0,0,0],[4,0,2,1,16,0,1,1,0,169],[7,8,1,5,5,2,0,0,0,0],[0,0,2,0,5,0,1,1,0,97],[6,0,0,0,8,1,1,1,1,32],[8,0,0,1,21,0,1,1,0,87],[3,0,0,5,24,0,1,1,0,167],[0,0,0,0,14,0,1,1,0,27],[4,0,2,0,8,0,0,0,0,0],[7,0,1,0,5,2,0,0,0,0],[7,0,1,3,27,25,0,0,0,0],[0,2,1,5,2,11,0,0,0,0],[0,0,2,5,1,23,1,1,0,16],[2,0,1,0,3,25,1,1,1,93],[2,0,1,1,15,5,1,1,0,57],[1,0,2,1,15,4,1,1,0,173],[0,0,1,0,1,2,1,1,0,132],[0,0,1,1,22,8,1,1,0,80],[3,8,0,0,10,4,0,0,0,0],[0,0,1,1,18,20,0,0,1,0],[4,7,1,2,25,5,0,0,0,0],[4,0,1,0,5,0,0,0,0,0],[6,0,0,0,10,0,0,0,0,0],[7,0,1,2,25,14,0,0,0,0],[0,0,1,1,18,33,1,1,0,43],[0,0,2,0,4,24,0,0,0,0],[2,0,0,5,14,11,1,1,0,90],[0,0,2,0,1,0,1,1,0,33],[6,0,1,5,18,16,0,0,0,0],[2,8,0,0,9,0,0,0,0,0],[1,1,0,1,17,5,0,0,0,0],[4,0,0,0,12,16,1,1,1,143],[1,0,1,0,5,2,1,1,0,118],[0,0,1,1,22,10,0,0,1,0],[5,5,0,0,8,1,0,0,0,0],[0,0,2,5,22,11,1,1,0,94],[0,0,1,1,18,25,1,1,0,44],[8,0,2,3,29,0,1,1,0,138],[7,0,2,5,14,0,1,1,0,90],[4,0,0,2,23,0,1,1,0,100],[0,0,0,5,12,8,0,0,0,0],[0,8,1,1,15,8,0,0,0,0],[1,0,0,0,9,8,1,1,0,118],[0,0,0,5,21,33,1,1,1,186],[3,0,2,0,10,0,1,1,1,17],[8,0,1,5,5,0,0,0,0,0],[7,8,1,3,28,29,0,0,0,0],[4,0,0,2,23,18,1,1,0,138],[6,6,0,2,24,0,0,0,0,0],[7,0,0,3,29,0,0,0,0,0],[5,0,2,1,17,0,0,0,0,0],[1,6,0,0,8,20,0,0,0,0],[8,8,1,3,27,9,0,0,1,0],[2,0,2,0,7,6,1,1,1,64],[0,7,2,5,8,0,0,0,1,0],[3,0,0,0,12,6,0,0,0,0],[6,0,1,0,6,16,0,0,0,0],[0,3,1,1,19,25,0,0,0,0],[0,6,1,0,6,5,0,0,0,0],[2,0,1,0,5,2,1,1,0,153],[3,0,0,0,14,23,0,0,0,0],[2,4,1,3,28,5,0,0,0,0],[5,5,0,3,29,18,0,0,0,0],[0,0,2,4,31,5,0,0,0,0],[0,0,1,3,27,0,1,1,0,100],[0,0,0,1,16,25,1,1,0,34],[4,5,1,0,5,2,0,0,0,0],[3,5,1,1,22,25,0,0,0,0],[4,8,1,0,7,0,0,0,0,0],[3,3,1,5,5,11,0,0,0,0],[4,4,2,1,16,33,0,0,0,0],[1,0,1,1,15,11,1,1,0,198],[1,0,2,1,22,0,0,0,0,0],[7,0,0,0,11,34,1,0,1,0],[0,0,1,4,31,0,0,0,0,0],[4,8,0,2,23,33,0,0,0,0],[4,6,0,0,12,25,0,0,0,0],[1,4,1,1,19,9,0,0,0,0],[0,4,0,2,23,9,0,0,0,0],[3,0,1,0,7,9,1,0,1,0],[0,0,2,5,28,20,0,0,0,0],[2,5,0,1,17,0,0,0,0,0],[0,1,0,3,30,0,0,0,0,0],[3,0,0,0,8,25,1,1,0,30],[2,0,1,1,18,9,0,0,0,0],[2,0,2,5,0,11,0,0,0,0],[8,0,0,2,23,0,1,1,0,20],[0,2,0,1,17,20,0,0,0,0],[0,0,0,3,29,18,1,1,0,94],[1,0,2,3,29,5,1,1,0,46],[0,0,2,3,27,0,0,0,0,0],[8,0,0,5,11,0,1,1,0,140],[1,7,2,0,0,2,0,0,0,0],[0,0,2,0,0,2,1,1,0,139],[5,6,2,2,26,11,0,0,0,0],[0,0,1,1,19,4,0,0,1,0],[2,5,1,2,26,0,0,0,0,0],[0,0,1,1,22,0,0,0,0,0],[2,0,2,1,17,8,0,0,1,0],[2,0,0,5,9,21,1,1,0,4],[1,0,1,3,27,20,1,1,0,180],[4,0,2,1,22,19,1,1,0,90],[6,8,0,1,21,0,0,0,0,0],[0,0,0,3,30,6,0,0,0,0],[6,0,1,0,3,33,1,1,0,154],[2,0,1,5,6,6,1,0,1,0],[6,0,1,1,18,16,1,1,0,109],[0,8,0,5,8,14,0,0,0,0],[2,0,2,2,25,25,0,0,0,0],[8,0,1,5,28,16,0,0,0,0],[0,6,0,0,14,0,0,0,0,0],[0,0,0,0,10,1,1,1,0,22],[7,0,1,3,27,24,0,0,0,0],[7,0,0,3,30,0,1,1,0,113],[5,6,1,0,2,5,0,0,0,0],[7,0,0,0,10,0,1,1,0,115],[0,0,0,0,14,16,0,0,0,0],[4,0,0,1,16,11,1,1,0,15],[3,0,1,5,15,20,0,0,1,0],[2,0,0,0,9,0,1,1,0,31],[4,0,2,0,13,9,0,0,0,0],[7,0,1,0,5,2,1,1,0,124],[8,8,0,5,11,6,0,0,0,0],[5,0,1,3,28,25,1,1,0,71],[8,0,0,0,8,25,0,0,0,0],[1,0,0,2,23,0,0,0,0,0],[4,4,1,1,22,0,0,0,0,0],[1,0,2,1,22,11,0,0,0,0],[5,0,2,1,18,13,0,0,1,0],[8,8,1,1,22,20,0,0,0,0],[7,0,1,0,5,9,1,1,0,111],[0,0,1,3,28,0,0,0,0,0],[3,0,1,0,1,29,1,1,1,189],[0,4,2,0,9,18,0,0,0,0],[5,7,0,0,14,0,0,0,0,0],[3,4,0,0,11,16,0,0,0,0],[0,0,1,0,1,0,1,1,0,188],[3,0,2,2,26,9,1,1,0,116],[4,0,0,0,14,24,0,0,0,0],[6,0,0,1,17,16,1,1,0,48],[0,0,2,0,11,1,0,0,0,0],[0,0,2,0,3,0,0,0,0,0],[0,0,0,1,16,0,1,1,1,152],[6,0,1,5,1,5,1,1,0,175],[8,8,1,2,25,13,0,0,1,0],[0,0,1,3,28,0,1,1,0,48],[0,0,1,0,0,2,0,0,0,0],[2,0,0,0,13,1,0,0,1,0],[4,0,1,0,1,2,0,0,1,0],[0,0,1,0,4,20,0,0,0,0],[0,1,1,0,2,25,0,0,1,0],[6,7,2,0,3,21,0,0,0,0],[7,0,1,0,2,11,1,1,0,38],[6,0,1,2,25,22,1,1,0,177],[0,0,1,3,27,33,0,0,0,0],[2,0,0,0,13,25,0,0,0,0],[0,8,1,0,5,2,0,0,0,0],[0,0,2,0,11,20,0,0,0,0],[0,0,2,1,22,0,1,1,0,4],[2,0,2,0,11,0,0,0,1,0],[5,5,0,1,17,7,0,0,0,0],[7,0,1,0,6,8,1,1,0,51],[1,2,0,5,13,0,0,0,0,0],[8,0,0,3,30,0,1,0,0,0],[5,0,1,1,15,5,1,1,0,112],[5,0,1,5,0,2,1,1,1,158],[0,0,1,0,1,5,0,0,0,0],[5,0,0,0,9,5,1,1,0,178],[7,8,2,5,30,13,0,0,0,0],[5,6,0,2,23,0,0,0,0,0],[2,6,1,2,26,7,0,0,0,0],[6,0,0,0,10,1,0,0,0,0],[0,7,0,1,17,0,0,0,0,0],[0,0,0,1,16,9,1,1,1,154],[6,8,1,1,20,5,0,0,0,0],[7,7,0,2,23,5,0,0,0,0],[0,0,2,3,29,0,1,1,0,178],[1,0,0,3,30,29,0,0,0,0],[3,0,1,4,31,0,1,1,0,135],[2,0,0,3,30,0,1,1,0,147],[8,0,1,5,4,9,0,0,0,0],[4,0,0,0,10,24,0,0,0,0],[4,0,0,5,11,25,1,1,0,107],[4,0,1,0,4,0,1,1,0,105],[0,0,2,5,2,5,0,0,0,0],[5,7,1,3,27,0,0,0,0,0],[0,7,1,1,19,33,0,0,0,0],[7,0,1,0,2,0,0,0,1,0],[3,0,1,0,0,18,1,1,0,92],[5,0,2,0,2,10,0,0,0,0],[6,0,2,0,13,23,0,0,1,0],[8,0,0,1,17,16,1,1,0,32],[3,0,0,0,13,23,1,1,0,196],[0,0,1,0,4,13,1,1,1,52],[6,0,1,1,22,13,1,1,0,193],[5,8,1,3,27,0,0,0,0,0],[6,0,1,4,31,7,0,0,0,0],[8,0,2,4,31,7,1,1,0,105],[3,0,0,0,8,8,0,0,1,0],[7,7,0,0,13,18,0,0,0,0],[8,0,1,4,31,0,1,1,0,31],[5,0,0,2,23,25,0,0,1,0],[2,0,0,5,17,0,0,0,0,0],[3,4,1,0,4,0,0,0,0,0],[7,0,1,1,20,25,0,0,0,0],[6,0,2,0,14,0,1,1,0,153],[0,0,1,3,27,0,0,0,0,0],[6,0,1,0,0,2,0,0,0,0],[7,8,1,5,22,0,0,0,0,0],[8,8,0,0,11,14,0,0,0,0],[7,0,1,3,28,0,1,1,0,10],[7,7,1,1,22,0,0,0,0,0],[6,0,0,1,16,7,1,1,0,95],[0,0,1,1,18,0,1,1,0,146],[0,0,1,0,4,6,1,0,0,0],[0,6,0,0,13,25,0,0,0,0],[0,0,0,1,17,23,1,0,0,0],[4,0,1,5,2,5,0,0,0,0],[2,0,0,0,14,23,1,1,0,167],[4,0,0,1,17,5,1,1,0,106],[1,0,1,1,20,20,0,0,0,0],[0,0,1,1,20,5,0,0,1,0],[4,0,1,5,26,18,1,1,1,98],[0,0,0,5,9,0,1,1,0,176],[0,0,2,3,29,0,1,0,0,0],[3,0,2,3,30,5,0,0,0,0],[4,5,1,0,6,9,0,0,0,0],[5,0,2,1,16,14,1,1,1,65],[7,0,0,5,24,5,1,1,0,1],[6,0,0,1,17,0,0,0,0,0],[5,0,1,3,28,5,0,0,0,0],[3,0,1,1,15,0,0,0,0,0],[5,0,0,0,13,14,1,1,0,184],[5,0,2,1,19,7,1,1,0,59],[5,0,0,0,8,16,0,0,0,0],[2,0,0,5,11,14,1,1,0,170],[0,5,2,5,4,9,0,0,1,0],[0,0,2,1,18,0,1,1,0,193],[0,0,0,0,10,5,1,1,0,86],[2,0,1,5,1,5,1,1,0,43],[6,0,2,1,18,18,1,1,1,16],[6,0,0,1,17,29,1,1,0,29],[2,0,0,0,8,24,0,0,0,0],[2,5,2,0,8,0,0,0,0,0],[0,0,1,3,27,5,1,1,0,73],[0,0,1,0,2,16,0,0,0,0],[3,0,2,1,22,5,1,1,1,57],[2,0,2,1,16,0,1,1,1,56],[6,6,0,0,9,8,0,0,1,0],[3,8,0,1,16,6,0,0,0,0],[7,0,2,5,3,22,0,0,0,0],[6,0,2,1,20,0,0,0,0,0],[0,0,1,0,0,2,0,0,1,0],[0,3,0,0,10,23,0,0,0,0],[8,8,1,0,6,25,0,0,0,0],[7,0,1,3,27,9,1,1,0,86],[7,7,0,2,24,4,0,0,0,0],[4,6,1,5,1,2,0,0,0,0],[5,0,1,0,0,0,0,0,0,0],[6,7,0,0,8,5,0,0,0,0],[8,0,1,1,18,24,1,1,1,33],[0,0,0,5,29,0,0,0,0,0],[8,0,1,0,6,8,1,1,1,168],[0,0,1,3,27,5,1,1,0,20],[8,0,0,5,21,0,1,1,0,122],[3,0,1,5,26,24,0,0,1,0],[0,4,1,3,27,0,0,0,1,0],[7,7,1,1,22,9,0,0,0,0],[3,0,0,0,8,5,0,0,0,0],[4,0,1,2,26,13,1,1,0,65],[0,0,0,5,21,5,0,0,0,0],[3,8,1,1,19,20,0,0,0,0],[2,4,1,0,5,9,0,0,0,0],[2,0,2,1,20,25,1,1,0,140],[0,3,0,3,29,14,0,0,0,0],[6,7,1,0,5,33,0,0,0,0],[0,0,2,5,14,11,1,1,0,158],[7,0,1,1,15,10,1,0,1,0],[0,8,2,1,20,20,0,0,0,0],[5,0,1,2,26,18,0,0,0,0],[7,0,1,3,28,10,1,1,1,24],[1,0,0,5,10,9,1,1,0,59],[3,0,0,5,14,29,0,0,1,0],[3,0,0,5,23,0,0,0,0,0],[4,0,1,0,0,8,0,0,0,0],[4,0,2,2,24,20,0,0,1,0],[2,0,2,5,22,11,0,0,0,0],[8,8,0,0,11,33,0,0,0,0],[4,0,0,0,8,0,1,1,0,35],[8,0,0,0,8,7,1,1,1,163],[7,0,2,5,3,0,0,0,0,0],[5,0,0,1,17,9,0,0,1,0],[0,0,1,1,15,9,0,0,0,0],[7,0,0,3,30,13,0,0,0,0],[7,8,1,0,5,33,0,0,0,0],[6,0,2,1,17,4,0,0,0,0],[1,0,1,5,26,15,1,0,0,0],[4,0,0,0,14,18,0,0,0,0],[1,0,1,5,25,0,0,0,1,0],[5,0,1,0,3,0,1,1,0,73],[6,0,1,0,5,0,1,1,1,51],[1,0,0,0,10,10,0,0,0,0],[5,0,2,0,12,0,1,0,0,0],[0,0,1,0,3,8,1,1,0,194],[4,0,2,0,2,13,0,0,1,0],[5,8,0,2,24,10,0,0,0,0],[4,0,1,0,2,7,1,1,0,80],[0,0,1,0,7,0,0,0,0,0],[2,0,0,0,9,8,1,0,0,0],[5,0,2,2,23,5,1,1,1,7],[7,0,1,5,19,33,0,0,0,0],[6,0,1,0,3,5,1,0,0,0],[4,8,0,3,30,0,0,0,0,0],[3,7,1,0,5,2,0,0,0,0],[8,0,1,1,18,33,0,0,0,0],[7,0,1,0,5,2,0,0,0,0],[8,0,0,0,11,1,1,1,1,90],[5,0,0,0,9,5,1,1,0,169],[0,7,1,1,19,0,0,0,0,0],[3,0,0,0,9,0,1,1,0,15],[1,8,1,1,20,11,0,0,1,0],[1,6,2,0,11,21,0,0,0,0],[0,0,0,1,17,9,1,1,0,47],[4,4,1,0,0,18,0,0,0,0],[7,0,1,5,20,24,1,1,0,159],[6,0,2,1,19,25,0,0,1,0],[3,6,0,3,30,24,0,0,0,0],[5,6,0,0,10,16,0,0,0,0],[6,0,0,0,12,18,1,1,0,33],[8,8,2,1,16,20,0,0,0,0],[0,7,0,3,29,9,0,0,0,0],[0,4,0,0,13,21,0,0,0,0],[0,0,2,5,0,0,1,1,1,185],[7,0,1,5,3,19,1,1,0,146],[3,0,0,2,23,0,0,0,0,0],[5,0,2,1,17,0,1,1,0,165],[2,0,1,0,0,9,0,0,0,0],[4,0,2,0,13,0,1,0,0,0],[8,0,1,1,20,7,1,1,1,49],[0,0,1,1,22,0,1,1,0,11],[0,0,0,0,11,11,0,0,0,0],[0,0,1,3,27,16,1,1,0,128],[6,0,1,1,15,0,1,1,0,160],[3,0,2,0,0,0,0,0,1,0],[0,0,1,0,4,20,0,0,0,0],[0,0,1,0,5,2,1,1,0,131],[6,0,0,0,9,0,1,1,0,3],[0,0,1,5,26,8,1,1,0,19],[5,0,0,5,9,6,1,1,0,65],[8,0,1,1,22,0,0,0,0,0],[8,0,0,2,24,9,0,0,1,0],[0,4,2,2,24,25,0,0,0,0],[3,0,1,5,25,5,1,0,0,0],[5,0,2,0,14,1,0,0,1,0],[0,4,2,1,16,33,0,0,0,0],[0,0,0,2,24,0,1,1,0,44],[0,0,0,2,23,5,0,0,0,0],[5,6,0,0,14,0,0,0,0,0],[8,0,1,0,5,0,0,0,0,0],[0,0,2,5,19,9,0,0,0,0],[7,0,0,3,29,11,1,1,0,69],[7,8,1,0,2,16,0,0,0,0],[0,0,0,0,12,5,0,0,0,0],[4,0,2,0,1,0,1,1,0,153],[1,0,0,0,13,25,0,0,0,0],[0,0,0,1,16,18,1,1,0,186],[1,0,0,2,24,0,0,0,1,0],[3,8,2,5,6,33,0,0,0,0],[0,0,1,3,27,23,0,0,0,0],[1,0,2,1,21,16,1,1,0,157],[7,8,2,5,23,6,0,0,0,0],[8,0,1,0,6,34,1,1,0,101],[6,0,0,0,12,25,0,0,0,0],[3,0,0,0,9,25,0,0,1,0],[5,0,1,1,22,8,0,0,0,0],[0,0,0,1,21,22,0,0,0,0],[1,0,2,0,5,16,1,1,0,1],[4,0,1,5,31,0,0,0,0,0],[0,0,0,0,13,0,1,1,0,156],[3,0,0,0,9,25,0,0,0,0],[3,0,2,0,0,25,1,1,0,143],[6,0,1,1,22,0,0,0,0,0],[1,0,0,0,9,0,1,1,0,170],[6,0,0,2,24,0,1,1,0,133],[2,7,1,0,2,9,0,0,0,0],[2,5,0,2,24,6,0,0,0,0],[3,0,1,4,31,0,0,0,0,0],[3,7,1,1,19,15,0,0,0,0],[0,0,1,0,1,5,0,0,0,0],[6,0,1,2,25,8,0,0,0,0],[5,0,1,2,26,6,0,0,0,0],[1,0,1,0,0,0,1,1,0,175],[4,0,0,1,17,25,1,1,1,180],[4,5,1,4,31,16,0,0,0,0],[5,0,1,0,7,7,1,1,0,94],[6,0,1,1,20,13,0,0,0,0],[3,0,0,2,24,4,1,0,0,0],[0,8,1,4,31,33,0,0,0,0],[6,0,1,2,26,23,1,0,0,0],[0,0,2,1,19,5,1,1,0,45],[6,7,1,0,0,16,0,0,0,0],[2,0,1,1,18,0,0,0,0,0],[1,0,0,5,12,0,1,1,0,20],[0,2,1,0,5,2,0,0,0,0],[7,0,1,5,0,16,1,1,0,81],[0,0,2,1,15,18,1,1,0,119],[0,0,1,0,7,11,1,1,0,132],[0,0,0,0,9,9,0,0,0,0],[0,0,1,0,3,0,0,0,0,0],[6,6,1,1,15,29,0,0,0,0],[0,0,1,4,31,0,0,0,1,0],[6,0,1,0,7,11,0,0,0,0],[2,0,2,0,10,1,0,0,0,0],[2,0,1,5,22,24,1,1,0,107]]};
+const SITEKEY={ALL:-1,BMM:0,GMB:1}, SITENAME={ALL:"VZI (both sites)",BMM:"BMM",GMB:"Gamsberg"};
+const AREAS=["Mining","Processing","Engineering","Support services","Projects","Area not recorded"];
+/* Draft VZI Major Unwanted Event taxonomy (18 Oct 2026, for VZI HSE review): L1 domain, L2 group, L3 MUE. */
+const MUEID=["S01", "S02", "S03", "S04", "S05", "S06", "S07", "S08", "S09", "S10", "S11", "S12", "S13", "S14", "S15", "S16", "S17", "S18", "S19", "S20", "S21", "S22", "S23", "S24", "H01", "H02", "H03", "H04", "H05", "H06", "E01", "E02", "E03", "E04"];
+const L1N=["Safety", "Occupational health and hygiene", "Environment"];
+const L2N=[["Ground", 0], ["Mobile equipment", 0], ["Fixed plant and energy", 0], ["Falls and lifting", 0], ["Explosives, fire and explosion", 0], ["Atmospheres and substances", 0], ["Water inrush and immersion", 0], ["Structures and shafts", 0], ["Airborne contaminants", 1], ["Physical agents", 1], ["Tailings and water containment", 2], ["Releases to land and water", 2]];
+const MUEL1=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2];
+const MUEL2=[0, 0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 6, 6, 7, 7, 8, 8, 8, 8, 9, 9, 10, 10, 11, 11];
+const MUE=["Fall of ground underground", "Pit wall or slope failure", "Subsidence or sinkhole", "Excavation or trench collapse", "Mobile equipment collision", "Mobile equipment loss of control", "Tyre or rim explosive failure", "Uncontrolled release of hazardous energy", "Person caught in moving machinery", "Electrical contact or arc flash", "Fall of person from height", "Falling object", "Dropped or uncontrolled suspended load", "Unplanned initiation, flyrock or misfire", "Underground fire", "Surface equipment or plant fire", "Flammable gas or dust explosion", "Hazardous atmosphere or engulfment in a confined space", "Irrespirable or toxic atmosphere in mine workings", "Loss of containment of hazardous chemicals", "Inrush or flooding of mine workings", "Immersion or drowning", "Structural collapse", "Shaft, winder or lift conveyance failure", "Overexposure to respirable crystalline silica", "Overexposure to lead", "Overexposure to diesel particulate matter", "Overexposure to welding and metal fumes", "Noise overexposure above 85 dB(A)", "Heat stroke or heat exhaustion", "Tailings storage facility failure", "Water, slurry or process dam failure", "Major hydrocarbon spill", "Contaminated water discharge or seepage"];
+const SHORT=["Fall of ground", "Pit wall", "Subsidence", "Excavation", "Vehicle collision", "Vehicle loss of control", "Tyre or rim", "Stored energy", "Moving machinery", "Electrical", "Fall from height", "Falling object", "Lifting", "Explosives", "Underground fire", "Surface fire", "Gas or dust explosion", "Confined space", "Toxic atmosphere", "Chemicals", "Inrush", "Drowning", "Structures", "Shaft and winder", "Silica dust", "Lead", "Diesel particulate", "Welding fumes", "Noise", "Heat", "Tailings", "Dams", "Hydrocarbon spill", "Contaminated water"];
+const CAUSE=["Rock falling or bursting from the hanging wall or face can kill and can trap a whole crew.", "A pit wall or bench failure can bury people and equipment and stop the pit.", "The ground can open beneath people, vehicles or buildings above old workings.", "A trench wall can collapse and bury a person within seconds.", "A haul truck colliding with a light vehicle or a person is usually fatal.", "A runaway or rollover can crush the operator or anyone in its path.", "A tyre or rim failure releases enough energy to kill people standing nearby.", "Equipment starting up or stored energy releasing during maintenance can crush or kill.", "Being drawn into a conveyor or rotating part is often fatal.", "Contact with live conductors or an arc flash causes severe burns or electrocution.", "A fall from height is one of the most common causes of death in mining.", "A tool or component dropped from height can kill a person below.", "A dropped or swinging load can crush the people beside it.", "An unplanned detonation or flyrock can cause multiple fatalities.", "An underground fire can fill the workings with smoke faster than people can get out.", "A fire on equipment or in the plant can injure people and stop production for weeks.", "A gas or dust explosion can kill everyone in the area.", "Entering a confined space without gas testing and a standby person can kill the entrant and the rescuer.", "Ventilation failure or blasting fumes can overcome people underground.", "A release of reagents, cyanide or acid can burn, poison and pollute.", "An inrush can flood workings and trap people with no way out.", "A person falling into a sump, dam or paste compartment can drown.", "A structural collapse can fall on people working below.", "A winder or shaft failure can kill everyone in the conveyance.", "Long-term silica exposure causes silicosis, which cannot be cured.", "Lead builds up in the body and harms the nerves, kidneys and blood.", "Long-term diesel exhaust exposure is a known cause of lung cancer.", "Metal fumes damage the lungs and nervous system over time.", "Noise above 85 dB(A) causes permanent hearing loss.", "Heat stroke can be fatal within hours.", "A tailings failure can cause loss of life, severe pollution and loss of the licence to operate.", "A dam or thickener wall failure can sweep people away and flood the plant.", "A large diesel or oil spill pollutes soil and water and can lead to regulatory action.", "Contaminated water leaving site breaches the water use licence."];
+const ACT=["Supervisors to check scaling and support at the most-reported ends; complete this week's fall of ground CRM checks.", "Geotechnical engineer to review crest and bench findings and confirm slope monitoring alarms are acted on.", "Confirm subsidence monitoring and barricading over known voids and old workings.", "Check shoring, battering and barricades on open excavations; complete the excavation CRM checks.", "Run vehicle CRM checks on haul roads and enforce pedestrian segregation with the mining contractors.", "Check parking, wheel chocks, brakes and berms; follow up runaway and rollover findings with the contractors.", "Confirm tyre exclusion zones and that only trained fitters work on multi-piece rims.", "Spot-check isolation and lock-out on the most-reported equipment; close past-due isolation actions.", "Walk the conveyors and crushers with the most findings and fix missing guards this week.", "Electrical engineer to inspect the flagged boards and cables and close open electrical actions.", "Check harness use, edge protection and scaffolds in the most-reported areas.", "Enforce toe boards, tool lanyards and barricading below work at height.", "Check lifting plans, rigging inspections and exclusion zones on this week's lifts.", "Mining manager to review magazine, charging and misfire findings; confirm blast clearance routines.", "Check fire suppression, extinguishers and hot work permits underground.", "Check suppression systems on mobile equipment and housekeeping around conveyors and workshops.", "Confirm gas testing and dust control routines, and whether this MUE applies at each site.", "Confirm permits, gas tests and standby persons for every confined space entry this week.", "Ventilation officer to check the flagged ends and re-entry gas testing after blasting.", "Check bunding, labelling and safety showers in the reagent areas and close open chemical actions.", "Check drawpoint and barricade conditions and pump capacity on the flagged levels.", "Confirm covers, barriers and lifebuoys at sumps, thickeners and dams.", "Engineering to inspect the structures flagged for corrosion or cracks.", "Engineering to confirm winder and rope inspections are current and close open shaft actions.", "Occupational hygienist to check dust suppression and respirator use where dust is reported.", "Confirm blood lead monitoring and hygiene controls in lead areas.", "Check engine emissions and ventilation where black smoke is reported.", "Confirm fume extraction and respirators for hot work.", "Check hearing protection use in the noisiest areas.", "Confirm hydration, rest breaks and heat monitoring as temperatures rise.", "Confirm tailings inspections are done and captured in Enablon.", "Confirm dam and thickener wall inspections are current.", "Check bunding, drip trays and refuelling bays where leaks are reported.", "Check seepage, sewage and stormwater findings and close open environmental actions."];
+const GRADE=["E","D","C","B","A"], GCOL={A:"var(--gA)",B:"var(--gB)",C:"var(--gC)",D:"var(--gD)",E:"var(--gE)"}, OUT={A:"Green",B:"Green",C:"Amber",D:"Red",E:"Red"}, OUTCOL={Green:"var(--good)",Amber:"var(--watch)",Red:"var(--crit)"};
+const SEVCOL={Critical:"var(--crit)",High:"var(--high)",Watch:"var(--watch)",Good:"var(--good)"};
+const WEEKS=["13 Aug","20 Aug","27 Aug","3 Sep","10 Sep","17 Sep","24 Sep","1 Oct"];
+const ICON={act:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+ crm:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg>',
+ exp:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l10 18H2z"/><path d="M12 10v5M12 18h.01"/></svg>',
+ rep:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>',
+ clo:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7h6l2 2h10v10H3z"/></svg>',
+ cmp:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg>',
+ gap:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3l18 18"/><path d="M10.6 5.1A10 10 0 0 1 22 12s-1.2 2.2-3.4 4.1M6.6 6.6C3.9 8.4 2 12 2 12s4 7 10 7c1.8 0 3.4-.5 4.8-1.3"/></svg>'};
+let D=BASE, scope="ALL", view="dash";
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const sum=a=>a.reduce((x,y)=>x+y,0), z=()=>Array(8).fill(0), avg=a=>a.length?sum(a)/a.length:0, pct=x=>Math.round(x*100);
+const sd=a=>{const m=avg(a);return Math.sqrt(avg(a.map(x=>(x-m)**2)))};
+const lc=s=>s.charAt(0).toLowerCase()+s.slice(1), uc=s=>s.charAt(0).toUpperCase()+s.slice(1);
+const listJoin=a=>a.length<2?a.join(""):a.slice(0,-1).join(", ")+" and "+a[a.length-1];
+
+/* ---------- example scenarios, built by adjusting this week's real records ---------- */
+function scenario(k){const d={subs:BASE.subs,O:BASE.O.map(r=>r.slice()),I:BASE.I.map(r=>r.slice()),A:BASE.A.map(r=>r.slice())};
+  if(k==="good"){let n=0;for(const r of d.A){if(r[6]&&r[7]&&(n++%10)!==9){r[6]=0;r[7]=0;r[1]=8;r[9]=0}}
+    d.A.filter(r=>r[0]>=5).slice(0,60).forEach(r=>{const c=r.slice();c[0]=8;c[1]=0;c[6]=1;c[7]=0;c[9]=0;d.A.push(c)});
+    let q=0;d.O.forEach(r=>{if(r[6]&&r[5]===2&&r[7]>30&&(q++%5)!==4)r[6]=0});
+    d.I.filter(r=>r[0]===4).forEach(r=>{const c=r.slice();c[0]=8;d.I.push(c)});
+    let h=0;d.O.forEach(r=>{if(r[0]===8&&r[5]===2&&(h++%2===0))r[5]=1});
+    d.O.filter(r=>r[0]===4).slice(0,20).forEach(r=>{const c=r.slice();c[0]=8;c[6]=0;d.O.push(c)})}
+  if(k==="slope"){const s1=BASE.subs.indexOf("Highwalls"),s2=BASE.subs.indexOf("Benches");
+    for(let i=0;i<11;i++)d.O.push([i<5?7:8,1,0,i%2?s1:s2,2,2,1,i<5?10:3]);d.I=d.I.filter(r=>!(r[4]===2&&r[0]>=7))}
+  if(k==="quiet"){let n=0;d.O=d.O.filter(r=>!(r[1]===0&&r[0]>=7&&(n++%3)!==0))}
+  return d}
+
+/* ---------- model ---------- */
+const CACHE={};
+function model(scp){if(CACHE[scp])return CACHE[scp];const sk=SITEKEY[scp];const inS=r=>sk<0||r===sk;
+  const m={obs:z(),uns:z(),hp:z(),crm:z(),ao:z(),ac:z(),open:0,late:0,lateH:0,od:[0,0,0,0,0],oldest:0,openHP:0,hpAge:[0,0,0,0],openHP30:0,
+    mue:[],area:AREAS.map(()=>({obs:z(),uns:z(),hp:z(),crm:z(),late:0,open:0,closed8:0}))};
+  for(let k=0;k<MUE.length;k++)m.mue.push({u:z(),hp:z(),crm:z(),openHP:0,late:0,lateH:0,open:0,area:[0,0,0,0,0,0],areaHP:[0,0,0,0,0,0],subs:{},site:[0,0,0]});
+  for(const r of D.O){if(!inS(r[1]))continue;const[w,si,a,s,mu,u,op,age]=r;const M=mu?m.mue[mu-1]:null;
+    if(w){m.obs[w-1]++;m.area[a].obs[w-1]++;if(u>=1){m.uns[w-1]++;m.area[a].uns[w-1]++;if(M){M.u[w-1]++;M.area[a]++;M.site[si]++;M.subs[s]=(M.subs[s]||0)+1}}if(u===2){m.hp[w-1]++;m.area[a].hp[w-1]++;if(M){M.hp[w-1]++;M.areaHP[a]++}}}
+    if(op&&u===2){m.openHP++;M&&M.openHP++;m.hpAge[age>90?3:age>60?2:age>30?1:0]++;if(age>30)m.openHP30++}}
+  for(const r of D.I){if(!inS(r[1]))continue;m.crm[r[0]-1]++;m.area[r[2]].crm[r[0]-1]++;if(r[4])m.mue[r[4]-1].crm[r[0]-1]++}
+  for(const r of D.A){if(!inS(r[2]))continue;const[cw,clw,,a,,mu,op,lt,hi,od]=r;const M=mu?m.mue[mu-1]:null;
+    if(cw)m.ao[cw-1]++;if(clw){m.ac[clw-1]++;if(clw===8)m.area[a].closed8++}if(op){m.open++;m.area[a].open++;M&&M.open++}
+    if(lt){m.late++;m.area[a].late++;M&&M.late++;if(hi){m.lateH++;M&&M.lateH++}m.od[od>90?4:od>60?3:od>30?2:od>7?1:0]++;m.oldest=Math.max(m.oldest,od)}}
+  const R=m.mue.map((x,i)=>{const hp8=sum(x.hp),hp2=x.hp[6]+x.hp[7],hpP=sum(x.hp.slice(0,6))/3,c2=x.crm[6]+x.crm[7],cP=sum(x.crm.slice(0,6))/3,u2=x.u[6]+x.u[7];
+    const sig={rise:hp2>=3&&hp2>hpP+1.5,checks:(cP>=2&&c2<cP*.7)||(u2>=2&&c2===0),late:x.open>0&&x.late/x.open>=.5&&x.late>=2,open:x.openHP>=3};
+    return{i,hp8,hp2,hpP,c2,cP,u2,u8:sum(x.u),sig,nsig:Object.values(sig).filter(Boolean).length,s:[hp8,hp2>=3?Math.max(0,hp2-hpP):0,x.openHP,x.late+x.lateH,cP>=3?Math.max(0,(cP-c2)/cP):0]}});
+  const W=[25,15,20,20,20],mx=[0,1,2,3,4].map(k=>Math.max(...R.map(r=>r.s[k]))||1);
+  R.forEach(r=>{r.parts=r.s.map((v,k)=>W[k]*v/mx[k]);r.score=Math.round(sum(r.parts)+r.nsig*4);const x=m.mue[r.i];r.none=(r.u8+sum(x.crm)+x.open+x.openHP)<=1});
+  const ranked=R.filter(r=>!r.none&&r.score>0).sort((a,b)=>b.score-a.score);ranked.forEach((r,k)=>r.status=k<3||r.nsig>=3?"focus":k<7?"watch":"ok");R.forEach(r=>{if(!r.status)r.status=r.none?"none":"ok"});
+  m.R=R;m.top=ranked;m.scope=scp;m.grades=grades(m);return CACHE[scp]=m}
+
+/* ---------- report card ---------- */
+function band(v,c,hi=true){for(let k=0;k<4;k++){if(hi?v>=c[k]:v<=c[k])return 4-k}return 0}
+function grades(m){const r2=x=>(x[6]+x[7])/2, r6=x=>avg(x.slice(0,6));
+  const obsR=r6(m.obs)?r2(m.obs)/r6(m.obs):1, hpR=r6(m.hp)?r2(m.hp)/r6(m.hp):1, crmR=r6(m.crm)?r2(m.crm)/r6(m.crm):1;
+  const onTime=m.open?(m.open-m.late)/m.open:1, old=m.openHP?m.openHP30/m.openHP:0;
+  const G=[
+   {k:"rep",name:"Field presence",what:"Observations in the last 2 weeks against the 6 weeks before",val:`${pct(obsR)}% of usual`,p:band(obsR,[1,.9,.8,.65]),to:"Back to the usual weekly number of observations"},
+   {k:"exp",name:"Hazard exposure",what:"High-potential unsafe findings in the last 2 weeks against the 6 weeks before (lower is better)",val:`${pct(hpR)}% of usual`,p:band(hpR,[.8,1,1.2,1.5],false),to:"High-potential findings at or below the usual level"},
+   {k:"crm",name:"Critical control checks",what:"CRM checks in the last 2 weeks against the 6 weeks before",val:`${pct(crmR)}% of usual`,p:band(crmR,[1,.9,.75,.6]),low:m.scope!=="ALL",to:"CRM checks back to at least 90% of usual"},
+   {k:"act",name:"Action follow-through",what:"Open actions still within their due date",val:`${pct(onTime)}% on time`,p:band(onTime,[.9,.75,.6,.4]),to:"At least 75% of open actions within their due date"},
+   {k:"clo",name:"Hazard close-out",what:"Open high-potential findings older than 30 days (lower is better)",val:`${pct(old)}% older than 30 days`,p:band(old,[.1,.25,.4,.6],false),to:"Fewer than a quarter of high-potential findings open past 30 days"}];
+  const ov=avg(G.map(g=>g.p));return{dims:G,overall:GRADE[Math.round(ov)],score:Math.round(ov*25)}}
+
+/* ---------- insight engine ---------- */
+function unusual(series){const prior=series.slice(0,7),m=avg(prior),s=sd(prior)||1,v=series[7];return m>=3?{z:(v-m)/s,m}:{z:0,m}}
+function insights(m){const out=[],site=m.scope;const lowSite=site!=="ALL";
+  // follow-through
+  if(m.open){const p=m.late/m.open;const by=AREAS.map((a,i)=>({n:a,v:m.area[i].late,o:m.area[i].open})).filter(x=>x.v).sort((a,b)=>b.v-a.v);
+    out.push({key:"act",head:p>=.5?"Hazards found but not fixed":"Actions mostly on time",impact:["Compliance","People"],theme:"Action follow-through",icon:"act",sev:p*80+Math.min(20,m.lateH/2),short:p>=.5?"hazards are being found but not fixed":"most actions are on time",
+      title:p>=.5?`Hazards are being found but not fixed: ${pct(p)}% of actions are past due`:`Most actions are on time`,big:`${pct(p)}%`,bigl:`${m.late} of ${m.open} open actions past their due date`,
+      sub:`${m.lateH} High priority · oldest ${m.oldest} days late · ${m.od[4]} more than 90 days late`,
+      drivers:by.slice(0,3).map(x=>`${x.n} <b>${x.v}</b> of ${x.o}`),
+      cause:"Hazards already found stay in place, the same conditions return as new observations, and past-due actions are among the first things an auditor or inspector checks.",
+      act:"Section managers close or re-date every High priority item within 7 days; the 10 oldest are reviewed at the next HSE meeting.",owner:"Section managers, HSE Head",
+      green:"75% or more of open actions within their due date",conf:"High",confWhy:"Read directly from the action status and due dates.",
+      spot:()=>[stats([[`${pct(p)}%`,"past due"],[m.lateH,"High priority past due"],[`${m.oldest} days`,"oldest item late"]]),sec("How late",ageBars(m.od,["1 to 7 days","8 to 30 days","31 to 60 days","61 to 90 days","over 90 days"],"var(--crit)")),sec("Where, past due against open",hbars(by.map(x=>[x.n,x.v,x.o]),"var(--crit)"))]})}
+  // critical control checks
+  {const c2=m.crm[6]+m.crm[7],cP=sum(m.crm.slice(0,6))/3;if(cP>=4){const r=c2/cP;
+    const drops=m.R.filter(x=>x.cP>=2&&x.c2<x.cP).map(x=>({i:x.i,d:x.cP-x.c2,c2:x.c2,cP:x.cP})).sort((a,b)=>b.d-a.d);const tot=Math.max(1,cP-c2);
+    const gaps=m.R.filter(x=>x.u2>=2&&x.c2===0).map(x=>SHORT[x.i]);
+    out.push({key:"crm",head:r<1?`Control checks down ${pct(1-r)}%`:"Control checks on track",impact:["People","Production"],theme:"Critical controls",icon:"crm",sev:r<1?(1-r)*120+15+(gaps.length*3):6,short:r<.8?"critical control checks are slipping":"critical control checks are on track",
+      title:r<1?`Critical control checks fell ${pct(1-r)}% in two weeks`:`Critical control checks held up`,big:`${c2}`,bigl:`CRM checks in 2 weeks against about ${Math.round(cP)} usually`,
+      sub:gaps.length?`Unsafe findings but no CRM check in 2 weeks: ${gaps.join(", ")}`:"Every MUE with unsafe findings had at least one check",
+      drivers:drops.slice(0,3).map(x=>`${SHORT[x.i]} <b>${x.c2}</b> vs ${Math.round(x.cP)} (${pct(x.d/tot)}% of the drop)`),
+      cause:"Critical controls are the last barrier before a fatality-potential event. With fewer checks a failed control can go unseen, and the dashboard can look healthy while exposure grows.",
+      act:`Restore the CRM checklist schedule${drops.length?` for ${drops.slice(0,2).map(x=>SHORT[x.i].toLowerCase()).join(" and ")}`:""}; confirm whether checks are being done but not captured in Enablon.`,owner:"Mine and plant managers, CRM champions",
+      green:"CRM checks back to at least 90% of the usual fortnight",conf:lowSite?"Low":"High",confWhy:lowSite?"Most CRM checks carry no site yet, so site figures run low.":"Counted from CRM checklists in Enablon.",
+      spot:()=>[stats([[c2,"checks in 2 weeks"],[Math.round(cP),"usual fortnight"],[`${pct(Math.max(0,1-r))}%`,"drop"]]),sec("Checks per week",weekBars(m.crm,"var(--high)","CRM checks")),sec("By MUE, last 2 weeks against the usual fortnight",hbars(m.R.filter(x=>x.cP>=1||x.c2).sort((a,b)=>(b.cP-b.c2)-(a.cP-a.c2)).slice(0,7).map(x=>[SHORT[x.i],x.c2,Math.round(x.cP)]),"var(--high)","vs"))]})}}
+  // surging MUEs
+  const rising=m.R.filter(r=>r.hp2>=4&&r.hp2>=2*r.hpP+2).sort((a,b)=>(b.hp2-b.hpP)-(a.hp2-a.hpP));
+  rising.slice(0,2).forEach(r=>{const x=m.mue[r.i];out.push({key:"rise"+r.i,head:`${SHORT[r.i]} warnings surging`,impact:["People","Production"],mue:r.i,theme:"Hazard exposure",icon:"exp",sev:74+Math.min(22,(r.hp2-r.hpP)*2),short:`${SHORT[r.i].toLowerCase()} warnings are surging`,
+    title:`${SHORT[r.i]} warnings are surging: ${r.hp2} high-potential findings in two weeks`,big:`${r.hp2}`,bigl:`in 2 weeks against about ${Math.round(r.hpP)} per fortnight before`,
+    sub:`${r.c2} CRM checks on this MUE in 2 weeks · ${x.openHP} still open`,drivers:topSubs(x,3),
+    cause:CAUSE[r.i]+" A cluster of high-potential findings is often the warning before the event.",act:ACT[r.i]+" The HSE Head confirms the immediate controls within 24 hours.",owner:"HSE Head, mine manager",
+    green:"High-potential findings back to the usual level and CRM checks completed",conf:"Medium",confWhy:"MUE tags on observations are suggested from the text.",spot:()=>mueSpot(m,r.i)})});
+  // compound warnings
+  const comp=m.R.filter(r=>r.nsig>=3&&!rising.slice(0,2).some(x=>x.i===r.i));
+  if(comp.length){out.push({key:"cmp",comp:comp.map(r=>r.i),head:`${comp.length} MUE${comp.length>1?"s":""} with stacked warnings`,impact:["People","Production"],theme:"Compound warning",icon:"cmp",sev:62+comp.length*6,short:comp.length===1?`warning signs are stacking up on ${SHORT[comp[0].i].toLowerCase()}`:`${comp.length} MUEs show several warning signs at once`,
+    title:`${uc(listJoin(comp.map(r=>SHORT[r.i].toLowerCase())))} ${comp.length===1?"shows":"show"} three or more warning signs at once`,big:`${comp.length}`,bigl:comp.length===1?"MUE with stacked warning signs":"MUEs with stacked warning signs",
+    sub:"Rising high potential, falling control checks, actions past due and open high-potential findings, counted per MUE",
+    drivers:comp.slice(0,3).map(r=>`${SHORT[r.i]} <b>${r.nsig}</b> of 4 signs`),
+    cause:"One signal can be noise. Several moving together on the same MUE is the pattern that tends to come before serious events.",
+    act:`Give ${comp.length===1?"this MUE":"these MUEs"} a short stand-down review with the risk owner this week: check the controls, close the oldest actions, complete the CRM checks.`,owner:"MUE risk owners",
+    green:"No MUE with three or more warning signs",conf:"Medium",confWhy:"Built from several indicators; MUE tags on observations are suggested from the text.",
+    spot:()=>[sec("Warning signs by MUE",`<div class="sigs">${comp.map(r=>`<div><b style="min-width:150px">${SHORT[r.i]}</b>${sigList(r.sig)}</div>`).join("")}</div>`),...comp.slice(0,1).flatMap(r=>mueSpot(m,r.i).slice(1))]})}
+  // top MUE (if not already covered)
+  const covered=new Set([...rising.slice(0,2).map(r=>r.i),...comp.map(r=>r.i)]);
+  const t=m.top.find(r=>!covered.has(r.i));
+  if(t){const x=m.mue[t.i];out.push({key:"mue",head:`${SHORT[t.i]} is the top MUE risk`,impact:["People","Production"],mue:t.i,theme:"Top MUE risk",icon:"exp",sev:35+t.score*.55,short:`the top risk is ${SHORT[t.i].toLowerCase()}`,
+    title:`${MUE[t.i]} is the top MUE risk this week`,big:`${t.hp8}`,bigl:"high-potential unsafe findings in 8 weeks",
+    sub:`${x.openHP} still open · ${x.late} of ${x.open} actions past due · CRM checks ${t.c2} in 2 weeks (usually ${Math.round(t.cP)})`,drivers:topSubs(x,3),
+    cause:CAUSE[t.i],act:ACT[t.i],owner:"MUE risk owner",green:"Fewer high-potential findings and no past-due actions on this MUE",conf:"Medium",confWhy:"MUE tags on observations are suggested from the text.",spot:()=>mueSpot(m,t.i)})}
+  // field presence by site
+  for(const s of (site==="ALL"?["BMM","GMB"]:[site])){const sm=site==="ALL"?model(s):m;const u=unusual(sm.obs);const a6=u.m,o=sm.obs[7];
+    if(a6>=8&&o<a6*.75){const by=AREAS.map((a,i)=>({n:a,d:sm.area[i].obs[7]-avg(sm.area[i].obs.slice(0,7))})).filter(x=>x.d<-.5).sort((a,b)=>a.d-b.d);
+      out.push({key:"rep"+s,site:s,head:`${SITENAME[s]} field presence is falling`,impact:["People"],theme:"Field presence",icon:"rep",sev:(1-o/a6)*95,unusual:u.z<=-1.5,short:`field presence is dropping at ${SITENAME[s]}`,
+        title:`Field presence is dropping at ${SITENAME[s]}: ${o} observations${o===Math.min(...sm.obs)?", the lowest in 8 weeks":""}`,big:`−${pct(1-o/a6)}%`,bigl:`${o} this week against about ${Math.round(a6)} a week usually`,
+        sub:`${sm.obs[6]} last week · ${sm.hp[7]} high-potential this week`,drivers:by.slice(0,3).map(x=>`${x.n} <b>${Math.round(x.d)}</b>`),
+        cause:"Fewer observations usually means less time in the field, not fewer hazards. Problems stay hidden until they turn into incidents.",
+        act:`Check the VFL and observation schedule at ${SITENAME[s]} with the GM, and confirm Enablon capture is up to date.`,owner:`${SITENAME[s]} GM`,
+        green:"Observations back to the usual weekly number",conf:"Medium",confWhy:"Site comes from Sub Area and business partner; about three quarters of observations are placed.",
+        spot:()=>[stats([[o,"observations this week"],[Math.round(a6),"usual week"],[sm.obs[6],"last week"]]),sec("Observations per week",weekBars(sm.obs,"var(--high)","Observations")),sec("By area, this week",hbars(AREAS.map((a,i)=>[a,sm.area[i].obs[7],Math.round(avg(sm.area[i].obs.slice(0,7)))]).filter(x=>x[1]||x[2]),"var(--high)","usual"))]})}}
+  // high potential spike
+  {const u=unusual(m.hp),h=m.hp[7];if(h>=5&&u.z>=1.5){out.push({key:"hp",head:`High-potential findings up ${pct(h/u.m-1)}%`,impact:["People","Production"],theme:"Hazard exposure",icon:"exp",sev:55+u.z*10,unusual:true,short:"high-potential exposure is rising",
+    title:`High-potential findings jumped to ${h}, well above the usual ${Math.round(u.m)}`,big:`+${pct(h/u.m-1)}%`,bigl:`${h} this week against about ${Math.round(u.m)} usually`,
+    sub:"Unusual for this site: outside the normal week-to-week range",drivers:m.R.map(r=>({i:r.i,v:m.mue[r.i].hp[7]})).filter(x=>x.v).sort((a,b)=>b.v-a.v).slice(0,3).map(x=>`${SHORT[x.i]} <b>${x.v}</b>`),
+    cause:"Each high-potential unsafe act or condition is a near miss for a serious injury or fatality.",act:"HSE Heads review this week's high-potential findings by Monday and confirm the immediate controls are in place.",owner:"HSE Heads",
+    green:"High-potential findings back within the usual range",conf:"Medium",confWhy:"Risk Potential as recorded by the observer.",spot:()=>[sec("High-potential findings per week",weekBars(m.hp,"var(--crit)","High potential"))]})}}
+  // close-out
+  if(m.openHP){const p=m.openHP30/m.openHP;out.push({key:"clo",head:"High-potential findings left open",impact:["People","Compliance"],theme:"Hazard close-out",icon:"clo",sev:p*60,short:"high-potential findings are left open",
+    title:`${m.openHP} high-potential findings are still open; ${pct(p)}% for over 30 days`,big:`${pct(p)}%`,bigl:"of open high-potential findings older than 30 days",
+    sub:`${m.hpAge[3]} older than 90 days · ${m.hpAge[0]} raised in the last 30 days`,
+    drivers:m.R.filter(r=>m.mue[r.i].openHP).sort((a,b)=>m.mue[b.i].openHP-m.mue[a.i].openHP).slice(0,3).map(r=>`${SHORT[r.i]} <b>${m.mue[r.i].openHP}</b>`),
+    cause:"Each one is a known way someone could be seriously hurt that nobody has closed.",act:"Owners close or downgrade high-potential findings older than 30 days; HSE samples 10 and checks the fix on site.",owner:"Observation owners, HSE",
+    green:"Fewer than a quarter open past 30 days",conf:"High",confWhy:"Status and Risk Potential as recorded; age counts from the date raised because the export holds no due date for observations.",
+    spot:()=>[stats([[m.openHP,"open high-potential findings"],[`${pct(p)}%`,"older than 30 days"],[m.hpAge[3],"older than 90 days"]]),sec("How long they have been open",ageBars(m.hpAge,["0 to 30 days","31 to 60 days","61 to 90 days","over 90 days"],"var(--high)")),sec("By MUE",hbars(m.R.filter(r=>m.mue[r.i].openHP).sort((a,b)=>m.mue[b.i].openHP-m.mue[a.i].openHP).slice(0,7).map(r=>[SHORT[r.i],m.mue[r.i].openHP]),"var(--high)"))]})}
+  // blind spots
+  {const none=m.R.filter(r=>r.none).map(r=>SHORT[r.i]);if(none.length)out.push({key:"gap",head:`${none.length} MUEs we cannot see`,impact:["Compliance"],theme:"Blind spots",icon:"gap",sev:22,short:"some MUEs are invisible",
+    title:`${none.length} MUEs have no leading-indicator data, so they always look calm`,big:`${none.length}`,bigl:`of ${MUE.length} MUEs with no records`,sub:none.join(" · "),drivers:[],
+    cause:"The report cannot warn about risks it cannot see.",act:"Agree with VZI which source covers each one, for example tailings inspections, transport checks or health surveillance.",owner:"HSE Head, Zensar",
+    green:"Every MUE has at least one leading-indicator source",conf:"High",confWhy:"No records tagged to these MUEs in the exports.",spot:()=>[]})}
+  out.forEach(o=>o.level=o.sev>=70?"Critical":o.sev>=45?"High":o.sev>=20?"Watch":"Good");
+  return out.sort((a,b)=>b.sev-a.sev)}
+function pickFocus(ins){const f=[],seen=new Set();for(const o of ins){if(o.level==="Good")continue;if(seen.has(o.theme))continue;f.push(o);seen.add(o.theme);if(f.length===4)break}return f}
+function wins(m){const w=[];const[o,o1]=[m.obs[7],m.obs[6]],[h,h1]=[m.hp[7],m.hp[6]],[c,c1]=[m.crm[7],m.crm[6]];
+  if(h<h1)w.push([`−${h1-h}`,"fewer high-potential findings than last week",`${h} this week, ${h1} last week`]);
+  if(o>o1*1.05)w.push([`+${o-o1}`,"more observations than last week","more eyes in the field"]);
+  if(c>c1)w.push([`+${c-c1}`,"more CRM checks than last week",`${c} this week`]);
+  if(m.ac[7]>m.ao[7])w.push([`${m.ac[7]}`,"actions closed, more than were opened",`${m.ao[7]} opened`]);
+  const ba=m.area.map((a,i)=>({n:AREAS[i],v:a.closed8})).filter(x=>x.v>=3&&x.n!=="Area not recorded").sort((a,b)=>b.v-a.v)[0];if(ba)w.push([`${ba.v}`,`actions closed by ${ba.n.toLowerCase()} this week`,"the most of any area"]);
+  const quiet=m.R.filter(x=>!x.none&&sum(m.mue[x.i].u.slice(0,6))>=6&&x.u2===0).map(x=>SHORT[x.i]);
+  if(quiet.length)w.push([`${quiet.length}`,`MUE${quiet.length>1?"s":""} with no unsafe findings for 2 weeks`,quiet.join(", ")]);
+  const down=m.R.filter(x=>x.hpP>=2&&x.hp2<x.hpP-1).map(x=>SHORT[x.i]);if(down.length)w.push([`${down.length}`,`MUE${down.length>1?"s":""} with high-potential findings falling`,down.join(", ")]);
+  return w.slice(0,4)}
+
+/* ---------- visual helpers ---------- */
+function weekBars(v,c,label,v2){const W=640,H=180,B=26,T=14,bw=W/8,mx=Math.max(3,...v,...(v2||[]))*1.15,a7=avg(v.slice(0,7));
+  let s=`<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="${esc(label)} per week">`;const y=x=>H-B-x/mx*(H-B-T);
+  s+=`<line x1="0" x2="${W}" y1="${y(a7)}" y2="${y(a7)}" style="stroke:var(--ink3);stroke-dasharray:4 4"/><text x="4" y="${y(a7)-6}" font-size="13" style="fill:var(--ink3)">usual ${Math.round(a7)}</text>`;
+  v.forEach((x,i)=>{const h=H-B-y(x),xx=i*bw+bw*.2,w=bw*.6;
+    s+=`<rect class="hov" data-html="${esc(`<div class='t'>Week to ${WEEKS[i]}</div><div class='r'><span>${label}</span><b>${x}</b></div>${v2?`<div class='r'><span>High potential</span><b>${v2[i]}</b></div>`:""}<div class='c'>Usual week about ${Math.round(a7)}</div>`)}" x="${xx}" y="${y(x)}" width="${w}" height="${Math.max(h,1.5)}" rx="6" style="fill:${i>=6?c:'#d9e0e8'}"/>`;
+    if(v2&&v2[i])s+=`<rect x="${xx}" y="${y(v2[i])}" width="${w}" height="${H-B-y(v2[i])}" rx="6" style="fill:${i>=6?'#a3271c':'#aeb9c6'};pointer-events:none"/>`;
+    s+=`<text x="${xx+w/2}" y="${y(x)-7}" font-size="15" font-weight="800" text-anchor="middle" style="fill:${i>=6?'var(--ink)':'var(--ink3)'}">${x}</text>`;
+    s+=`<text x="${xx+w/2}" y="${H-6}" font-size="13" text-anchor="middle" style="fill:${i>=6?'var(--ink)':'var(--ink3)'};font-weight:${i>=6?800:500}">${i===7?'This week':i===6?'Last week':WEEKS[i]}</text>`});
+  return s+"</svg>"+(v2?`<div class="foot"><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:#a3271c;margin-right:6px"></span>darker part is high potential</div>`:"")}
+function spark(v,c,w=96,h=32){const mx=Math.max(3,...v),bw=w/8;return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" aria-hidden="true">`+v.map((x,i)=>{const bh=x?Math.max(2.5,x/mx*(h-2)):2;return `<rect x="${i*bw+1}" y="${h-bh}" width="${bw-2.5}" height="${bh}" rx="2" style="fill:${i===7?c:i===6?c:'#d9e0e8'};opacity:${i===6?.55:1}"/>`}).join("")+`</svg>`}
+function ageBars(v,labels,c){const mx=Math.max(1,...v);return `<div class="bars">`+v.map((x,i)=>`<div class="b"><span>${labels[i]}</span><span class="t"><i style="width:${x/mx*100}%;background:${c};opacity:${.35+.65*(i+1)/v.length}"></i></span><b class="v">${x}</b></div>`).join("")+`</div>`}
+function hbars(rows,c,mode){const mx=Math.max(1,...rows.flatMap(r=>[r[1],r[2]||0]));return `<div class="bars">`+rows.map(r=>`<div class="b"><span>${esc(r[0])}</span><span class="t" style="position:relative">${r[2]!=null&&mode?`<i style="position:absolute;inset:0 auto 0 0;width:${r[2]/mx*100}%;background:#d9e0e8"></i>`:""}<i style="position:relative;width:${r[1]/mx*100}%;background:${c}"></i></span><span class="v"><b>${r[1]}</b>${r[2]!=null?` ${mode==="vs"?"vs":mode==="usual"?"usual":"of"} ${r[2]}`:""}</span></div>`).join("")+`</div>`}
+function ia(k,text,sub,head){const H={c:["!","What this can cause"],a:["→","What to do"],g:["✓","What moves this to green"]}[k];return `<span class="ia ${k}"><h5><i>${H[0]}</i>${head||H[1]}</h5><p>${esc(text)}</p>${sub?`<small>${esc(sub)}</small>`:""}</span>`}
+function stats(a){return `<div class="stats">${a.map(([b,s])=>`<div><b>${b}</b><span>${s}</span></div>`).join("")}</div>`}
+function sec(h,body){return body?`<div class="sec"><h4>${h}</h4>${body}</div>`:""}
+function topSubs(x,n){return Object.entries(x.subs).sort((a,b)=>b[1]-a[1]).slice(0,n).map(([s,v])=>`${esc(D.subs[s])} <b>${v}</b>`)}
+function sigList(sig){const L={rise:"High potential rising",checks:"Control checks falling or missing",late:"Most actions past due",open:"High-potential findings left open"};return Object.entries(L).map(([k,l])=>`<span class="${sig[k]?'on':'off'}">${sig[k]?'●':'○'} ${l}</span>`).join(" ")}
+function mueSpot(m,i){const x=m.mue[i],r=m.R[i];
+  return [stats([[r.hp8,"high-potential findings, 8 weeks"],[x.openHP,"still open"],[`${x.late} / ${x.open}`,"actions past due"]]),
+   sec("Warning signs",`<div class="sigs">${Object.entries({rise:"High potential rising",checks:"Control checks falling or missing",late:"Most actions past due",open:"High-potential findings left open"}).map(([k,l])=>`<div class="${r.sig[k]?'on':'off'}">${r.sig[k]?'●':'○'} ${l}</div>`).join("")}</div>`),
+   sec("Unsafe findings per week",weekBars(x.u,"var(--crit)","Unsafe findings",x.hp)),
+   sum(x.crm)?sec("CRM checks per week",weekBars(x.crm,"var(--c3)","CRM checks")):"",
+   sec("Where, 8 weeks",hbars(AREAS.map((a,k)=>[a,x.area[k]]).filter(q=>q[1]).sort((a,b)=>b[1]-a[1]),"var(--c1)")+`<div class="foot">BMM ${x.site[0]} · Gamsberg ${x.site[1]}${x.site[2]?` · site not recorded ${x.site[2]}`:""}</div>`),
+   Object.keys(x.subs).length?sec("Most reported sub areas",`<div class="chips">${topSubs(x,6).map(s=>`<span>${s}</span>`).join("")}</div>`):""]}
+
+
+/* ===== icons ===== */
+const SV=(p,sw=2)=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
+const MI0=[
+ SV('<path d="M2 21l7-10 4 5 3-3 6 8z"/><path d="M8 3l2 2-2 2-2-2z"/><path d="M14 5l1.5 1.5L14 8l-1.5-1.5z"/>'),
+ SV('<path d="M12 3c1 4 5 5.5 5 10.5a5 5 0 0 1-10 0c0-3 2-4 2.5-6.5 1 1 1.5 2.5 1.5 4 1.5-2 1.5-5 1-8z"/>'),
+ SV('<path d="M6 21V9l6-6 6 6v12"/><path d="M6 9h12M12 3v18"/><rect x="9" y="13" width="6" height="5"/>'),
+ SV('<path d="M2 14c2 0 2-2 4-2s2 2 4 2 2-2 4-2 2 2 4 2 2-2 4-2"/><path d="M2 19c2 0 2-2 4-2s2 2 4 2 2-2 4-2 2 2 4 2 2-2 4-2"/><path d="M12 3c2 3 3 4.5 3 6a3 3 0 0 1-6 0c0-1.5 1-3 3-6z"/>'),
+ SV('<path d="M12 2l2 6 6-2-3.5 5 5.5 3-6 1 2 6-6-4-4 5v-6l-6 .5 4-4.5-4-4 6 1z"/>'),
+ SV('<path d="M2 21h20"/><path d="M3 21v-4h5v-4h5V9h5V5h3v16"/>'),
+ SV('<path d="M2 19h20"/><path d="M5 19l3-9h8l3 9"/><path d="M2 10h6M16 10h6"/><path d="M9 14h6"/>'),
+ SV('<path d="M2 17V8h11v9"/><path d="M13 11h5l4 4v2"/><path d="M2 17h20"/><circle cx="6" cy="18.5" r="2"/><circle cx="17" cy="18.5" r="2"/>'),
+ SV('<path d="M9 3h6M10 3v6l-5.5 9.5A2 2 0 0 0 6.2 21h11.6a2 2 0 0 0 1.7-2.5L14 9V3"/><path d="M7.5 15h9"/>'),
+ SV('<path d="M3 6h13l-1.5 8h-10z"/><path d="M16 8l4 2"/><path d="M19 12c0 3 2 4 2 6.5a2 2 0 0 1-4 0c0-2.5 2-3.5 2-6.5z"/>'),
+ SV('<path d="M5 21V4h14v17"/><path d="M9 8h1M14 8h1M9 12h1"/><path d="M13 4l-2 6 3 3-2 8"/>'),
+ SV('<ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/><circle cx="12" cy="12.5" r="1.5"/><path d="M12 14v4M10 16h4"/>'),
+ SV('<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>'),
+ SV('<rect x="5" y="9" width="12" height="12" rx="1"/><path d="M9 9v12M13 9v12"/><path d="M15 9c0-3 2-5 5-6"/><path d="M20 3l1 1"/>'),
+ SV('<rect x="4" y="3" width="16" height="15" rx="2"/><path d="M4 11h16"/><path d="M7 21v-3M17 21v-3"/><path d="M7.5 14.5h.01M16.5 14.5h.01"/>'),
+ SV('<circle cx="12" cy="12" r="5"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"/>'),
+ SV('<path d="M7 17a4 4 0 1 1 .8-7.9A5.5 5.5 0 0 1 18.5 10a3.5 3.5 0 0 1-.5 7"/><path d="M13 12l-2.5 4h3L11 21"/>')];
+const FI={rise:[SV('<path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/>'),"Rising"],checks:[SV('<path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6z"/><path d="M9.5 9.5l5 5M14.5 9.5l-5 5"/>'),"Checks down"],late:[SV('<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2"/><path d="M9 2h6"/>'),"Late"],open:[SV('<path d="M3 7h6l2 2h10v10H3z"/><path d="M12 12v3M12 17h.01"/>'),"Open"]};
+const FLONG={rise:"High-potential findings rising",checks:"Critical control checks falling or missing",late:"Most actions past due",open:"High-potential findings left open"};
+const WARN=SV('<path d="M12 3l10 18H2z"/><path d="M12 10v5M12 18h.01"/>',2.4);
+const ARROW=SV('<path d="M5 12h14M13 6l6 6-6 6"/>',2.4);
+const SPARK='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.8 5.4L19 9.2l-5.2 1.8L12 16l-1.8-5L5 9.2l5.2-1.8zM19 14l.9 2.6 2.6.9-2.6.9L19 21l-.9-2.6-2.6-.9 2.6-.9zM5 15l.7 1.8 1.8.7-1.8.7L5 20l-.7-1.8-1.8-.7 1.8-.7z"/></svg>';
+const IMPI={People:SV('<circle cx="12" cy="7" r="3.5"/><path d="M5 21c0-4 3-7 7-7s7 3 7 7"/>',2.4),Production:SV('<path d="M3 20h18M5 20V10l5 3V8l5 3V5l4 2v13"/>',2.4),Compliance:SV('<path d="M6 3h9l4 4v14H6z"/><path d="M9 13l2 2 4-4"/>',2.4)};
+const IMPTXT={People:"Risk of serious injury or a fatality.",Production:"A serious incident can bring a Section 54 stoppage of a section or the whole mine. The industry estimate is about R13 million in lost revenue per stoppage (Minerals Council, 2015).",Compliance:"Past-due actions and missing verification are among the first things a mine inspector or auditor checks."};
+const SEVC={Critical:["var(--red)","var(--redbg)"],High:["var(--high)","var(--highbg)"],Watch:["var(--amber)","var(--amberbg)"],Good:["var(--green)","var(--greenbg)"]};
+const CONFL={High:3,Medium:2,Low:1};
+const meter=(c,why)=>`<span class="conf hov" data-html="${esc(`<div class='t'>Confidence: ${c}</div><div class='c'>${why||""}</div>`)}"><span class="meter l${CONFL[c]}"><span></span><span></span><span></span></span>${c}</span>`;
+const impChip=k=>`<span class="imp">${IMPI[k]}${k}</span>`;
+const gcol=g=>`var(--g${g})`;
+const sevTag=(l,extra="")=>`<span class="sev ${l}">${l==="Critical"||l==="High"?WARN:""}${l}${extra}</span>`;
+const words=(t,base=.15)=>esc(t).split(" ").map((w,i)=>`<span class="w" style="--d:${(base+i*.05).toFixed(2)}s">${w}</span>`).join(" ");
+const aiMsg=t=>`<span class="aiq">${SPARK}AI insight</span><h2>${t}</h2>`;
+function countUp(root){root.querySelectorAll("[data-n]").forEach(el=>{const to=+el.dataset.n,suf=el.dataset.suf||"",pre=el.dataset.pre||"";if(matchMedia("(prefers-reduced-motion: reduce)").matches){el.textContent=pre+to+suf;return}
+  const t0=performance.now(),dur=900;const step=t=>{const p=Math.min(1,(t-t0)/dur),e=1-Math.pow(1-p,3);el.textContent=pre+Math.round(to*e)+suf;if(p<1)requestAnimationFrame(step)};el.textContent=pre+"0"+suf;requestAnimationFrame(step)})}
+const cnt=(v,pre="",suf="")=>{const n=parseFloat(String(v).replace(/[^\d.]/g,""));return isNaN(n)?esc(v):`<span data-n="${n}" data-pre="${esc(pre)}" data-suf="${esc(suf)}">${esc(v)}</span>`};
+function bigNum(b){const m=String(b).match(/^([−+-]?)(\d+)(%?)$/);return m?cnt(m[2],m[1],m[3]):esc(b)}
+/* ===== overrides of logic helpers for the new language ===== */
+function ia(k,text,sub,head){const H={a:[ARROW,"What to do"],g:[SV('<path d="M5 12l5 5 9-10"/>',3),"What moves this to green"],c:[WARN,"What this can cause"]}[k];return `<div class="ia ${k}"><h5><i>${H[0]}</i>${head||H[1]}</h5><p>${esc(text)}</p>${sub?`<small>${esc(sub)}</small>`:""}</div>`}
+function hbars(rows,c,mode){const mx=Math.max(1,...rows.flatMap(r=>[r[1],r[2]||0]));return `<div class="bars">`+rows.map((r,i)=>`<div class="b"><span>${esc(r[0])}</span><span class="t" style="position:relative">${r[2]!=null&&mode?`<i style="position:absolute;inset:0 auto 0 0;width:${r[2]/mx*100}%;background:var(--soft2);border:1.5px solid var(--ref)"></i>`:""}<i class="grow" style="position:relative;width:${r[1]/mx*100}%;background:${c};--d:${.1+i*.06}s"></i></span><span class="v"><b>${r[1]}</b>${r[2]!=null?` ${mode==="vs"?"vs":mode==="usual"?"usual":"of"} ${r[2]}`:""}</span></div>`).join("")+`</div>`}
+function ageBars(v,labels,c){const mx=Math.max(1,...v);return `<div class="bars">`+v.map((x,i)=>`<div class="b"><span>${labels[i]}</span><span class="t"><i class="grow" style="width:${x/mx*100}%;background:${c};opacity:${.35+.65*(i+1)/v.length};--d:${.1+i*.07}s"></i></span><b class="v">${x}</b></div>`).join("")+`</div>`}
+function weekBars(v,c,label,v2){const W=640,H=200,B=28,T=18,bw=W/8,mx=Math.max(3,...v,...(v2||[]))*1.15,a7=avg(v.slice(0,7));
+  let s=`<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="${esc(label)} per week" style="font-family:var(--bf)">`;const y=x=>H-B-x/mx*(H-B-T);
+  v.forEach((x,i)=>{const h=H-B-y(x),xx=i*bw+bw*.2,w=bw*.6;
+    s+=`<rect class="hov growY" data-html="${esc(`<div class='t'>Week to ${WEEKS[i]}</div><div class='r'><span>${label}</span><b>${x}</b></div>${v2?`<div class='r'><span>High potential</span><b>${v2[i]}</b></div>`:""}`)}" x="${xx}" y="${y(x)}" width="${w}" height="${Math.max(h,1.5)}" rx="4" style="fill:${i>=6?c:'var(--soft2)'};--d:${(i*.05).toFixed(2)}s"/>`;
+    if(v2&&v2[i])s+=`<rect class="growY" x="${xx}" y="${y(v2[i])}" width="${w}" height="${H-B-y(v2[i])}" rx="4" style="fill:${i>=6?'var(--red)':'var(--ref)'};opacity:.85;pointer-events:none;--d:${(i*.05+.1).toFixed(2)}s"/>`;
+    s+=`<text x="${xx+w/2}" y="${y(x)-8}" font-size="17" font-weight="800" text-anchor="middle" style="fill:${i>=6?'var(--ink)':'var(--ink3)'}">${x}</text>`;
+    s+=`<text x="${xx+w/2}" y="${H-6}" font-size="14.5" text-anchor="middle" style="fill:${i>=6?'var(--ink)':'var(--ink3)'};font-weight:${i>=6?800:600}">${i===7?'This week':i===6?'Last week':WEEKS[i]}</text>`});
+  s+=`<line x1="0" x2="${W}" y1="${y(a7)}" y2="${y(a7)}" style="stroke:var(--ink2);stroke-width:1.5;stroke-dasharray:6 5"/><text x="4" y="${y(a7)-7}" font-size="14.5" font-weight="700" style="fill:var(--ink2)">usual ${Math.round(a7)}</text>`;
+  return s+"</svg>"+(v2?`<div class="legend" style="margin-top:4px"><span><span class="k1" style="background:var(--red)"></span>High potential</span><span><span class="k1" style="background:${c}"></span>All unsafe</span></div>`:"")}
+function mueSpot(m,i){const x=m.mue[i],r=m.R[i];const tot=x.site[0]+x.site[1]+x.site[2]||1;
+  const area=AREAS.map((a,k)=>[a,x.area[k]]).filter(q=>q[1]).sort((a,b)=>b[1]-a[1]);
+  return [`<div class="stats"><div><b>${cnt(r.hp8)}</b><span>high-potential findings, 8 weeks</span></div><div><b>${cnt(x.openHP)}</b><span>still open</span></div><div><b>${x.late} / ${x.open}</b><span>actions past due</span></div></div>`,
+   sec("Warning signs",`<div class="sigs">${Object.keys(FI).map(k=>`<div class="${r.sig[k]?'on':''}">${FI[k][0]}${FLONG[k]}${r.sig[k]?"":" · no"}</div>`).join("")}</div>`),
+   sec("Unsafe findings per week",weekBars(x.u,"var(--act)","Unsafe findings",x.hp)),
+   sum(x.crm)?sec("Critical control checks per week",weekBars(x.crm,"var(--green)","CRM checks")):"",
+   sec("Which site",`<div class="split">${[["BMM",x.site[0],"var(--c1)"],["Gamsberg",x.site[1],"var(--c2)"],["Site not recorded",x.site[2],"var(--ref)"]].filter(q=>q[1]).map(q=>`<span class="grow" style="width:${q[1]/tot*100}%;background:${q[2]}">${q[0]} ${q[1]}</span>`).join("")}</div>`),
+   area.length?sec("Which area",hbars(area,"var(--c1)")):"",
+   Object.keys(x.subs).length?sec("Most reported places",`<div class="chips">${topSubs(x,6).map(s=>`<span>${s}</span>`).join("")}</div>`):""]}
+function miniFor(o,m){
+  if(o.key==="act")return stackBar(m.od,["1 to 7","8 to 30","31 to 60","61 to 90","90+"],"days late");
+  if(o.key==="clo")return stackBar(m.hpAge,["0 to 30","31 to 60","61 to 90","90+"],"days open");
+  if(o.key==="crm")return miniWeeks(m.crm,"CRM checks");
+  if(o.key==="hp")return miniWeeks(m.hp,"High potential");
+  if(o.key.startsWith("rep"))return miniWeeks(model(o.site).obs,"Observations");
+  if(o.key==="cmp")return `<div style="display:grid;gap:8px">${o.comp.slice(0,3).map(i=>{const r=m.R[i];return `<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:15px;font-weight:800"><span style="display:flex;gap:8px;align-items:center"><span style="width:22px;height:22px;color:var(--red)">${MI[i]}</span>${SHORT[i]}</span><span style="display:flex;gap:3px">${Object.keys(FI).map(k=>`<span class="hov" data-html="${esc(`<div class='t'>${FLONG[k]}</div><div class='c'>${r.sig[k]?"Present":"Not present"}</div>`)}" style="width:22px;height:22px;border-radius:5px;display:grid;place-items:center;background:${r.sig[k]?'var(--red)':'var(--soft2)'};color:#fff;padding:3px">${FI[k][0]}</span>`).join("")}</span></div>`}).join("")}</div>`;
+  if(o.mue!=null)return miniWeeks(m.mue[o.mue].hp,"High-potential findings");
+  if(o.key==="gap")return `<div style="display:flex;gap:5px;flex-wrap:wrap">${m.R.map(r=>`<span class="hov" data-html="${esc(`<div class='t'>${MUE[r.i]}</div><div class='c'>${r.none?"No data":"Has data"}</div>`)}" style="width:26px;height:26px;border-radius:6px;display:grid;place-items:center;padding:4px;background:${r.none?'var(--soft2)':'var(--act)'};color:${r.none?'var(--ink3)':'#fff'}">${MI[r.i]}</span>`).join("")}</div>`;
+  return ""}
+function stackBar(v,labels,unit){const t=sum(v)||1;const op=[.3,.45,.6,.8,1];return `<div><div style="display:flex;height:20px;border-radius:4px;overflow:hidden;gap:2px">${v.map((x,i)=>x?`<span class="hov grow" data-html="${esc(`<div class='t'>${labels[i]} ${unit}</div><div class='r'><span>Items</span><b>${x}</b></div>`)}" style="width:${x/t*100}%;background:var(--red);opacity:${op[i+(5-v.length)]};--d:${.2+i*.08}s"></span>`:"").join("")}</div><div style="display:flex;justify-content:space-between;font-size:14.5px;color:var(--ink2);margin-top:6px;font-weight:600"><span>${labels[0]} ${unit}</span><span>${labels[labels.length-1]} ${unit}: <b style="color:var(--red)">${v[v.length-1]}</b></span></div></div>`}
+function miniWeeks(v,label){const W=280,H=64,bw=W/8,mx=Math.max(3,...v)*1.1,u=avg(v.slice(0,6));const y=x=>H-2-x/mx*(H-8);
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:320px;font-family:var(--bf)" role="img" aria-label="${esc(label)} per week">`+v.map((x,i)=>`<rect class="hov growY" data-html="${esc(`<div class='t'>Week to ${WEEKS[i]}</div><div class='r'><span>${label}</span><b>${x}</b></div>`)}" x="${i*bw+bw*.18}" y="${y(x)}" width="${bw*.64}" height="${Math.max(H-2-y(x),1.5)}" rx="3" style="fill:${i>=6?'var(--act)':'var(--soft2)'};--d:${(.2+i*.05).toFixed(2)}s"/>`).join("")+`<line x1="0" x2="${W}" y1="${y(u)}" y2="${y(u)}" style="stroke:var(--ink2);stroke-width:1.5;stroke-dasharray:4 4"/></svg><div class="mwl"><span><i class="dk"></i>Last 2 weeks</span><span><i class="ds"></i>Usual: ${Math.round(u)}</span></div>`}
+
+/* ===== v11: design languages and layouts ===== */
+const DSS=[["exec","Executive (sober)"],["ibcs","IBCS report"],["carbon","IBM Carbon style"],["fiori","SAP Fiori style"],["slds","Salesforce Lightning style"],["atlassian","Atlassian style"],["govuk","GOV.UK style"],["uswds","US Web Design System style"],["hmi","Control room (ISA-101)"],["powerbi","Power BI report style"]];
+const LAYS=[["brief","Briefing (scrolling report)"],["grid","Single-screen dashboard"],["tabs","Tabbed sections"],["inbox","Issue list and detail"],["score","Scorecard table"],["register","MUE risk register"],["memo","Briefing note (text first)"],["matrix","Heat map first"],["steps","Step-through (for meetings)"],["sites","Sites side by side"]];
+let lay="brief",tabSel=0,pick=null,stepSel=0;
+const LV={Critical:0,High:1,Watch:2,Good:3};
+const STC={focus:["var(--red)","var(--redbg)","Need action"],watch:["var(--high)","var(--highbg)","Watch"],ok:["var(--green)","var(--greenbg)","Steady"],none:["var(--grey)","var(--soft2)","No data"]};
+const ORD={focus:0,watch:1,ok:2,none:3};
+const mueOrder=m=>[...m.R].sort((a,b)=>ORD[a.status]-ORD[b.status]||b.score-a.score);
+const insBox=h=>`<div class="ins"><span class="lab">${SPARK}AI insight</span><p>${h}</p></div>`;
+function blk(t,body,o={}){return `<section class="blk anim" style="--d:${o.d||0}s"><header class="bh"><h2 class="bt">${t}</h2>${o.x?`<span class="bx">${o.x}</span>`:""}</header><div class="bb">${o.ai?insBox(o.ai):""}${body}</div></section>`}
+function vText(ins){const s=ins.filter(o=>o.level==="Critical"||o.level==="High");return s.length?uc(s[0].short)+(s[1]?`, and ${s[1].short}`:""):"A steady week"+(ins[0]&&ins[0].level==="Watch"?`; keep an eye on ${ins[0].short}`:"")}
+function hsBest(m){let best={v:-1};m.R.forEach(r=>[0,1,2,3,4].forEach(c=>{const v=m.mue[r.i].areaHP[c]*2+m.mue[r.i].area[c];if(v>best.v)best={v,i:r.i,c}}));return best}
+function texts(m,ins,f){const worst=m.grades.dims.reduce((a,b)=>b.p<a.p?b:a),nRed=m.grades.dims.filter(d=>d.p<=1).length,n=k=>m.R.filter(r=>r.status===k).length,b=hsBest(m),w=wins(m),nf=n("focus");
+  return {vs:`<b>${nRed?`${nRed} of 5 vital signs are in the red.`:"No vital sign is in the red."}</b> The weakest is ${esc(lc(worst.name))}.`,
+   fa:f.length?`<b>${f.length} area${f.length>1?"s need":" needs"} leadership attention this week.</b> Each says what it can cause and what to do.`:"<b>No focus areas this week.</b>",
+   wall:(()=>{const gF=[...new Set(m.R.filter(r=>r.status==="focus").map(r=>L2N[MUEL2[r.i]][0]))];return `<b>${nf===1?"1 of 34 MUEs needs":nf+" of 34 MUEs need"} action</b>${gF.length?`, in ${gF.length} of 12 groups: ${esc(listJoin(gF.map(lc)))}`:""}. ${n("watch")} to watch, ${n("ok")} steady, ${n("none")} with no leading-indicator data in Enablon.`})(),
+   hs:b.v>0?`<b>${esc(SHORT[b.i])} in ${esc(AREAS[b.c].toLowerCase())}</b> is the biggest concentration of unsafe findings.`:"No unsafe findings in this selection.",
+   wins:w.length?`<b>${w.length} thing${w.length>1?"s":""} improved</b> on last week.`:"Nothing improved on last week."}}
+function verdictHTML(m,ins,o={}){const g=m.grades,s=ins.filter(x=>x.level==="Critical"||x.level==="High"),st=OUT[g.overall],imps=[...new Set(s.slice(0,3).flatMap(x=>x.impact))],cf=s[0]?s[0].conf:"High",sc=o.sc||m.scope;
+  const why=s[0]&&!o.nowhy?`<button class="why" data-ins="${s[0].key}"${o.sc?` data-isc="${o.sc}"`:""}>Why, and what to do ${ARROW}</button>`:"";
+  const vt=`<div class="vt"><span class="lab">${SPARK}AI insight · verdict for ${esc(SITENAME[sc])}</span><p class="txt">${esc(vText(ins))}.</p></div>`;
+  const og=`<div class="og"><i class="gq big" style="background:${gcol(g.overall)}">${g.overall}</i><div><b>Overall grade ${g.overall}</b><small>${g.score} out of 100, the average of five vital signs</small></div></div>`;
+  if(o.compact)return `<section class="vd compact anim" style="--stc:${gcol(g.overall)}">${og}${vt}${why}</section>`;
+  const sr=x=>{const gg=model(x).grades.overall;return `<button class="sr" data-site="${x}"><i class="gq" style="background:${gcol(gg)}">${gg}</i><span>${x==="ALL"?"VZI (both sites)":SITENAME[x]}</span></button>`};
+  return `<section class="vd anim" style="--stc:${gcol(g.overall)}"><div class="main">${vt}<div class="meta">${imps.length?`<span class="ml">Business impact</span>${imps.map(impChip).join("")}`:""}<span class="ml">Confidence</span>${meter(cf,s[0]?s[0].confWhy:"")}</div>${why}</div>
+   <div class="stat">${og}<span class="sub">By site</span><div class="srs">${["ALL","BMM","GMB"].filter(x=>x!==scope).map(sr).join("")}</div></div></section>`}
+function vspec(m){const r6=x=>avg(x.slice(0,6)),r2=x=>(x[6]+x[7])/2;
+  const sp=[{a:r2(m.obs),u:r6(m.obs),unit:"/ week",hi:true,ser:m.obs},{a:r2(m.hp),u:r6(m.hp),unit:"/ week",hi:false,ser:m.hp},{a:r2(m.crm),u:r6(m.crm),unit:"/ week",hi:true,ser:m.crm},
+   {a:m.open?(m.open-m.late)/m.open*100:100,t:75,unit:"on time",pc:1,hi:true},{a:m.openHP?m.openHP30/m.openHP*100:0,t:25,unit:"open 30+ days",pc:1,hi:false}];
+  return sp.map(s=>{const diff=s.u!=null?(s.a-s.u)/(s.u||1):(s.a-s.t)/100;s.good=s.hi?diff>=0:diff<=0;s.vtxt=s.u!=null?`${diff>=0?"▲":"▼"} ${Math.abs(Math.round(diff*100))}% vs usual`:`${s.good?"✓ meets":"✗ misses"} target ${s.t}%`;s.val=Math.round(s.a)+(s.pc?"%":"");return s})}
+function vitalsHTML(m){const sp=vspec(m),others=["BMM","GMB"].map(model);
+  return `<div class="vitals">`+m.grades.dims.map((d,k)=>{const s=sp[k],g=GRADE[d.p],ref=s.u!=null?s.u:s.t,mx=Math.max(s.a,ref,1)*1.15;
+    return `<button class="vs" data-dim="${k}" data-sc="${m.scope}"><span class="h"><span>${d.name}</span><span class="gl" style="background:${gcol(g)}">${g}</span></span>
+      <span class="v">${cnt(Math.round(s.a),"",s.pc?"%":"")}<small>${s.unit}</small></span>
+      <span class="ibcs"><span class="r a"><span>2 wks</span><span class="t"><i class="grow" style="width:${s.a/mx*100}%;--d:${.1+k*.05}s"></i>${s.t!=null?`<span class="tg" style="left:${s.t/mx*100}%"></span>`:""}</span></span>${s.u!=null?`<span class="r u"><span>Usual</span><span class="t"><i style="width:${s.u/mx*100}%"></i></span></span>`:""}</span>
+      <span class="var ${s.good?"ok":"bad"}">${s.vtxt}</span>
+      ${m.scope==="ALL"?`<span class="sites2">${others.map(o=>{const gg=GRADE[o.grades.dims[k].p];return `<i style="background:${gcol(gg)}">${gg}</i>${o.scope==="BMM"?"BMM":"Gamsberg"}${o.grades.dims[k].low&&d.k==="crm"?"*":""}`}).join(" ")}</span>`:d.low&&d.k==="crm"?`<span class="sites2">* indicative by site</span>`:""}</button>`}).join("")+
+   `</div><div class="legend"><span><span class="k1"></span>Last 2 weeks</span><span><span class="k2"></span>Usual (6 weeks before)</span><span><span class="k3"></span>Target</span><span>Select a sign for the evidence</span></div>`}
+function kpisHTML(m){const sp=vspec(m);return `<div class="kpis">`+m.grades.dims.map((d,k)=>{const g=GRADE[d.p],s=sp[k];return `<button class="kp anim" style="--d:${.04*k}s" data-dim="${k}" data-sc="${m.scope}"><span class="gl" style="background:${gcol(g)}">${g}</span><b>${d.name}</b><span>${cnt(Math.round(s.a),"",s.pc?"%":"")} ${s.unit} · <em style="color:${s.good?"var(--green)":"var(--red)"}">${s.vtxt}</em></span></button>`}).join("")+`</div>`}
+function faCard(o,m,i){const[sc,sb]=SEVC[o.level];return `<button class="fa anim" data-ins="${o.key}" style="--sfg:${sc};--sbg:${sb};--d:${(.05+i*.05).toFixed(2)}s">
+  <span class="top">${sevTag(o.level)}<span class="theme">${o.theme}</span>${meter(o.conf,o.confWhy)}</span>
+  <h3>${esc(o.head)}</h3>
+  <span class="body"><span class="big" style="color:${o.level==="Good"?"var(--ink)":sc}">${bigNum(o.big)}<small>${esc(o.bigl)}</small></span><span class="mini">${miniFor(o,m)}</span></span>
+  <span class="imps">${o.impact.map(impChip).join("")}</span>
+  <span class="cta">${WARN}<span>What this can cause, and what to do</span><span class="go">Open ${ARROW}</span></span></button>`}
+const frow=(o,isc)=>{const[sc,sb]=SEVC[o.level];return `<button class="frow" data-ins="${o.key}"${isc?` data-isc="${isc}"`:""} style="--sfg:${sc};--sbg:${sb}"><span class="fl">${sevTag(o.level)}<b>${esc(o.head)}</b><small>${esc(o.theme)} · ${esc(o.bigl)}</small></span><span class="fb">${esc(o.big)}</span>${ARROW}</button>`};
+const alsoHTML=rest=>rest.length?`<div class="more"><span class="theme">Also on the radar</span>${rest.map(o=>`<button class="mo" data-ins="${o.key}">${sevTag(o.level)}${esc(o.head)}</button>`).join("")}</div>`:"";
+const focusHTML=c=>`<div class="focus">${c.f.map((o,i)=>faCard(o,c.m,i)).join("")}</div>${alsoHTML(c.rest)}`;
+const stLegend=`<div class="stl"><span><i style="background:var(--red)"></i>Need action</span><span><i style="background:var(--high)"></i>Watch</span><span><i style="background:var(--green)"></i>Steady</span><span><i style="background:var(--grey)"></i>No data</span></div>`;
+function hsHTML(m){const rows=m.R.filter(r=>sum(m.mue[r.i].area)>0).sort((a,b)=>sum(m.mue[b.i].areaHP)*2+sum(m.mue[b.i].area)-(sum(m.mue[a.i].areaHP)*2+sum(m.mue[a.i].area))).slice(0,6);
+  const cols=[0,1,2,3,4],mx=Math.max(1,...rows.flatMap(r=>cols.map(c=>m.mue[r.i].area[c]))),best=hsBest(m);
+  let h=`<div style="overflow-x:auto"><div class="hs" style="grid-template-columns:minmax(150px,1.4fr) repeat(5,minmax(64px,1fr));min-width:520px"><span></span>${cols.map(c=>`<span class="hd">${AREAS[c].replace(" services","")}</span>`).join("")}`;
+  rows.forEach(r=>{const x=m.mue[r.i];h+=`<span class="rl">${MI[r.i]}${SHORT[r.i]}</span>`+cols.map(c=>{const v=x.area[c],hp=x.areaHP[c],d=v?22+28*Math.sqrt(v/mx):0,sh=v?hp/v:0,col=sh>=.5?"var(--red)":sh>=.25?"var(--high)":"var(--ref)";
+    return `<button class="cl hov" data-mue="${r.i}" data-html="${esc(`<div class='t'>${MUE[r.i]} · ${AREAS[c]}</div><div class='r'><span>Unsafe, 8 weeks</span><b>${v}</b></div><div class='r'><span>High potential</span><b>${hp}</b></div>`)}" aria-label="${MUE[r.i]} in ${AREAS[c]}: ${v}">${v?`<span class="dotc popin" style="width:${d}px;height:${d}px;background:${col};${r.i===best.i&&c===best.c?'box-shadow:0 0 0 3px var(--paper),0 0 0 5px var(--ink)':''}">${v}</span>`:""}</button>`}).join("")});
+  return h+`</div></div><div class="stl"><span><i style="background:var(--red);border-radius:50%"></i>Half or more high potential</span><span><i style="background:var(--high);border-radius:50%"></i>A quarter or more</span><span><i style="background:var(--ref);border-radius:50%"></i>Mostly lower</span><span>Size: unsafe findings, 8 weeks</span></div>`}
+function hsTop(m,n=6){const c=[];m.R.forEach(r=>[0,1,2,3,4].forEach(k=>{const v=m.mue[r.i].area[k];if(v)c.push({i:r.i,k,v,hp:m.mue[r.i].areaHP[k]})}));c.sort((a,b)=>(b.hp*2+b.v)-(a.hp*2+a.v));const t=c.slice(0,n),mx=Math.max(1,...t.map(x=>x.v));
+  return `<div style="display:grid;gap:10px">${t.map((x,j)=>`<button data-mue="${x.i}" style="border:0;background:none;padding:0;text-align:left;display:grid;gap:4px;width:100%"><span style="display:flex;justify-content:space-between;gap:8px;font-size:15px;font-weight:600"><span>${SHORT[x.i]} · ${AREAS[x.k]}</span><span style="font-family:var(--nf)">${x.v} <small style="color:var(--red);font-weight:700">${x.hp} high potential</small></span></span><span style="height:12px;background:var(--soft2);border-radius:3px;overflow:hidden;display:block"><i class="grow" style="display:block;height:100%;width:${x.v/mx*100}%;background:${x.hp/x.v>=.5?"var(--red)":x.hp/x.v>=.25?"var(--high)":"var(--ref)"};--d:${.1+j*.05}s"></i></span></button>`).join("")}</div><div class="ft">Unsafe findings in the last 8 weeks, by MUE and area.</div>`}
+function winsHTML(m){const w=wins(m);return w.length?`<div class="wins">${w.map(([b,t,s],i)=>`<div class="win anim" style="--d:${(.05*i).toFixed(2)}s"><b>${bigNum(b)}</b><span>${esc(uc(t))}</span><small>${esc(s||"")}</small></div>`).join("")}</div>`:`<div class="ft">No measure improved on last week.</div>`}
+function winsRow(m){const w=wins(m);return w.length?`<div class="wrow">${w.map(([b,t])=>`<span><b>${esc(b)}</b>${esc(t)}</span>`).join("")}</div>`:`<div class="ft">No measure improved on last week.</div>`}
+function howHTML(){const nO=D.O.filter(r=>r[0]).length,nI=D.I.length,nA=D.A.length;
+  const N=[["var(--ink2)",SV('<path d="M4 4h10l4 4v12H4z"/><path d="M14 4v4h4"/><path d="M8 13h6M8 16h4"/>'),"Enablon exports",cnt(nO+nI+nA),"observations, CRM checks and actions in 8 weeks"],
+   ["var(--c1)",SV('<path d="M4 6h16M7 12h10M10 18h4"/>'),"Cleaned and tagged",cnt(34),"MUEs in 12 groups, plus site and area for each record"],
+   ["var(--high)",SV('<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>'),"Measured against usual",cnt(5),"vital signs, each against its own usual range"],
+   ["var(--ai)",SPARK,"AI analysis",cnt(window.__ins?window.__ins.length:7),"insights, each with cause, action and owner"],
+   ["var(--green)",SV('<circle cx="12" cy="7" r="3.5"/><path d="M5 21c0-4 3-7 7-7s7 3 7 7"/><path d="M15 12l2 2 4-4"/>'),"HSE Head decides",cnt(1),"decision recorded per focus area"]];
+  return `<div class="nodes">${N.map((n,i)=>`<div class="node anim" style="--nc:${n[0]};--d:${(.05+i*.07).toFixed(2)}s"><span class="ic">${n[1]}Step ${i+1}</span><span class="cnt">${n[3]}</span><b>${n[2]}</b><small>${n[4]}</small></div>`).join("")}</div>
+   <span class="sub">Can the report card come from the Enablon exports? Yes, all five vital signs; two carry a caveat until VZI shares the location tree.</span>
+   <div class="dv">${[["Field presence","Observation date","y"],["Hazard exposure","Risk Potential, unsafe act or condition","y"],["Critical control checks","CRM checklists; only 27% carry a site","p"],["Action follow-through","Status and due dates","y"],["Hazard close-out","Status; age from date raised","p"]].map(d=>`<div class="dvt"><span class="st"><i style="background:${d[2]==="y"?"var(--green)":"var(--amber)"}">${d[2]==="y"?"✓":"½"}</i>${d[2]==="y"?"Yes":"Yes, with a caveat"}</span><b>${d[0]}</b><small>${d[1]}</small></div>`).join("")}</div>
+   <button class="lnk" type="button" data-about="1">Read the design rules behind this report</button>`}
+/* detail content, used by the pop-up, the issue list and the step-through */
+function causeBlock(text,level){const[sc,sb]=SEVC[level]||SEVC.High;return `<section class="cause" style="--sfg:${sc};--sbg:${sb}"><span class="lvl">${sevTag(level)}</span><h5><i>${WARN}</i>What this can cause</h5><p>${esc(text)}</p></section>`}
+function aiBlock(act,owner,green,imps,conf,why){return `<section class="aiw"><span class="lab">${SPARK}AI recommendation and business impact</span>
+  ${act?`<div class="ia a"><h5><i>${ARROW}</i>What to do</h5><p>${esc(act)}</p>${owner?`<small>Owner: ${esc(owner)}</small>`:""}</div>`:""}
+  ${imps&&imps.length?`<div class="two">${imps.slice(0,2).map(k=>`<div class="ia"><h5><i>${IMPI[k]}</i>Business impact: ${k}</h5><p style="font-size:16px">${esc(IMPTXT[k])}</p></div>`).join("")}</div>`:""}
+  <div style="display:flex;gap:20px;flex-wrap:wrap;align-items:center">${green?`<span class="conf" style="color:var(--green)">✓ Good when: ${esc(green)}</span>`:""}${conf?`<span class="conf">Confidence ${meter(conf,why)}</span>`:""}</div></section>`}
+function insDetail(o,hid){return `<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">${sevTag(o.level)}<span class="theme">${o.theme}</span></div>
+  <h2${hid?' id="spotH"':""}>${esc(o.title)}</h2><p class="lede">${esc(o.bigl)}. ${esc(o.sub)}.</p>
+  ${causeBlock(o.cause,o.level)}${aiBlock(o.act,o.owner,o.green,o.impact,o.conf,o.confWhy)}
+  ${o.drivers.length?`<div class="sec"><h4>Driven by</h4><div class="chips">${o.drivers.map(d=>`<span>${d}</span>`).join("")}</div></div>`:""}
+  ${o.spot().join("")}`}
+function whyLine(r,x){const p=[];if(r.sig.rise)p.push(`high potential up to ${r.hp2} in 2 weeks`);if(r.u2>=2&&r.c2===0)p.push("no CRM check in 2 weeks");else if(r.sig.checks)p.push(`CRM checks ${r.c2} vs ${Math.round(r.cP)} usually`);
+  if(x.late)p.push(`${x.late} action${x.late>1?"s":""} past due`);if(x.openHP)p.push(`${x.openHP} high-potential open`);return p.length?uc(p.slice(0,3).join(" · ")):"Nothing unusual in 8 weeks"}
+function mueDetail(i,hid){const m=model(lay==="sites"?"ALL":scope),r=m.R[i];const st={focus:["Critical","Need action"],watch:["High","Watch"],ok:["Good","Steady"],none:["Watch","No data"]}[r.status];
+  return `<div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap"><span class="mic" style="--st:${SEVC[st[0]][0]};--stbg:${SEVC[st[0]][1]};width:48px;height:48px">${MI[i]}</span>${sevTag(st[0]," · "+st[1])}<span class="theme">${MUEID[i]} · ${esc(L1N[MUEL1[i]])} › ${esc(L2N[MUEL2[i]][0])} · ${SITENAME[m.scope]}</span></div>
+   <h2${hid?' id="spotH"':""}>${esc(MUE[i])}</h2><p class="lede">${r.none?"No leading-indicator records in the Enablon exports, so this risk cannot be seen.":esc(whyLine(r,m.mue[i]))+"."}</p>
+   ${causeBlock(CAUSE[i],st[0]==="Good"?"Watch":st[0])}
+   ${aiBlock(r.none?"Agree with VZI which source covers this MUE.":ACT[i],r.none?"HSE Head":"MUE risk owner",null,r.none?["Compliance"]:["People","Production"],r.none?"High":"Medium",r.none?"No records tagged to this MUE.":"MUE tags on observations are suggested from the text.")}
+   ${r.none?"":mueSpot(m,i).join("")}`}
+
+/* ===== AI action summary: read this alone and act ===== */
+function summaryHTML(c,o={}){const g=c.m.grades,st=OUT[g.overall],w=wins(c.m),nf=c.m.R.filter(r=>r.status==="focus").length,A=c.f;
+  const lead=`${esc(SITENAME[c.m.scope])} is at <b>grade ${g.overall}</b> this week. ${A.length?`<b>${A.length} action${A.length>1?"s need":" needs"} an owner this week.</b> Most urgent: ${esc(A[0].head)}.`:"<b>No action is needed beyond routine work.</b>"}${nf?` ${nf===1?"1 MUE needs":nf+" MUEs need"} action.`:""}${w.length?` ${w.length} thing${w.length>1?"s":""} improved on last week.`:""}`;
+  const rows=A.map((x,i)=>{const[sc,sb]=SEVC[x.level];return `<li class="sa" style="--sfg:${sc};--sbg:${sb}"><span class="no">${i+1}</span><div><div class="sh3">${sevTag(x.level)}<b>${esc(x.head)}</b>${x.head.includes(String(x.big))?"":`<span class="kf">${esc(x.big)} · ${esc(x.bigl)}</span>`}</div>
+    <p class="act"><b>Do:</b> ${esc(x.act)}</p>${o.compact?"":`<p class="rk"><b>What this can cause:</b> ${esc(x.cause)}</p>`}
+    <div class="ft2"><span>Owner: <b>${esc(x.owner)}</b></span><span class="conf">Confidence ${meter(x.conf,x.confWhy)}</span><button class="lnk" type="button" data-ins="${x.key}">See the details ${ARROW}</button></div></div></li>`}).join("");
+  const also=c.rest.length?`<div class="also2"><span class="sub">Also check</span>${c.rest.map(x=>`<button class="lnk" type="button" data-ins="${x.key}">${esc(x.head)}</button>`).join("")}</div>`:"";
+  return `<section class="sumy anim" style="--d:.03s"><header class="bh"><h2 class="bt">AI summary: actions for this week</h2><span class="bx">Read this alone to act; details are one click away</span></header><div class="bb">${o.compact?"":insBox(lead)}<ol class="sal">${rows}</ol>${also}</div></section>`}
+function summaryView(c){return verdictHTML(c.m,c.ins,{nowhy:1})+summaryHTML(c)+`<div><button class="why" type="button" data-view="dash">Read the full report ${ARROW}</button></div>`}
+
+/* ===== MUE levels: L1 domain, L2 group, L3 MUE (draft VZI taxonomy, 34 MUEs) ===== */
+const GI=[MI0[0],MI0[7],MI0[12],SV('<path d="M12 2v7"/><path d="M7 2h10"/><path d="M12 9a4 4 0 1 1-4 4"/><path d="M8 13l-2 1"/>'),MI0[4],MI0[8],MI0[3],MI0[2],SV('<path d="M4 10c0-2 2-3 4-3h8c2 0 4 1 4 3v2c0 4-4 7-8 7s-8-3-8-7z"/><path d="M8 12h8M9 15h6"/>'),SV('<path d="M3 10v4h4l5 4V6L7 10z"/><path d="M16 9a4 4 0 0 1 0 6M19 6a8 8 0 0 1 0 12"/>'),MI0[6],SV('<path d="M12 3c3 4 6 7 6 11a6 6 0 0 1-12 0c0-4 3-7 6-11z"/>')];
+const DI=[SV('<path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/>'),SV('<path d="M3 12h4l2-4 4 8 2-4h6"/>'),SV('<path d="M5 19c0-9 6-14 15-14 0 9-5 15-14 15"/><path d="M5 19l8-8"/>')];
+const MI=MUE.map((_,i)=>GI[MUEL2[i]]);
+const SR={focus:0,watch:1,ok:2,none:3};
+let mLvl=2,mF1=null,mF2=null,regOpen=new Set();
+function nodes(m,lvl,f){const all=MUE.map((_,i)=>i);
+  const N=lvl===1?L1N.map((n,k)=>({k,name:n,l1:k,icon:DI[k],idx:all.filter(i=>MUEL1[i]===k)})):L2N.map((g,k)=>({k,name:g[0],l1:g[1],icon:GI[k],idx:all.filter(i=>MUEL2[i]===k)})).filter(n=>f==null||n.l1===f);
+  N.forEach(n=>{const rs=n.idx.map(i=>m.R[i]).sort((a,b)=>SR[a.status]-SR[b.status]||b.score-a.score);n.rs=rs;n.cnt={focus:0,watch:0,ok:0,none:0};rs.forEach(r=>n.cnt[r.status]++);
+    n.status=rs.reduce((a,r)=>SR[r.status]<SR[a]?r.status:a,"none");n.score=Math.max(0,...rs.map(r=>r.score||0));
+    const S=(f2)=>[0,1,2,3,4,5,6,7].map(w=>sum(n.idx.map(i=>f2(m.mue[i])[w])));n.u=S(x=>x.u);n.hp=S(x=>x.hp);n.crm=S(x=>x.crm);
+    n.openHP=sum(n.idx.map(i=>m.mue[i].openHP));n.late=sum(n.idx.map(i=>m.mue[i].late));n.open=sum(n.idx.map(i=>m.mue[i].open));
+    n.c2=sum(rs.map(r=>r.c2));n.cP=sum(rs.map(r=>r.cP));n.sig={};Object.keys(FI).forEach(k=>n.sig[k]=rs.some(r=>!r.none&&r.sig[k]));
+    n.site=[0,1,2].map(s=>sum(n.idx.map(i=>m.mue[i].site[s])));n.area=[0,1,2,3,4].map(a=>sum(n.idx.map(i=>m.mue[i].area[a])));n.areaHP=[0,1,2,3,4].map(a=>sum(n.idx.map(i=>m.mue[i].areaHP[a])));n.top=rs[0]});
+  return N.sort((a,b)=>SR[a.status]-SR[b.status]||b.score-a.score)}
+const cntsHTML=n=>`<span class="cnts">${["focus","watch","ok","none"].filter(s=>n.cnt[s]).map(s=>`<span class="stb" style="--st:${STC[s][0]}"><i></i>${n.cnt[s]} ${STC[s][2].toLowerCase()}</span>`).join("")}</span>`;
+const nodeLine=n=>`<b>${n.cnt.focus} of ${n.idx.length} MUEs need action</b>, ${n.cnt.watch} to watch, ${n.cnt.ok} steady, ${n.cnt.none} with no data. ${n.u[7]} unsafe findings this week; ${n.late} of ${n.open} actions past due.`;
+function mtTile(m,r,j){const x=m.mue[r.i],d=x.u[7]-x.u[6],c=STC[r.status];
+  return `<button class="mt anim ${r.status==='none'?'none':''}" data-mue="${r.i}" style="--st:${c[0]};--stbg:${c[1]};--d:${(.02*j).toFixed(2)}s"><span class="nm"><span class="mic">${MI[r.i]}</span><span>${esc(MUE[r.i])}<small class="nsub">${MUEID[r.i]} · ${esc(L2N[MUEL2[r.i]][0])}</small></span></span>
+   ${r.none?`<span class="n">No data in Enablon</span>`:`<span class="row"><span><span class="n">${cnt(x.u[7])}<small>unsafe this week</small></span>${d?` <span class="d" style="color:${d>0?'var(--red)':'var(--green)'}">${d>0?'▲':'▼'}${Math.abs(d)}</span>`:""}</span>${spark(x.u,c[0],72,30)}</span>`}
+   ${r.none?"":`<span class="flags">${Object.keys(FI).filter(k=>r.sig[k]).map(k=>`<span class="flag hov" data-html="${esc(`<div class='t'>${FLONG[k]}</div>`)}">${FI[k][0]}${FI[k][1]}</span>`).join("")}</span>`}</button>`}
+function nodeTile(n,lvl,j){const c=STC[n.status],d=n.u[7]-n.u[6],ng=L2N.filter(g=>g[1]===n.k).length;
+  return `<button class="mt anim ${n.status==="none"?"none":""}" data-node="${lvl}:${n.k}" style="--st:${c[0]};--stbg:${c[1]};--d:${(.03*j).toFixed(2)}s"><span class="nm"><span class="mic">${n.icon}</span><span>${esc(n.name)}<small class="nsub">${lvl===1?`L1 domain · ${ng} groups, ${n.idx.length} MUEs`:`L2 group · ${n.idx.length} MUE${n.idx.length>1?"s":""}`}</small></span></span>
+   ${cntsHTML(n)}
+   ${n.status==="none"?`<span class="n">No data in Enablon</span>`:`<span class="row"><span><span class="n">${cnt(n.u[7])}<small>unsafe this week</small></span>${d?` <span class="d" style="color:${d>0?'var(--red)':'var(--green)'}">${d>0?'▲':'▼'}${Math.abs(d)}</span>`:""}</span>${spark(n.u,c[0],72,30)}</span>`}
+   <span class="drill">${lvl===1?"Show its groups":"Show its MUEs"} ${ARROW}</span></button>`}
+function wallInner(m){const lv=[[1,"L1 Domains",3],[2,"L2 Groups",12],[3,"L3 MUEs",34]];
+  const seg=`<div class="seg lv" role="group" aria-label="MUE level">${lv.map(([l,t,k])=>`<button type="button" data-mlvl="${l}" aria-pressed="${mLvl===l}">${t} (${k})</button>`).join("")}</div>`;
+  const cr=[`<button class="lnk" type="button" data-mlvl="${mF1!=null||mF2!=null?mLvl===3&&mF2!=null?2:mLvl:mLvl}">All</button>`];
+  if(mF1!=null)cr.push(`<button class="lnk" type="button" data-mlvl="2:d${mF1}">${esc(L1N[mF1])}</button>`);
+  if(mF2!=null)cr.push(`<b>${esc(L2N[mF2][0])}</b>`);
+  let body="";
+  if(mLvl===1)body=`<div class="muegrid">${nodes(m,1).map((n,j)=>nodeTile(n,1,j)).join("")}</div>`;
+  else if(mLvl===2)body=`<div class="muegrid">${nodes(m,2,mF1).map((n,j)=>nodeTile(n,2,j)).join("")}</div>`;
+  else if(mF2!=null)body=`${insBox(nodeLine(nodes(m,2).find(n=>n.k===mF2)))}<div class="muegrid">${nodes(m,2).find(n=>n.k===mF2).rs.map((r,j)=>mtTile(m,r,j)).join("")}</div>`;
+  else body=nodes(m,2,mF1).map(n=>`<div class="gsub"><span class="mic" style="--st:${STC[n.status][0]};--stbg:${STC[n.status][1]};width:30px;height:30px">${n.icon}</span>${esc(n.name)}${cntsHTML(n)}</div><div class="muegrid">${n.rs.map((r,j)=>mtTile(m,r,j)).join("")}</div>`).join("");
+  return `<div class="mhead">${seg}${mF1!=null||mF2!=null?`<nav class="crumb" aria-label="MUE level path">${cr.join('<span aria-hidden="true">›</span>')}</nav>`:""}</div>${body}${stLegend}<div class="ft">Levels follow the draft VZI Major Unwanted Event taxonomy (3 domains, 12 groups, 34 MUEs), for VZI HSE review. MUE tags on Enablon records are suggested from the text and checklists.</div>`}
+function wallHTML(m){return `<div id="wallBox">${wallInner(m)}</div>`}
+function mchipsHTML(m){return `<div class="mcs">`+nodes(m,2).map(n=>{const c=STC[n.status];return `<button class="mc" data-grp="${n.k}" style="--st:${c[0]};--stbg:${c[1]}"><span class="mic">${n.icon}</span><span>${esc(n.name)}<small class="nsub">${n.cnt.focus?`${n.cnt.focus} need action`:n.status==="none"?"no data":`${n.idx.length} MUEs`}</small></span><b>${n.status==="none"?"":n.u[7]}</b></button>`}).join("")+`</div>`+stLegend+`<div class="ft">12 MUE groups. Select one to see its MUEs.</div>`}
+function spotGroup(k){const m=model(lay==="sites"?"ALL":scope),n=nodes(m,2).find(x=>x.k===k),c=STC[n.status];
+  openSpot(`<div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap"><span class="mic" style="--st:${c[0]};--stbg:${c[1]};width:48px;height:48px">${n.icon}</span><span class="stb" style="--st:${c[0]}"><i></i>${c[2]}</span><span class="theme">${esc(L1N[n.l1])} · L2 group · ${SITENAME[m.scope]}</span></div>
+   <h2 id="spotH">${esc(n.name)}</h2>${insBox(nodeLine(n))}<div class="muegrid">${n.rs.map((r,j)=>mtTile(m,r,j)).join("")}</div>${n.status==="none"?"":sec("Unsafe findings per week, whole group",weekBars(n.u,"var(--act)","Unsafe findings",n.hp))}`)}
+/* ===== the ten layouts ===== */
+const tbl=(head,rows)=>`<div class="tw"><table class="tb"><thead><tr>${head.map(h=>`<th${h[1]?' style="text-align:right"':""}>${h[0]}</th>`).join("")}</tr></thead><tbody>${rows}</tbody></table></div>`;
+const LB={
+ brief:c=>verdictHTML(c.m,c.ins)+summaryHTML(c)+blk("Vital signs: report card",vitalsHTML(c.m),{ai:c.t.vs,d:.05})+blk("Focus areas for the coming week",focusHTML(c),{ai:c.t.fa,d:.1})+blk("Major Unwanted Events",wallHTML(c.m),{ai:c.t.wall,d:.15})
+   +`<div class="duo">${blk("Where the problem is",hsHTML(c.m),{ai:c.t.hs,d:.2})}${blk("What went well",winsHTML(c.m),{ai:c.t.wins,d:.2})}</div>`+blk("How this report works",howHTML(),{d:.25}),
+ grid:c=>verdictHTML(c.m,c.ins,{compact:1})+kpisHTML(c.m)+summaryHTML(c)
+   +`<div class="g3" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px;align-items:start">${blk("Major Unwanted Events by group",mchipsHTML(c.m),{ai:c.t.wall,d:.1})}${blk("Where the problem is",hsTop(c.m),{ai:c.t.hs,d:.15})}${blk("What went well",winsHTML(c.m),{ai:c.t.wins,d:.2})}</div>`,
+ tabs:c=>{const nf=c.m.R.filter(r=>r.status==="focus").length;
+   const T=[["Overview",""],["Focus areas",`<span class="cnt r">${c.f.length}</span>`],["MUEs",`<span class="cnt r">${nf}</span>`],["Where",""],["What went well",`<span class="cnt">${wins(c.m).length}</span>`],["How it works",""]];
+   const P=[()=>blk("Vital signs: report card",vitalsHTML(c.m),{ai:c.t.vs}),()=>blk("Focus areas for the coming week",focusHTML(c),{ai:c.t.fa}),()=>blk("Major Unwanted Events",wallHTML(c.m),{ai:c.t.wall}),()=>blk("Where the problem is",hsHTML(c.m),{ai:c.t.hs}),()=>blk("What went well",winsHTML(c.m),{ai:c.t.wins}),()=>blk("How this report works",howHTML())];
+   return verdictHTML(c.m,c.ins)+summaryHTML(c)+`<div class="blk"><div class="tabs" role="tablist" style="padding:0 12px;background:var(--hbar);border-bottom:0">${T.map((t,i)=>`<button role="tab" data-tab="${i}" aria-selected="${tabSel===i}">${t[0]}${t[1]}</button>`).join("")}</div></div>`+P[tabSel]()},
+ inbox:c=>{const items=c.ins.filter(o=>o.level!=="Good").sort((a,b)=>LV[a.level]-LV[b.level]),mues=mueOrder(c.m).filter(r=>r.status==="focus");
+   if(!pick||!(items.some(o=>"i:"+o.key===pick)||mues.some(r=>"m:"+r.i===pick)))pick=items[0]?"i:"+items[0].key:mues[0]?"m:"+mues[0].i:null;
+   const li=items.map(o=>`<button class="ii" data-pick="i:${o.key}" aria-current="${pick==="i:"+o.key}" style="--sfg:${SEVC[o.level][0]}"><span class="tg">${sevTag(o.level)}<span class="theme">${o.theme}</span></span><span class="fb">${esc(o.big)}</span><b>${esc(o.head)}</b></button>`).join("");
+   const lm=mues.map(r=>`<button class="ii" data-pick="m:${r.i}" aria-current="${pick==="m:"+r.i}" style="--sfg:var(--red)"><span class="tg"><span class="mic" style="--st:var(--red);--stbg:var(--redbg);width:28px;height:28px">${MI[r.i]}</span><span class="theme">MUE</span></span><span class="fb">${c.m.mue[r.i].u[7]}</span><b>${esc(MUE[r.i])}</b></button>`).join("");
+   return verdictHTML(c.m,c.ins,{compact:1})+summaryHTML(c)+`<div class="ib">${blk("Issues this week",`<div class="ilist"><span class="gh">Insights, most serious first</span>${li}${lm?`<span class="gh">MUEs that need action</span>${lm}`:""}</div>`,{x:`${items.length+mues.length} items`})}<section class="blk anim"><div class="bb det" id="detail">${pickDetail(c)}</div></section></div>`},
+ score:c=>{const sp=vspec(c.m),oth=["BMM","GMB"].map(model),all=scope==="ALL";
+   const rows=c.m.grades.dims.map((d,k)=>{const g=GRADE[d.p],s=sp[k];return `<tr class="ck" data-dim="${k}" data-sc="${scope}"><td><b>${d.name}</b></td><td><span class="gl" style="background:${gcol(g)};width:34px;height:34px;font-size:17px">${g}</span></td><td class="r">${s.val} <small style="font-weight:500;color:var(--ink3)">${s.unit}</small></td><td class="r">${s.u!=null?Math.round(s.u)+" usual":"target "+s.t+"%"}</td><td><span class="var ${s.good?"ok":"bad"}">${s.vtxt}</span></td><td>${s.ser?spark(s.ser,"var(--act)",110,30):'<span class="ft">Not weekly</span>'}</td>${all?oth.map(o=>{const gg=GRADE[o.grades.dims[k].p];return `<td><i class="gq" style="background:${gcol(gg)}">${gg}</i></td>`}).join(""):""}<td class="wrap">${esc(d.to||"")}</td></tr>`}).join("");
+   const fr=[...c.f,...c.rest].map(o=>{const sc=SEVC[o.level][0];return `<tr class="ck" data-ins="${o.key}"><td>${sevTag(o.level)}</td><td style="min-width:200px"><b>${esc(o.head)}</b><div class="ft">${esc(o.theme)}</div></td><td class="r" style="color:${sc};font-size:22px">${esc(o.big)}</td><td class="cz"><span style="border-left:4px solid ${sc};padding-left:10px;display:block;font-weight:600">${esc(o.cause)}</span></td><td class="wrap" style="color:var(--aiink)">${esc(o.act)}</td><td style="min-width:140px">${esc(o.owner)}</td><td>${meter(o.conf,o.confWhy)}</td></tr>`}).join("");
+   return verdictHTML(c.m,c.ins)+summaryHTML(c)+blk("Report card",tbl([["Vital sign"],["Grade"],["Last 2 weeks",1],["Compared with",1],["Variance"],["8 weeks"],...(all?[["BMM"],["Gamsberg"]]:[]),["Good when"]],rows),{ai:c.t.vs,d:.05})
+    +blk("Focus areas and what to do",tbl([["Severity"],["Issue"],["Key figure",1],["What this can cause"],["What to do (AI)"],["Owner"],["Confidence"]],fr),{ai:c.t.fa,d:.1})+blk("What went well",winsRow(c.m),{ai:c.t.wins,d:.15})},
+ register:c=>{const flag=sig=>Object.keys(FI).filter(k=>sig[k]).map(k=>`<span class="fi hov" data-html="${esc(`<div class='t'>${FLONG[k]}</div>`)}" aria-label="${FLONG[k]}">${FI[k][0]}</span>`).join("")||'<span class="ft">None</span>';
+   const row3=r=>{const x=c.m.mue[r.i],st=STC[r.status],d=x.u[7]-x.u[6];return `<tr class="ck l3" data-mue="${r.i}"><td><span class="nmc" style="padding-left:34px"><span class="mic" style="--st:${st[0]};--stbg:${st[1]}">${MI[r.i]}</span><span>${esc(MUE[r.i])}<small class="nsub">${MUEID[r.i]}</small></span></span></td><td><span class="stb" style="--st:${st[0]}"><i></i>${st[2]}</span></td>
+     ${r.none?`<td colspan="6" class="ft">No records in the Enablon exports</td>`:`<td class="r">${x.u[7]}${d?` <small style="color:${d>0?"var(--red)":"var(--green)"}">${d>0?"▲":"▼"}${Math.abs(d)}</small>`:""}</td><td>${spark(x.u,st[0],96,28)}</td><td class="r">${x.openHP}</td><td class="r">${x.late} of ${x.open}</td><td class="r">${r.c2} vs ${Math.round(r.cP)}</td><td><span class="fis">${flag(r.sig)}</span></td>`}<td class="cz">${esc(CAUSE[r.i])}</td></tr>`};
+   const rows=nodes(c.m,2).map(n=>{const st=STC[n.status],op=regOpen.has(n.k),d=n.u[7]-n.u[6];return `<tr class="ck grp" data-rgrp="${n.k}" aria-expanded="${op}"><td><span class="nmc"><span class="tog">${op?"▾":"▸"}</span><span class="mic" style="--st:${st[0]};--stbg:${st[1]}">${n.icon}</span><span>${esc(n.name)}<small class="nsub">${esc(L1N[n.l1])} · ${n.idx.length} MUE${n.idx.length>1?"s":""}</small></span></span></td><td>${cntsHTML(n)}</td>
+     ${n.status==="none"?`<td colspan="6" class="ft">No records in the Enablon exports</td>`:`<td class="r">${n.u[7]}${d?` <small style="color:${d>0?"var(--red)":"var(--green)"}">${d>0?"▲":"▼"}${Math.abs(d)}</small>`:""}</td><td>${spark(n.u,st[0],96,28)}</td><td class="r">${n.openHP}</td><td class="r">${n.late} of ${n.open}</td><td class="r">${n.c2} vs ${Math.round(n.cP)}</td><td><span class="fis">${flag(n.sig)}</span></td>`}<td class="cz">${n.status==="none"?"":`<b>${esc(SHORT[n.top.i])}:</b> ${esc(CAUSE[n.top.i])}`}</td></tr>${op?n.rs.map(row3).join(""):""}`}).join("");
+   return verdictHTML(c.m,c.ins,{compact:1})+summaryHTML(c)+blk("MUE risk register",`<div class="more"><button class="lnk" type="button" data-rall="1">Open all groups</button><button class="lnk" type="button" data-rall="0">Close all groups</button></div>`+tbl([["MUE group (L2) and MUE (L3)"],["Status"],["Unsafe this week",1],["8 weeks"],["High potential open",1],["Actions past due",1],["CRM checks, 2 weeks vs usual",1],["Warning signs"],["What this can cause"]],rows)+`<div class="stl"><span>Warning signs:</span>${Object.keys(FI).map(k=>`<span style="display:inline-flex;gap:6px;align-items:center"><span class="fi" style="width:24px;height:24px;border-radius:4px;background:var(--red);color:#fff;display:inline-grid;place-items:center;padding:4px">${FI[k][0]}</span>${FLONG[k]}</span>`).join("")}</div><div class="ft">Select a group to open its MUEs; select an MUE for the evidence, what to do and the owner. Levels follow the draft VZI MUE taxonomy, for VZI HSE review.</div>`,{ai:c.t.wall,d:.05})
+    +blk("Focus areas",`<div class="frows">${c.f.map(o=>frow(o)).join("")}</div>`,{ai:c.t.fa,d:.1})},
+ memo:c=>{const g=c.m.grades,st=OUT[g.overall],w=wins(c.m),sp=vspec(c.m);let n=2;
+   const fi=c.f.map(o=>{const[sc,sb]=SEVC[o.level];return `<li style="--sfg:${sc};--sbg:${sb}"><h3>${esc(o.head)} ${sevTag(o.level)}</h3><p><b>${esc(o.big)}</b> ${esc(o.bigl)}. ${esc(o.sub)}.</p><div class="cz"><b>What this can cause</b>${esc(o.cause)}</div><div class="az"><b>AI recommendation: what to do</b>${esc(o.act)} Owner: ${esc(o.owner)}.</div><button class="lnk" data-ins="${o.key}">See the evidence</button></li>`}).join("");
+   return `<article class="memo anim"><h2 style="font-size:26px">Weekly safety briefing note</h2><div class="mh"><b>To</b><span>${scope==="ALL"?"CEO, General Managers BMM and Gamsberg, HSE Head":SITENAME[scope]+" General Manager, HSE Head and section managers"}</span><b>From</b><span>Proactive Safety Agent (AI), for the HSE Head to confirm</span><b>Week</b><span>Friday 25 September to Thursday 1 October 2026</span><b>Grade</b><span><b>${g.overall}</b> (${g.score} out of 100)</span></div>
+    <h2 class="mt2">1. Bottom line</h2>${insBox(`${esc(vText(c.ins))}.`)}${summaryHTML(c,{compact:1})}
+    <h2 class="mt2">${n++}. What needs attention</h2><ol class="fi">${fi}</ol>
+    ${c.rest.length?`<h2 class="mt2">${n++}. Also on the radar</h2><ul>${c.rest.map(o=>`<li><button class="lnk" style="color:var(--ink);font-weight:600" data-ins="${o.key}">${esc(o.head)}</button> (${o.level})</li>`).join("")}</ul>`:""}
+    <h2 class="mt2">${n++}. What went well</h2>${w.length?`<ul>${w.map(([b,t,s])=>`<li><b>${esc(b)}</b> ${esc(t)}.${s?` ${esc(s)}.`:""}</li>`).join("")}</ul>`:"<p>Nothing improved on last week.</p>"}
+    <h2 class="mt2">${n++}. Decisions for the HSE Head</h2><ul class="dec">${c.f.map(o=>`<li><i></i><span>Confirm or change the focus area <b>${esc(o.head)}</b> (owner: ${esc(o.owner)}).</span></li>`).join("")}</ul>
+    <h2 class="mt2">Annex: vital signs</h2>${tbl([["Vital sign"],["Grade"],["Value",1],["Variance"]],c.m.grades.dims.map((d,k)=>{const gg=GRADE[d.p];return `<tr class="ck" data-dim="${k}" data-sc="${scope}"><td>${d.name}</td><td><i class="gq" style="background:${gcol(gg)}">${gg}</i></td><td class="r">${sp[k].val} ${sp[k].unit}</td><td><span class="var ${sp[k].good?"ok":"bad"}">${sp[k].vtxt}</span></td></tr>`}).join(""))}
+    <div class="ft">Facts come from the Enablon exports. Text in the shaded AI boxes is the agent's analysis; the HSE Head confirms the focus areas.</div></article>`},
+ matrix:c=>{const cols=[0,1,2,3,4],rows=nodes(c.m,2).filter(n=>n.status!=="none"),none=nodes(c.m,2).filter(n=>n.status==="none");
+   const mx=Math.max(1,...rows.flatMap(x=>[...cols.map(k=>x.area[k]),x.site[0],x.site[1]]));
+   const cell=(v,sh,first)=>{const bl=first?' style="border-left:2px solid var(--rule)"':"";if(!v)return `<td class="c"${bl}><span style="color:var(--ink3);font-weight:500">0</span></td>`;const p=Math.round(10+75*Math.sqrt(v/mx));return `<td class="c"${bl}><span class="hov" data-html="${esc(`<div class='t'>${v} unsafe findings</div>`)}" style="background:color-mix(in srgb,var(--red) ${p}%,var(--paper));color:${p>45?"#fff":"var(--ink)"}">${v}</span></td>`};
+   const body=rows.map(x=>{const st=STC[x.status];return `<tr class="ck" data-grp="${x.k}"><td><span class="nmc"><span class="mic" style="--st:${st[0]};--stbg:${st[1]}">${x.icon}</span><span>${esc(x.name)}<small class="nsub">${x.idx.length} MUE${x.idx.length>1?"s":""}</small></span></span></td><td>${cntsHTML(x)}</td>${cols.map(k=>cell(x.area[k])).join("")}${cell(x.site[0],0,1)}${cell(x.site[1],0)}<td class="r" style="border-left:2px solid var(--rule)">${sum(x.u)}</td></tr>`}).join("");
+   return verdictHTML(c.m,c.ins,{compact:1})+summaryHTML(c)+blk("Where risk sits: unsafe findings by MUE group, area and site (8 weeks)",`<div class="mx">${tbl([["MUE group (L2)"],["MUEs by status"],...cols.map(k=>[AREAS[k].replace(" services","")]),["BMM"],["Gamsberg"],["Total",1]],body)}</div>
+     <div class="stl"><span style="display:inline-flex;align-items:center;gap:8px">Fewer<i style="width:140px;height:14px;margin:0;background:linear-gradient(90deg,color-mix(in srgb,var(--red) 10%,var(--paper)),var(--red))"></i>More unsafe findings</span></div>${none.length?`<div class="ft">Groups with no data in Enablon: ${none.map(x=>esc(x.name)).join(", ")}.</div>`:""}<div class="ft">Select a group to see its MUEs.</div>`,{ai:c.t.hs,d:.05})
+    +`<div class="duo">${blk("Focus areas",`<div class="frows">${c.f.map(o=>frow(o)).join("")}</div>`,{ai:c.t.fa,d:.1})}${blk("What went well",winsHTML(c.m),{ai:c.t.wins,d:.1})}</div>`},
+ steps:c=>{const S=[["Verdict",()=>verdictHTML(c.m,c.ins,{nowhy:1})+kpisHTML(c.m)],["Actions",()=>summaryHTML(c)],...c.f.map((o,i)=>[o.theme,()=>`<section class="blk anim"><header class="bh"><h2 class="bt">Focus area ${i+1} of ${c.f.length}</h2><span class="bx">${esc(o.theme)}</span></header><div class="bb det">${insDetail(o)}</div></section>`]),["MUEs",()=>blk("Major Unwanted Events",wallHTML(c.m),{ai:c.t.wall})],["What went well",()=>blk("What went well",winsHTML(c.m),{ai:c.t.wins})]];
+   stepSel=Math.max(0,Math.min(stepSel,S.length-1));
+   return `<div class="stp"><nav class="snav" aria-label="Steps"><button class="sb2" data-step="${stepSel-1}" ${stepSel?"":"disabled"}>Previous</button><div class="dots">${S.map((s,i)=>`<button data-step="${i}" aria-current="${i===stepSel}">${i+1}. ${s[0]}</button>`).join("")}</div><button class="sb2 pri" data-step="${stepSel+1}" ${stepSel<S.length-1?"":"disabled"}>Next</button></nav>${S[stepSel][1]()}</div>`},
+ sites:c=>{const col=s=>{const m=model(s),ins=insights(m),f=pickFocus(ins).slice(0,3),sp=vspec(m),st=OUT[m.grades.overall];
+     return blk(SITENAME[s],`${verdictHTML(m,ins,{compact:1,sc:s,nowhy:1})}<span class="sub">Vital signs</span><div class="vr">${m.grades.dims.map((d,k)=>{const g=GRADE[d.p];return `<button class="vrr" data-dim="${k}" data-sc="${s}"><span class="gl" style="background:${gcol(g)}">${g}</span><b>${d.name}${d.low?" *":""}</b><span>${sp[k].val} <small style="font-family:var(--bf);font-size:14px;font-weight:500;color:var(--ink2)">${sp[k].unit}</small></span></button>`}).join("")}</div><span class="sub">Top focus areas</span><div class="frows">${f.map(o=>frow(o,s)).join("")}</div>`,{x:`Grade ${m.grades.overall}`,d:s==="GMB"?.1:.05})};
+   const A=c.m,rows=nodes(A,2).filter(n=>n.site[0]+n.site[1]),mx=Math.max(1,...rows.flatMap(n=>n.site.slice(0,2)));
+   const diff=`<div class="tw2"><span class="hd">MUE group</span><span class="hd">BMM</span><span class="hd">Gamsberg</span>${rows.map(x=>{return `<button class="lnk" type="button" data-grp="${x.k}" style="color:var(--ink);font-weight:600;text-decoration:none">${esc(x.name)}</button>${[0,1].map(k=>`<span class="br"><i class="grow" style="width:${x.site[k]/mx*80}%;background:${k?"var(--c2)":"var(--c1)"}"></i><b>${x.site[k]}</b></span>`).join("")}`}).join("")}</div><div class="ft">Unsafe findings in the last 8 weeks. Records with no site are left out. * CRM checks by site are indicative.</div>`;
+   return verdictHTML(c.m,c.ins,{compact:1})+summaryHTML(c)+`<div class="cmp">${col("BMM")}${col("GMB")}</div>`+blk("Where the sites differ",diff,{d:.15})}
+};
+function pickDetail(c){if(!pick)return `<p class="ft">Nothing to show.</p>`;if(pick[0]==="i"){const o=c.ins.find(x=>"i:"+x.key===pick);return o?insDetail(o):""}return mueDetail(+pick.slice(2))}
+function ctx(){const m=model(lay==="sites"?"ALL":scope),ins=insights(m),f=pickFocus(ins),rest=ins.filter(o=>!f.includes(o)&&o.level!=="Good");return {m,ins,f,rest,t:texts(m,ins,f)}}
+function render(){const c=ctx();window.__ins=c.ins;document.documentElement.dataset.layout=lay;$("siteSeg").hidden=!isDash()||(lay==="sites"&&view!=="sum");$("dash").innerHTML=view==="sum"?summaryView(c):LB[lay](c);countUp($("dash"))}
+
+/* ===== pop-up detail ===== */
+let lastFocus=null;
+function openSpot(html){lastFocus=document.activeElement;$("spot").innerHTML=`<button class="x" id="sx">Close</button>`+html;$("dim").hidden=false;document.body.classList.add("lock");$("dim").scrollTop=0;$("sx").onclick=closeSpot;$("sx").focus();tip.hidden=true;countUp($("spot"))}
+function closeSpot(){$("dim").hidden=true;document.body.classList.remove("lock");if(lastFocus)lastFocus.focus()}
+const spotInsight=o=>openSpot(insDetail(o,1));
+const spotMue=i=>openSpot(mueDetail(i,1));
+function spotGrade(k,s){const m=model(s),d=m.grades.dims[k],g=GRADE[d.p];
+  const body={0:()=>sec("Observations per week",weekBars(m.obs,"var(--act)","Observations")),1:()=>sec("High-potential findings per week",weekBars(m.hp,"var(--red)","High potential")),2:()=>sec("Critical control checks per week",weekBars(m.crm,"var(--act)","CRM checks")),3:()=>sec("How late, open actions",ageBars(m.od,["1 to 7 days","8 to 30 days","31 to 60 days","61 to 90 days","over 90 days"],"var(--red)")),4:()=>sec("Open high-potential findings by age",ageBars(m.hpAge,["0 to 30 days","31 to 60 days","61 to 90 days","over 90 days"],"var(--high)"))}[k]();
+  const sites=["BMM","GMB","ALL"].map(model).map(x=>{const gg=GRADE[x.grades.dims[k].p];return `<span class="sr" style="width:auto;cursor:default"><i class="gq" style="background:${gcol(gg)}">${gg}</i>${x.scope==="ALL"?"VZI":SITENAME[x.scope]}</span>`}).join("");
+  openSpot(`<div style="display:flex;gap:14px;align-items:center"><span class="gl" style="background:${gcol(g)};width:60px;height:60px;font-size:32px">${g}</span><div><span class="theme">${SITENAME[s]} · vital sign</span><h2 id="spotH" style="padding-right:0">${d.name}: ${d.val}</h2></div></div>
+   <p class="lede">${esc(d.what)}.${d.low?" Indicative only: most CRM checks carry no site yet.":""}</p><div style="display:flex;gap:8px;flex-wrap:wrap">${sites}</div>${aiBlock(null,null,d.to,null,null,null)}${body}`)}
+function spotAbout(){openSpot(`<span class="theme">About this report</span><h2 id="spotH">The design rules behind this report</h2>
+  <ul class="rules"><li>It is a safety report: calm and plain. Colour is used only for severity and status, never for decoration.</li>
+  <li>Every section is a framed panel with its own header, so it stands apart from the page.</li>
+  <li>Everything the agent writes sits in a marked "AI insight" box with a coloured edge, never in a heading. Facts come from Enablon.</li>
+  <li>"What this can cause" leads every detail view and is coloured by severity; what to do, the owner and the business impact follow.</li>
+  <li>One notation: last 2 weeks solid, usual outlined, target a line, variance in red or green (IBCS).</li>
+  <li>Grade bands (A to E) are a proposal to agree with VZI HSE. Leading indicators only; no predictions.</li>
+  <li>Ten design languages for review: ${DSS.map(d=>d[1]).join(", ")}.</li>
+  <li>Ten layouts for review: ${LAYS.map(d=>d[1]).join(", ")}.</li></ul>
+  <div class="ft">Section 54 estimate: Minerals Council South Africa via Miningmx. Rules drawn from IBCS, ISA-101 high-performance HMI, ICMM critical control management and public design systems.</div>`)}
+
+/* ===== email ===== */
+function email(s){const m=model(s),ins=insights(m),f=pickFocus(ins).slice(0,3),g=m.grades,w=wins(m),v=vText(ins),st=OUT[g.overall];
+  $("mail").innerHTML=`<div class="mail anim"><div class="hd"><b>From</b><span>Proactive Safety Agent</span><b>To</b><span>${SITENAME[s]} GM, HSE Head and section managers</span><b>Subject</b><span><strong>${esc(`${SITENAME[s]} safety, week ending 1 October 2026: grade ${g.overall}. ${v}`)}</strong></span></div>
+   <div class="bd"><div class="mv" style="--stc:${gcol(g.overall)}"><i class="gq big" style="background:${gcol(g.overall)}">${g.overall}</i><div class="ins"><span class="lab">${SPARK}AI insight · verdict for ${SITENAME[s]}</span><p>${esc(v)}.</p></div></div>
+    <div class="lab2">Vital signs</div><div class="vrow">${g.dims.map(d=>`<div><span class="gl" style="background:${gcol(GRADE[d.p])}">${GRADE[d.p]}</span>${d.name}${d.low?" *":""}</div>`).join("")}</div>
+    <div class="lab2">${f.length} area${f.length!==1?"s need":" needs"} attention</div>
+    ${f.map(o=>{const[sc,sb]=SEVC[o.level];return `<div class="mfa" style="--sfg:${sc};--sbg:${sb}"><div class="h"><span class="big" style="color:${sc}">${esc(o.big)}</span>${sevTag(o.level," · "+o.theme)}<h4>${esc(o.head)}</h4></div>
+      <div class="c"><b>What this can cause</b>${esc(o.cause)}</div><div class="d"><b>AI · What to do</b>${esc(o.act)} <span style="color:var(--ink2)">(${esc(o.owner)})</span><br><button class="lnk" type="button" data-opensite="${s}" data-oins="${o.key}">See the details ${ARROW}</button></div></div>`}).join("")}
+    ${w.length?`<div class="lab2">What went well</div><div class="wrow">${w.map(([b,t])=>`<span><b>${esc(b)}</b>${esc(t)}</span>`).join("")}</div>`:""}
+    <button class="ctab" type="button" data-opensite="${s}">Open the ${SITENAME[s]} report</button>
+    <div class="ft">AI marks the agent's analysis; facts come from Enablon. The HSE Head confirms the focus areas. Charts go in as images.${s!=="ALL"?" * Indicative by site: most CRM checks carry no site yet.":""}</div></div></div>`}
+
+/* ===== events ===== */
+const tip=$("tip");
+document.addEventListener("mousemove",e=>{const el=e.target.closest&&e.target.closest(".hov");if(!el||!el.dataset.html){tip.hidden=true;return}tip.innerHTML=el.dataset.html;tip.hidden=false;const w=tip.offsetWidth,h=tip.offsetHeight;let x=e.clientX+14,y=e.clientY+14;if(x+w>innerWidth-8)x=e.clientX-w-14;if(y+h>innerHeight-8)y=e.clientY-h-14;tip.style.left=x+"px";tip.style.top=y+"px"});
+document.addEventListener("click",e=>{const t=e.target;if(t.closest("#spot")&&!t.closest("#sx")){const mu=t.closest("#spot [data-mue]");if(mu)spotMue(+mu.dataset.mue);return}if(t===$("dim")){closeSpot();return}
+  const tb=t.closest("[data-tab]");if(tb){tabSel=+tb.dataset.tab;render();return}
+  const sp=t.closest("[data-step]");if(sp&&!sp.disabled){stepSel=+sp.dataset.step;render();$("dash").scrollIntoView({behavior:"smooth",block:"start"});return}
+  const pk=t.closest("[data-pick]");if(pk){pick=pk.dataset.pick;document.querySelectorAll("[data-pick]").forEach(b=>b.setAttribute("aria-current",b.dataset.pick===pick));$("detail").innerHTML=pickDetail(ctx());countUp($("detail"));if(innerWidth<1080)$("detail").scrollIntoView({behavior:"smooth",block:"start"});return}
+  const ml=t.closest("[data-mlvl]");if(ml){const v=ml.dataset.mlvl;if(v.startsWith("2:d")){mLvl=2;mF1=+v.slice(3);mF2=null}else{mLvl=+v;mF1=null;mF2=null}$("wallBox").innerHTML=wallInner(ctx().m);countUp($("wallBox"));return}
+  const nd=t.closest("[data-node]");if(nd){const[l,k]=nd.dataset.node.split(":").map(Number);if(l===1){mLvl=2;mF1=k;mF2=null}else{mLvl=3;mF2=k;mF1=L2N[k][1]}const wb=$("wallBox");if(wb){wb.innerHTML=wallInner(ctx().m);countUp(wb);wb.scrollIntoView({behavior:"smooth",block:"nearest"})}return}
+  const gp=t.closest("[data-grp]");if(gp){spotGroup(+gp.dataset.grp);return}
+  const rg=t.closest("[data-rgrp]");if(rg){const k=+rg.dataset.rgrp;regOpen.has(k)?regOpen.delete(k):regOpen.add(k);render();return}
+  const ra=t.closest("[data-rall]");if(ra){regOpen=ra.dataset.rall==="1"?new Set(L2N.map((_,k)=>k)):new Set();render();return}
+  const dv=t.closest("[data-view]");if(dv){setView(dv.dataset.view);return}
+  if(t.closest("[data-about]")){spotAbout();return}
+  const sc=t.closest("[data-site]");if(sc){setScope(sc.dataset.site);return}
+  const gi=t.closest("[data-dim]");if(gi){spotGrade(+gi.dataset.dim,gi.dataset.sc);return}
+  const ii=t.closest("[data-ins]");if(ii&&lay==="inbox"&&view==="dash"&&!ii.dataset.isc&&$("detail")){pick="i:"+ii.dataset.ins;document.querySelectorAll("[data-pick]").forEach(b=>b.setAttribute("aria-current",b.dataset.pick===pick));$("detail").innerHTML=pickDetail(ctx());countUp($("detail"));$("detail").scrollIntoView({behavior:"smooth",block:"start"});return}
+  if(ii){const list=ii.dataset.isc?insights(model(ii.dataset.isc)):window.__ins;const o=list.find(x=>x.key===ii.dataset.ins);if(o)spotInsight(o);return}
+  const mu=t.closest("[data-mue]");if(mu){spotMue(+mu.dataset.mue);return}
+  const op=t.closest("[data-opensite]");if(op){view="dash";setView("dash");setScope(op.dataset.opensite);if(op.dataset.oins){const o=window.__ins.find(x=>x.key===op.dataset.oins);if(o)spotInsight(o)}return}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("dim").hidden)closeSpot()});
+function setScope(s){scope=s;document.querySelectorAll("#siteSeg button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.s===s));render();tip.hidden=true;window.scrollTo({top:0,behavior:"smooth"})}
+const isDash=()=>view==="dash"||view==="sum";
+function setView(v){view=v;document.querySelectorAll("#viewSeg button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===v));$("dash").hidden=!isDash();$("mail").hidden=isDash();if(isDash())render();else{$("siteSeg").hidden=true;email(v)}tip.hidden=true;window.scrollTo({top:0})}
+document.querySelectorAll("#siteSeg button").forEach(b=>b.onclick=e=>{e.stopPropagation();setScope(b.dataset.s)});
+document.querySelectorAll("#viewSeg button").forEach(b=>b.onclick=e=>{e.stopPropagation();setView(b.dataset.v)});
+const store=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}},load=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
+$("dsSel").innerHTML=DSS.map((d,i)=>`<option value="${d[0]}">${i+1} · ${d[1]}</option>`).join("");
+$("laySel").innerHTML=LAYS.map((d,i)=>`<option value="${d[0]}">${i+1} · ${d[1]}</option>`).join("");
+function setDS(v){document.documentElement.dataset.ds=v;store("a04ds11",v);isDash()?render():email(view)}
+function setLay(v){lay=v;tabSel=0;stepSel=0;store("a04lay11",v);if(view!=="dash")setView("dash");render()}
+$("dsSel").onchange=e=>setDS(e.target.value);
+$("laySel").onchange=e=>setLay(e.target.value);
+$("scn").onchange=e=>{const k=e.target.value;D=k==="live"?BASE:scenario(k);for(const x in CACHE)delete CACHE[x];pick=null;
+  $("banner").hidden=k==="live";$("banner").textContent={good:"Example scenario: most past-due actions closed, CRM checks back to normal and fewer high-potential findings. Built by adjusting this week's records; not real data.",slope:"Example scenario: 11 high-potential pit wall findings at Gamsberg in two weeks and no pit wall CRM checks. Built by adjusting this week's records; not real data.",quiet:"Example scenario: BMM records two thirds fewer observations in the last two weeks. Built by adjusting this week's records; not real data."}[k]||"";
+  isDash()?render():email(view)};
+(()=>{let v=load("a04ds11");if(!DSS.some(d=>d[0]===v))v="exec";let l=load("a04lay11");if(!LAYS.some(d=>d[0]===l))l="brief";$("dsSel").value=v;$("laySel").value=l;document.documentElement.dataset.ds=v;lay=l})();
+render();
+</script>
+
+</body></html>
